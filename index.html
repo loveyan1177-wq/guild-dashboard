@@ -304,7 +304,7 @@ async function initLogin() {
   try {
     const anchors = await loadAnchors();
     if (anchorParam && keyParam === 'bm2026' + anchorParam) {
-      const matched = anchors.find(a => a.id === anchorParam || a.name === anchorParam);
+      const matched = anchors.find(a => a.name.toLowerCase() === anchorParam.toLowerCase() || a.id === anchorParam);
       if (matched) {
         selectAnchor(matched);
         return;
