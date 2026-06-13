@@ -149,6 +149,28 @@
   .ai-done-btn:disabled { opacity: 0.4; cursor: default; }
   .ai-done-label { font-size: 11px; color: var(--green); }
   .ai-empty { text-align: center; padding: 2rem; font-size: 13px; color: var(--text2); }
+
+  /* 大哥展开详情 */
+  .bro-item { cursor: pointer; transition: all 0.2s; }
+  .bro-item:hover { border-color: rgba(124,111,247,0.4); background: rgba(124,111,247,0.05); }
+  .bro-item.expanded { border-color: rgba(124,111,247,0.5); }
+  .bro-detail { display: none; padding: 10px 14px 12px; border-top: 1px solid var(--border); background: rgba(0,0,0,0.2); border-radius: 0 0 10px 10px; margin: 0 -14px -12px; }
+  .bro-detail.show { display: block; }
+  .bro-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-bottom: 10px; }
+  .bro-stat { font-size: 11px; color: var(--text2); }
+  .bro-stat span { color: var(--text); font-weight: 500; }
+  .bro-ai-title { font-size: 11px; color: var(--purple2); margin-bottom: 6px; letter-spacing: 0.04em; }
+  .bro-ai-item { font-size: 12px; color: var(--text2); line-height: 1.6; padding: 6px 8px; background: rgba(124,111,247,0.06); border-radius: 6px; border-left: 2px solid rgba(124,111,247,0.3); margin-bottom: 5px; }
+  .bro-ai-none { font-size: 12px; color: var(--text2); opacity: 0.5; font-style: italic; }
+  .bro-arrow { font-size: 12px; color: var(--text2); transition: transform 0.2s; margin-left: 6px; }
+  .bro-item.expanded .bro-arrow { transform: rotate(180deg); }
+
+  /* 待跟进展开 */
+  .todo-item { cursor: pointer; transition: background 0.2s; }
+  .todo-item:hover { background: rgba(255,255,255,0.03); }
+  .todo-detail { display: none; padding: 8px 0 4px 18px; }
+  .todo-detail.show { display: block; }
+  .todo-ai-item { font-size: 12px; color: var(--text2); line-height: 1.6; padding: 6px 8px; background: rgba(248,113,113,0.06); border-radius: 6px; border-left: 2px solid rgba(248,113,113,0.3); margin-bottom: 5px; }
 </style>
 </head>
 <body>
@@ -244,7 +266,7 @@
   </div>
 
   <div class="section">
-    <div class="section-title">本场Top大哥</div>
+    <div class="section-title">累计Top大哥</div>
     <div class="bro-list" id="d-bros"></div>
   </div>
 
@@ -513,33 +535,37 @@ function renderDashboard(anchor, liveData, fansData) {
     }
   });
 
-  // Top大哥
+  // 累计Top大哥（可展开）
   const topFans = [...fans].sort((a,b) => (b.total_coins||0)-(a.total_coins||0)).slice(0,5);
   const broList = document.getElementById('d-bros');
   broList.innerHTML = '';
   topFans.forEach((f, i) => {
     const rankClass = i===0?'top1':i===1?'top2':i===2?'top3':'';
     const tier = f.total_coins >= 3000 ? 'svip' : f.total_coins >= 1000 ? 'vip' : '';
-    const tagHtml = tier ? `<span class="bro-tag tag-${tier}">${tier==='svip'?'超级VIP':'VIP'}</span>` : '';
-    broList.innerHTML += `
-      <div class="bro-item">
-        <div class="bro-rank ${rankClass}">${i+1}</div>
-        <div class="bro-name">${f.username}${tagHtml}</div>
-        <div class="bro-coins">${(f.total_coins||0).toLocaleString()} coins</div>
-      </div>
-    `;
+    const tagHtml = tier ? '<span class="bro-tag tag-' + tier + '">' + (tier==='svip'?'超级VIP':'VIP') + '</span>' : '';
+    const div = document.createElement('div');
+    div.className = 'bro-item';
+    div.innerHTML = '<div class="bro-rank ' + rankClass + '">' + (i+1) + '</div>'
+      + '<div class="bro-name">' + f.username + tagHtml + '</div>'
+      + '<div class="bro-coins">' + (f.total_coins||0).toLocaleString() + ' coins</div>'
+      + '<div class="bro-arrow">▾</div>'
+      + '<div class="bro-detail" id="bro-detail-' + i + '"></div>';
+    div.onclick = function() { toggleBroDetail(this, f, i); };
+    broList.appendChild(div);
   });
 
-  // 待跟进
+  // 待跟进（可展开AI建议）
   const todos = document.getElementById('d-todos');
   todos.innerHTML = '';
-  lostFans.slice(0,3).forEach(f => {
-    todos.innerHTML += `
-      <div class="todo-item">
-        <div class="todo-dot dot-red"></div>
-        <div class="todo-text"><span class="todo-name">${f.username}</span> 超过7天未出现，累计 ${(f.total_coins||0).toLocaleString()} coins</div>
-      </div>
-    `;
+  lostFans.slice(0,3).forEach((f, i) => {
+    const div = document.createElement('div');
+    div.className = 'todo-item';
+    div.innerHTML = '<div class="todo-dot dot-red"></div>'
+      + '<div class="todo-text" style="flex:1"><span class="todo-name">' + f.username + '</span> 超过7天未出现，累计 ' + (f.total_coins||0).toLocaleString() + ' coins</div>'
+      + '<div class="bro-arrow" style="flex-shrink:0">▾</div>'
+      + '<div class="todo-detail" id="todo-detail-' + i + '"></div>';
+    div.onclick = function() { toggleTodoDetail(this, f, i); };
+    todos.appendChild(div);
   });
   if (todos.innerHTML === '') {
     todos.innerHTML = '<div class="todo-item"><div class="todo-dot dot-green"></div><div class="todo-text">暂无待跟进粉丝，继续保持！</div></div>';
@@ -654,6 +680,73 @@ async function markDone(recordId, anchorName, btn) {
       document.getElementById('ai-pending-count').textContent = pending > 0 ? pending + ' 条待处理' : '全部已处理 ✓';
     } else { btn.disabled = false; btn.textContent = '标记已处理'; }
   } catch(e) { btn.disabled = false; btn.textContent = '标记已处理'; }
+}
+
+// 大哥展开详情
+function toggleBroDetail(el, fan, idx) {
+  const detail = document.getElementById('bro-detail-' + idx);
+  const isExpanded = el.classList.contains('expanded');
+  // 收起其他
+  document.querySelectorAll('.bro-item.expanded').forEach(item => {
+    item.classList.remove('expanded');
+    item.querySelector('.bro-detail').classList.remove('show');
+  });
+  if (isExpanded) return;
+  el.classList.add('expanded');
+
+  // 找匹配的AI建议
+  const relatedSuggestions = allSuggestions.filter(s =>
+    s.reason && s.reason.includes(fan.username) ||
+    s.action && s.action.includes(fan.username)
+  ).slice(0, 3);
+
+  const lastActive = fan.last_active || '暂无记录';
+  const statsHtml = '<div class="bro-stats">'
+    + '<div class="bro-stat">累计金币 <span>' + (fan.total_coins||0).toLocaleString() + '</span></div>'
+    + '<div class="bro-stat">最高单场 <span>' + (fan.max_single||0).toLocaleString() + '</span></div>'
+    + '<div class="bro-stat">出现场次 <span>' + (fan.sessions||0) + ' 场</span></div>'
+    + '<div class="bro-stat">最后活跃 <span>' + lastActive + '</span></div>'
+    + '</div>';
+
+  let aiHtml = '<div class="bro-ai-title">🤖 相关 AI 建议</div>';
+  if (relatedSuggestions.length > 0) {
+    aiHtml += relatedSuggestions.map(s =>
+      '<div class="bro-ai-item">' + s.action + '</div>'
+    ).join('');
+  } else {
+    aiHtml += '<div class="bro-ai-none">暂无相关建议</div>';
+  }
+
+  detail.innerHTML = statsHtml + aiHtml;
+  detail.classList.add('show');
+}
+
+// 待跟进展开AI建议
+function toggleTodoDetail(el, fan, idx) {
+  const detail = document.getElementById('todo-detail-' + idx);
+  const isExpanded = el.classList.contains('expanded');
+  document.querySelectorAll('.todo-item.expanded').forEach(item => {
+    item.classList.remove('expanded');
+    item.querySelector('.todo-detail').classList.remove('show');
+  });
+  if (isExpanded) return;
+  el.classList.add('expanded');
+
+  const relatedSuggestions = allSuggestions.filter(s =>
+    s.reason && s.reason.includes(fan.username) ||
+    s.action && s.action.includes(fan.username)
+  ).slice(0, 3);
+
+  let aiHtml = '';
+  if (relatedSuggestions.length > 0) {
+    aiHtml = relatedSuggestions.map(s =>
+      '<div class="todo-ai-item">' + s.action + '</div>'
+    ).join('');
+  } else {
+    aiHtml = '<div class="bro-ai-none">暂无相关建议，可私信关心近况</div>';
+  }
+  detail.innerHTML = aiHtml;
+  detail.classList.add('show');
 }
 
 initLogin();
