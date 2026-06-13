@@ -339,15 +339,32 @@ async function initLogin() {
   const urlParams = new URLSearchParams(window.location.search);
   const anchorParam = urlParams.get('anchor');
   const keyParam = urlParams.get('key');
+
+  // 直链模式：有 anchor+key 参数时，跳过 anchors 请求直接加载数据
+  if (anchorParam && keyParam === 'bm2026' + anchorParam) {
+    const fakeAnchor = { name: anchorParam, id: anchorParam, level: '', target: 0 };
+    // 并行获取 anchors（拿target/level）和数据
+    const [liveData, fansData, anchors] = await Promise.all([
+      loadLiveData(anchorParam),
+      loadFansData(anchorParam),
+      loadAnchors().catch(() => [])
+    ]);
+    const matched = anchors.find(a => a.name.toLowerCase() === anchorParam.toLowerCase()) || fakeAnchor;
+    currentAnchor = matched;
+    renderDashboard(matched, liveData, fansData);
+    hideLoading();
+    showDashboard();
+    document.getElementById('ai-list').innerHTML = '<div class="ai-empty" style="color:var(--text2);opacity:0.5">建议加载中...</div>';
+    loadSuggestions(anchorParam).then(sugData => {
+      allSuggestions = sugData;
+      renderSuggestions(allSuggestions, currentAiDays);
+    });
+    return;
+  }
+
+  // 普通模式：显示主播列表
   try {
     const anchors = await loadAnchors();
-    if (anchorParam && keyParam === 'bm2026' + anchorParam) {
-      const matched = anchors.find(a => a.name.toLowerCase() === anchorParam.toLowerCase() || a.id === anchorParam);
-      if (matched) {
-        selectAnchor(matched);
-        return;
-      }
-    }
     const list = document.getElementById('anchor-list');
     list.innerHTML = '';
     anchors.forEach(a => {
