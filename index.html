@@ -298,8 +298,18 @@ function hideLoading() {
 
 async function initLogin() {
   showLoading();
+  const urlParams = new URLSearchParams(window.location.search);
+  const anchorParam = urlParams.get('anchor');
+  const keyParam = urlParams.get('key');
   try {
     const anchors = await loadAnchors();
+    if (anchorParam && keyParam === 'bm2026' + anchorParam) {
+      const matched = anchors.find(a => a.id === anchorParam || a.name === anchorParam);
+      if (matched) {
+        selectAnchor(matched);
+        return;
+      }
+    }
     const list = document.getElementById('anchor-list');
     list.innerHTML = '';
     anchors.forEach(a => {
@@ -325,6 +335,13 @@ async function initLogin() {
 }
 
 async function selectAnchor(anchor) {
+  const urlParams = new URLSearchParams(window.location.search);
+  const key = urlParams.get('key');
+  const anchorParam = urlParams.get('anchor');
+  if (anchorParam && key !== 'bm2026' + anchorParam) {
+    alert('链接无效，请联系运营获取专属链接');
+    return;
+  }
   currentAnchor = anchor;
   showLoading();
   document.getElementById('loading').querySelector('.loading-text').textContent = `加载 ${anchor.name} 的数据...`;
