@@ -23,6 +23,15 @@ async function redisSet(key, value, ttl) {
   }
 }
 
+async function redisDel(key) {
+  const url = process.env.KV_REST_API_URL;
+  const token = process.env.KV_REST_API_TOKEN;
+  await fetch(`${url}/del/${encodeURIComponent(key)}`, {
+    method: 'POST',
+    headers: { Authorization: `Bearer ${token}` }
+  });
+}
+
 export default async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
   if (req.method !== 'POST') return res.status(405).json({ error: 'POST only' });
@@ -44,11 +53,8 @@ export default async function handler(req, res) {
       await redisSet(`suggestions:${anchor}`, suggestions, 300);
       results.suggestions = 'ok';
     }
-    // anchors 缓存清除，让下次自动刷新
-    await fetch(`${url}/del/${encodeURIComponent('anchors')}`, {
-      method: 'POST',
-      headers: { Authorization: `Bearer ${process.env.KV_REST_API_TOKEN}` }
-    }).catch(() => {});
+    // 清除 anchors 缓存，让下次自动刷新
+    await redisDel('anchors');
     res.json({ success: true, anchor, updated: results });
   } catch (e) {
     res.status(500).json({ error: e.message });

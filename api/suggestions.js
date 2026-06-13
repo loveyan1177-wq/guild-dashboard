@@ -1,5 +1,5 @@
 // api/suggestions.js
-// 读取 AI 建议表，加入 Redis 缓存（5分钟），需要实时性时可手动刷新
+// 读取 AI 建议表，加入 Redis 缓存（5分钟）
 
 async function redisGet(key) {
   const url = process.env.KV_REST_API_URL;
@@ -17,22 +17,16 @@ async function redisGet(key) {
   } catch { return null; }
 }
 
-async function redisSet(key, value, ttl = 300) {
+async function redisSetEx(key, value, ttl) {
   const url = process.env.KV_REST_API_URL;
   const token = process.env.KV_REST_API_TOKEN;
-  await fetch(`${url}/del/${encodeURIComponent(key)}`, {
-    method: 'POST',
-    headers: { Authorization: `Bearer ${token}` }
-  });
-  await fetch(`${url}/set/${encodeURIComponent(key)}`, {
+  const encoded = encodeURIComponent(key);
+  const res = await fetch(`${url}/set/${encoded}?ex=${ttl}`, {
     method: 'POST',
     headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
     body: JSON.stringify(JSON.stringify(value))
   });
-  await fetch(`${url}/expire/${encodeURIComponent(key)}/${ttl}`, {
-    method: 'POST',
-    headers: { Authorization: `Bearer ${token}` }
-  });
+  return res.json();
 }
 
 async function getToken() {
@@ -116,8 +110,7 @@ export default async function handler(req, res) {
       return res.json({ suggestions: cached, source: 'cache' });
     }
     const suggestions = await fetchFromFeishu(anchor);
-    // 缓存 5 分钟
-    redisSet(cacheKey, suggestions, 300).catch(() => {});
+    redisSetEx(cacheKey, suggestions, 300).catch(() => {});
     res.json({ suggestions, source: 'feishu' });
   } catch (e) {
     res.status(500).json({ error: e.message, suggestions: [] });

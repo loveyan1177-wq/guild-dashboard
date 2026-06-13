@@ -17,23 +17,18 @@ async function redisGet(key) {
   } catch { return null; }
 }
 
-async function redisSet(key, value, ttl = 600) {
+async function redisSetEx(key, value, ttl) {
   const url = process.env.KV_REST_API_URL;
   const token = process.env.KV_REST_API_TOKEN;
-  await fetch(`${url}/del/${encodeURIComponent(key)}`, {
-    method: 'POST',
-    headers: { Authorization: `Bearer ${token}` }
-  });
-  await fetch(`${url}/set/${encodeURIComponent(key)}`, {
+  // Upstash REST: POST /set/key/value?ex=ttl
+  const encoded = encodeURIComponent(key);
+  const body = JSON.stringify(value);
+  const res = await fetch(`${url}/set/${encoded}?ex=${ttl}`, {
     method: 'POST',
     headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
-    body: JSON.stringify(JSON.stringify(value))
+    body: JSON.stringify(body)
   });
-  // 设置过期时间
-  await fetch(`${url}/expire/${encodeURIComponent(key)}/${ttl}`, {
-    method: 'POST',
-    headers: { Authorization: `Bearer ${token}` }
-  });
+  return res.json();
 }
 
 async function getToken() {
@@ -103,8 +98,7 @@ export default async function handler(req, res) {
       return res.json({ anchors: cached, source: 'cache' });
     }
     const anchors = await fetchFromFeishu();
-    // 缓存 10 分钟
-    redisSet('anchors', anchors, 600).catch(() => {});
+    redisSetEx('anchors', anchors, 600).catch(() => {});
     res.json({ anchors, source: 'feishu' });
   } catch(e) {
     res.status(500).json({ error: e.message, anchors: [] });
