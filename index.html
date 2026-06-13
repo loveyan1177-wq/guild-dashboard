@@ -611,14 +611,16 @@ function renderSuggestions(suggestions, days) {
   });
   Object.values(groups).forEach(g => g.sort((a,b) => getLevelOrder(a.level) - getLevelOrder(b.level)));
   const todayStr = now.toISOString().split('T')[0];
+  const anchorName = currentAnchor ? currentAnchor.name : '';
   const sortedDates = Object.keys(groups).sort().reverse();
   list.innerHTML = sortedDates.map(function(date) {
     const items = groups[date].map(function(s) {
       const isDone = s.status === '已处理';
       const levelCls = 'ai-level-' + getLevelClass(s.level);
+      const btnOnclick = "markDone('" + s.id + "', '" + anchorName + "', this)";
       const footer = isDone
         ? '<span class="ai-done-label">✓ 已处理</span>'
-        : '<button class="ai-done-btn" onclick="markDone('" + s.id + "', '" + (currentAnchor ? currentAnchor.name : '') + "', this)">标记已处理</button>';
+        : '<button class="ai-done-btn" onclick="' + btnOnclick + '">标记已处理</button>';
       return '<div class="ai-item ' + (isDone ? 'done' : '') + '" id="ai-' + s.id + '">'
         + '<div class="ai-item-header">'
         + '<span class="ai-level ' + levelCls + '">' + getLevelText(s.level) + '</span>'
