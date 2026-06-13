@@ -9,9 +9,12 @@ async function redisGet(key) {
   });
   const data = await res.json();
   if (data.result === null || data.result === undefined) return null;
-  // 存的是 JSON 字符串，需要 parse
   try {
-    return typeof data.result === 'string' ? JSON.parse(data.result) : data.result;
+    // Upstash 存了两层 JSON.stringify，需要 parse 两次
+    let val = data.result;
+    if (typeof val === 'string') val = JSON.parse(val);
+    if (typeof val === 'string') val = JSON.parse(val);
+    return Array.isArray(val) ? val : null;
   } catch {
     return null;
   }
@@ -102,7 +105,7 @@ export default async function handler(req, res) {
 
   try {
     const cached = await redisGet(`lives:${anchor}`);
-    if (cached && Array.isArray(cached)) {
+    if (cached) {
       return res.json({ lives: cached, source: 'cache' });
     }
     const lives = await fetchFromFeishu(anchor);

@@ -6,19 +6,19 @@
 async function redisSet(key, value) {
   const url = process.env.KV_REST_API_URL;
   const token = process.env.KV_REST_API_TOKEN;
-  // 先删除旧 key，再写入，确保完全覆盖
-  await fetch(`${url}/del/${key}`, {
+  // 先删除旧 key，确保完全覆盖
+  await fetch(`${url}/del/${encodeURIComponent(key)}`, {
     method: 'POST',
     headers: { Authorization: `Bearer ${token}` }
   });
-  // 存为 JSON 字符串
+  // 直接存 JSON 字符串（一层即可）
   const res = await fetch(`${url}/set/${encodeURIComponent(key)}`, {
     method: 'POST',
     headers: {
       Authorization: `Bearer ${token}`,
       'Content-Type': 'application/json'
     },
-    body: JSON.stringify(JSON.stringify(value))
+    body: JSON.stringify(JSON.stringify(value))  // Upstash REST API 要求 body 是 JSON，值本身是字符串
   });
   return res.json();
 }
