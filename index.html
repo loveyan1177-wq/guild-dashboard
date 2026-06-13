@@ -601,7 +601,7 @@ function renderSuggestions(suggestions, days) {
       const levelCls = 'ai-level-' + getLevelClass(s.level);
       const footer = isDone
         ? '<span class="ai-done-label">✓ 已处理</span>'
-        : '<button class="ai-done-btn" onclick="markDone('' + s.id + '', this)">标记已处理</button>';
+        : '<button class="ai-done-btn" onclick="markDone('" + s.id + "', '" + (currentAnchor ? currentAnchor.name : '') + "', this)">标记已处理</button>';
       return '<div class="ai-item ' + (isDone ? 'done' : '') + '" id="ai-' + s.id + '">'
         + '<div class="ai-item-header">'
         + '<span class="ai-level ' + levelCls + '">' + getLevelText(s.level) + '</span>'
@@ -616,14 +616,14 @@ function renderSuggestions(suggestions, days) {
   }).join('');
 }
 
-async function markDone(recordId, btn) {
+async function markDone(recordId, anchorName, btn) {
   btn.disabled = true;
   btn.textContent = '处理中...';
   try {
     const res = await fetch('/api/suggestion-done', {
       method: 'POST',
       headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify({record_id: recordId})
+      body: JSON.stringify({record_id: recordId, anchor: anchorName})
     });
     const data = await res.json();
     if (data.success) {
