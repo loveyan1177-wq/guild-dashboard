@@ -54,31 +54,20 @@
   .income-card { background: linear-gradient(135deg, #1e1a3a, #12121a); border: 1px solid rgba(124,111,247,0.3); border-radius: 16px; padding: 1.5rem; margin-bottom: 1rem; position: relative; overflow: hidden; }
   .income-card::before { content: ''; position: absolute; top: -50px; right: -50px; width: 150px; height: 150px; background: radial-gradient(circle, rgba(124,111,247,0.15), transparent 70%); }
   .income-label { font-size: 13px; color: var(--text2); margin-bottom: 0.5rem; }
-  .income-value { font-size: 36px; font-weight: 700; color: var(--purple2); letter-spacing: -1px; min-height: 44px; }
+  .income-value { font-size: 36px; font-weight: 700; color: var(--purple2); letter-spacing: -1px; }
   .income-sub { font-size: 13px; color: var(--text2); margin-top: 0.5rem; }
   .income-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 1rem; }
   .income-mini { background: rgba(255,255,255,0.05); border-radius: 10px; padding: 12px; }
   .income-mini-label { font-size: 11px; color: var(--text2); margin-bottom: 4px; }
   .income-mini-value { font-size: 18px; font-weight: 600; }
 
-  /* 连续天数卡片 */
-  .streak-card { background: rgba(251,191,36,0.07); border: 1px solid rgba(251,191,36,0.2); border-radius: 14px; padding: 14px 16px; margin-bottom: 1rem; display: flex; align-items: center; gap: 14px; opacity: 0; transform: translateY(10px); transition: opacity 0.5s ease, transform 0.5s ease; }
-  .streak-card.visible { opacity: 1; transform: translateY(0); }
-  .streak-fire { font-size: 30px; animation: pulse-fire 2s ease-in-out infinite; flex-shrink: 0; }
-  @keyframes pulse-fire { 0%,100%{transform:scale(1)} 50%{transform:scale(1.12)} }
-  .streak-info { flex: 1; }
-  .streak-num { font-size: 26px; font-weight: 700; color: var(--amber); line-height: 1; }
-  .streak-text { font-size: 12px; color: rgba(251,191,36,0.6); margin-top: 3px; }
-  .streak-best { font-size: 11px; color: var(--text2); margin-top: 5px; }
-
   /* 指标卡片网格 */
   .metrics-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 1rem; }
-  .metric-card { background: var(--bg2); border: 1px solid var(--border); border-radius: 12px; padding: 1rem; opacity: 0; transform: translateY(10px); transition: opacity 0.4s ease, transform 0.4s ease; }
-  .metric-card.visible { opacity: 1; transform: translateY(0); }
+  .metric-card { background: var(--bg2); border: 1px solid var(--border); border-radius: 12px; padding: 1rem; }
   .metric-icon { font-size: 20px; margin-bottom: 8px; }
   .metric-value { font-size: 22px; font-weight: 600; }
   .metric-label { font-size: 12px; color: var(--text2); margin-top: 4px; }
-  .metric-trend { font-size: 11px; margin-top: 6px; }
+  .metric-trend { font-size: 12px; margin-top: 6px; }
   .up { color: var(--green); }
   .down { color: var(--red); }
   .warn { color: var(--amber); }
@@ -88,13 +77,8 @@
   .progress-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; }
   .progress-title { font-size: 14px; font-weight: 500; }
   .progress-pct { font-size: 14px; color: var(--purple2); font-weight: 600; }
-  .progress-bar { height: 8px; background: rgba(255,255,255,0.1); border-radius: 4px; overflow: hidden; }
-  .progress-fill { height: 100%; border-radius: 4px; background: linear-gradient(90deg, #7c6ff7, #34d399); width: 0%; transition: width 1.2s cubic-bezier(0.22,1,0.36,1); }
-
-  /* 激励文案 */
-  .motivation-card { background: rgba(124,111,247,0.08); border: 1px solid rgba(124,111,247,0.2); border-radius: 12px; padding: 14px 16px; margin-bottom: 1rem; font-size: 13px; color: var(--text2); line-height: 1.7; opacity: 0; transform: translateY(10px); transition: opacity 0.5s ease, transform 0.5s ease; }
-  .motivation-card.visible { opacity: 1; transform: translateY(0); }
-  .motivation-card strong { color: var(--purple2); font-weight: 600; }
+  .progress-bar { height: 6px; background: rgba(255,255,255,0.1); border-radius: 3px; overflow: hidden; }
+  .progress-fill { height: 100%; border-radius: 3px; background: linear-gradient(90deg, #7c6ff7, #34d399); transition: width 1s ease; }
 
   /* Section标题 */
   .section { margin-bottom: 1rem; }
@@ -102,8 +86,7 @@
 
   /* 大哥排行 */
   .bro-list { display: flex; flex-direction: column; gap: 8px; }
-  .bro-item { background: var(--bg2); border: 1px solid var(--border); border-radius: 10px; padding: 12px 14px; display: flex; align-items: center; gap: 12px; opacity: 0; transform: translateX(-8px); transition: opacity 0.3s ease, transform 0.3s ease; }
-  .bro-item.visible { opacity: 1; transform: translateX(0); }
+  .bro-item { background: var(--bg2); border: 1px solid var(--border); border-radius: 10px; padding: 12px 14px; display: flex; align-items: center; gap: 12px; }
   .bro-rank { font-size: 13px; color: var(--text2); width: 18px; font-weight: 600; }
   .bro-rank.top1 { color: var(--amber); }
   .bro-rank.top2 { color: #c0c0c0; }
@@ -119,10 +102,9 @@
   .todo-list { display: flex; flex-direction: column; gap: 8px; }
   .todo-item { background: var(--bg2); border: 1px solid var(--border); border-radius: 10px; padding: 12px 14px; display: flex; align-items: flex-start; gap: 10px; }
   .todo-dot { width: 8px; height: 8px; border-radius: 50%; margin-top: 5px; flex-shrink: 0; }
-  .dot-red { background: var(--red); box-shadow: 0 0 6px var(--red); animation: pulse-dot 2s ease-in-out infinite; }
+  .dot-red { background: var(--red); box-shadow: 0 0 6px var(--red); }
   .dot-amber { background: var(--amber); box-shadow: 0 0 6px var(--amber); }
   .dot-green { background: var(--green); box-shadow: 0 0 6px var(--green); }
-  @keyframes pulse-dot { 0%,100%{opacity:1} 50%{opacity:0.4} }
   .todo-text { font-size: 13px; line-height: 1.5; color: var(--text); flex: 1; }
   .todo-name { font-weight: 600; color: var(--text); }
 
@@ -136,10 +118,37 @@
   @keyframes spin { to { transform: rotate(360deg); } }
   .loading-text { font-size: 14px; color: var(--text2); }
 
-  @keyframes fadeSlideUp { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
-  .animated { animation: fadeSlideUp 0.6s ease forwards; }
+  /* 数字动画 */
+  @keyframes countUp { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+  .animated { animation: countUp 0.6s ease forwards; }
 
+  /* 时间戳 */
   .timestamp { text-align: center; font-size: 12px; color: var(--text2); margin-top: 2rem; opacity: 0.6; }
+
+  /* AI建议模块 */
+  .ai-section-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+  .ai-section-title { font-size: 13px; font-weight: 500; color: var(--text2); text-transform: uppercase; letter-spacing: 0.08em; }
+  .ai-badge { font-size: 11px; padding: 2px 8px; border-radius: 20px; background: rgba(124,111,247,0.2); color: var(--purple2); font-weight: 600; }
+  .ai-tabs { display: flex; gap: 6px; margin-bottom: 12px; }
+  .ai-tab { font-size: 12px; padding: 5px 12px; border-radius: 20px; border: 1px solid var(--border); background: transparent; color: var(--text2); cursor: pointer; transition: all 0.2s; }
+  .ai-tab.active { background: rgba(124,111,247,0.15); border-color: var(--purple); color: var(--purple2); }
+  .ai-date-group { margin-bottom: 14px; }
+  .ai-date-label { font-size: 11px; color: var(--text2); margin-bottom: 8px; padding-left: 2px; letter-spacing: 0.04em; }
+  .ai-item { background: var(--bg2); border: 1px solid var(--border); border-radius: 12px; padding: 12px 14px; margin-bottom: 8px; transition: opacity 0.3s; }
+  .ai-item.done { opacity: 0.45; }
+  .ai-item-header { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
+  .ai-level { font-size: 10px; padding: 2px 8px; border-radius: 20px; font-weight: 600; flex-shrink: 0; }
+  .ai-level-urgent, .ai-level-high { background: rgba(248,113,113,0.15); color: var(--red); border: 1px solid rgba(248,113,113,0.3); }
+  .ai-level-important, .ai-level-mid { background: rgba(251,191,36,0.15); color: var(--amber); border: 1px solid rgba(251,191,36,0.3); }
+  .ai-level-normal, .ai-level-low { background: rgba(52,211,153,0.1); color: var(--green); border: 1px solid rgba(52,211,153,0.2); }
+  .ai-reason { font-size: 13px; color: var(--text); line-height: 1.5; flex: 1; }
+  .ai-action { font-size: 12px; color: var(--text2); line-height: 1.6; margin-bottom: 10px; padding: 8px 10px; background: rgba(255,255,255,0.03); border-radius: 8px; border-left: 2px solid rgba(124,111,247,0.4); }
+  .ai-footer { display: flex; align-items: center; justify-content: flex-end; }
+  .ai-done-btn { font-size: 12px; padding: 5px 14px; border-radius: 20px; border: 1px solid var(--border2); background: transparent; color: var(--text2); cursor: pointer; transition: all 0.2s; }
+  .ai-done-btn:hover { border-color: var(--green); color: var(--green); background: rgba(52,211,153,0.08); }
+  .ai-done-btn:disabled { opacity: 0.4; cursor: default; }
+  .ai-done-label { font-size: 11px; color: var(--green); }
+  .ai-empty { text-align: center; padding: 2rem; font-size: 13px; color: var(--text2); }
 </style>
 </head>
 <body>
@@ -186,15 +195,6 @@
     </div>
   </div>
 
-  <div class="streak-card" id="streak-card">
-    <div class="streak-fire">🔥</div>
-    <div class="streak-info">
-      <div class="streak-num" id="d-streak">-- 天</div>
-      <div class="streak-text" id="d-streak-text">连续直播中，保持状态！</div>
-      <div class="streak-best" id="d-streak-best"></div>
-    </div>
-  </div>
-
   <div class="section">
     <div class="progress-card">
       <div class="progress-header">
@@ -212,33 +212,27 @@
   </div>
 
   <div class="metrics-grid">
-    <div class="metric-card" id="mc-fans">
+    <div class="metric-card">
       <div class="metric-icon">✨</div>
       <div class="metric-value" id="d-fans">--</div>
       <div class="metric-label">新增粉丝（今日）</div>
-      <div class="metric-trend" id="d-fans-trend"></div>
     </div>
-    <div class="metric-card" id="mc-vip">
+    <div class="metric-card">
       <div class="metric-icon">👑</div>
       <div class="metric-value" id="d-vip">--</div>
       <div class="metric-label">VIP粉丝总数</div>
-      <div class="metric-trend" id="d-vip-trend"></div>
     </div>
-    <div class="metric-card" id="mc-gifters">
+    <div class="metric-card">
       <div class="metric-icon">👥</div>
       <div class="metric-value" id="d-gifters">--</div>
       <div class="metric-label">今日送礼人数</div>
-      <div class="metric-trend" id="d-gifters-trend"></div>
     </div>
-    <div class="metric-card" id="mc-lost">
+    <div class="metric-card">
       <div class="metric-icon">⚠️</div>
       <div class="metric-value warn" id="d-lost">--</div>
       <div class="metric-label">流失预警</div>
-      <div class="metric-trend" id="d-lost-trend"></div>
     </div>
   </div>
-
-  <div class="motivation-card" id="motivation-card"></div>
 
   <div class="section">
     <div class="chart-card">
@@ -259,57 +253,49 @@
     <div class="todo-list" id="d-todos"></div>
   </div>
 
+  <div class="section" id="ai-section">
+    <div class="ai-section-header">
+      <div class="ai-section-title">🤖 AI 建议</div>
+      <div class="ai-badge" id="ai-pending-count"></div>
+    </div>
+    <div class="ai-tabs">
+      <button class="ai-tab active" onclick="switchAiTab(7, this)">最近7天</button>
+      <button class="ai-tab" onclick="switchAiTab(30, this)">本月</button>
+      <button class="ai-tab" onclick="switchAiTab(0, this)">全部</button>
+    </div>
+    <div id="ai-list"></div>
+  </div>
+
   <div class="timestamp" id="d-timestamp"></div>
 </div>
 
 <script>
+const FEISHU_APP_ID = 'cli_aaa0a0786b391bec';
+const FEISHU_APP_SECRET = '0bIlPficAAbs9jrVm5S0vcDf2iVj50fm';
+const APP_TOKEN = 'ONg9bbRwoampbAsJd71c7RKsn7e';
+const TABLE_ANCHORS = 'tbl7bMJLN66tBB7M';
+const TABLE_LIVE = 'tbl4VQMLt9PH4QNy';
+const TABLE_FANS = 'tblSpn2p5LW9TCjX';
+
+let token = '';
 let currentAnchor = null;
 let trendChartInst = null;
 
-function animateNumber(el, target, duration) {
-  const start = performance.now();
-  function update(now) {
-    const p = Math.min((now - start) / duration, 1);
-    const ease = 1 - Math.pow(1 - p, 4);
-    el.textContent = Math.floor(ease * target).toLocaleString();
-    if (p < 1) requestAnimationFrame(update);
-  }
-  requestAnimationFrame(update);
+async function getToken() {
+  const res = await fetch('/api/token');
+  const data = await res.json();
+  token = data.token;
+  return token;
 }
 
-function revealWithDelay(el, delay) {
-  setTimeout(() => { if (el) el.classList.add('visible'); }, delay);
+async function feishuGet(url) {
+  const res = await fetch(url, { headers: { 'Authorization': 'Bearer ' + token } });
+  return res.json();
 }
 
-function calcStreak(lives) {
-  if (!lives || lives.length === 0) return 0;
-  const dates = [...new Set(lives.map(l => l.date).filter(Boolean))].sort().reverse();
-  if (dates.length === 0) return 0;
-  let streak = 1;
-  for (let i = 0; i < dates.length - 1; i++) {
-    const diff = (new Date(dates[i]) - new Date(dates[i+1])) / 86400000;
-    if (diff === 1) streak++;
-    else break;
-  }
-  return streak;
-}
-
-function genMotivation(anchorName, todayDiamonds, avgDiamonds, streak, pct, newFans) {
-  const parts = [];
-  if (todayDiamonds > 0 && avgDiamonds > 0) {
-    if (todayDiamonds > avgDiamonds * 1.2) {
-      parts.push('今天表现超棒！💎 <strong>' + todayDiamonds.toLocaleString() + ' 钻石</strong>，高于近期平均 ' + Math.round((todayDiamonds/avgDiamonds-1)*100) + '%');
-    } else if (todayDiamonds >= avgDiamonds * 0.8) {
-      parts.push('今天状态稳定，<strong>' + todayDiamonds.toLocaleString() + ' 钻石</strong>，继续保持');
-    } else {
-      parts.push('今天辛苦了，<strong>' + todayDiamonds.toLocaleString() + ' 钻石</strong>，明天继续加油');
-    }
-  }
-  if (streak >= 7) parts.push('连续直播 <strong>' + streak + ' 天</strong>，毅力满分！');
-  else if (streak >= 3) parts.push('已连续直播 <strong>' + streak + ' 天</strong>，保持势头');
-  if (newFans > 0) parts.push('今日新增 <strong>' + newFans + ' 位粉丝</strong>');
-  if (pct >= 50) parts.push('本月目标已完成 <strong>' + pct + '%</strong>，冲刺阶段加油');
-  return parts.length > 0 ? parts.join('，') + '！' : '数据已更新，继续加油！';
+async function feishuSearch(tableId, filter) {
+  const res = await fetch(`/api/search?table=${tableId}&filter=${encodeURIComponent(JSON.stringify(filter))}`);
+  return res.json();
 }
 
 async function loadAnchors() {
@@ -319,12 +305,12 @@ async function loadAnchors() {
 }
 
 async function loadLiveData(anchorName) {
-  const res = await fetch('/api/live?anchor=' + encodeURIComponent(anchorName));
+  const res = await fetch(`/api/live?anchor=${encodeURIComponent(anchorName)}`);
   return res.json();
 }
 
 async function loadFansData(anchorName) {
-  const res = await fetch('/api/fans?anchor=' + encodeURIComponent(anchorName));
+  const res = await fetch(`/api/fans?anchor=${encodeURIComponent(anchorName)}`);
   return res.json();
 }
 
@@ -332,15 +318,18 @@ function showLogin() {
   document.getElementById('dashboard').style.display = 'none';
   document.getElementById('login-page').style.display = 'flex';
 }
+
 function showDashboard() {
   document.getElementById('login-page').style.display = 'none';
   document.getElementById('dashboard').style.display = 'block';
 }
+
 function showLoading() {
   document.getElementById('loading').style.display = 'flex';
   document.getElementById('login-page').style.display = 'none';
   document.getElementById('dashboard').style.display = 'none';
 }
+
 function hideLoading() {
   document.getElementById('loading').style.display = 'none';
 }
@@ -354,161 +343,295 @@ async function initLogin() {
     const anchors = await loadAnchors();
     if (anchorParam && keyParam === 'bm2026' + anchorParam) {
       const matched = anchors.find(a => a.name.toLowerCase() === anchorParam.toLowerCase() || a.id === anchorParam);
-      if (matched) { selectAnchor(matched); return; }
+      if (matched) {
+        selectAnchor(matched);
+        return;
+      }
     }
     const list = document.getElementById('anchor-list');
     list.innerHTML = '';
     anchors.forEach(a => {
       const btn = document.createElement('div');
       btn.className = 'anchor-btn';
-      btn.innerHTML = '<div class="anchor-avatar">' + a.name[0].toUpperCase() + '</div><div class="anchor-info"><div class="anchor-name">' + a.name + '</div><div class="anchor-status">' + (a.status || '在播') + '</div></div><div class="anchor-arrow">›</div>';
+      btn.innerHTML = `
+        <div class="anchor-avatar">${a.name[0].toUpperCase()}</div>
+        <div class="anchor-info">
+          <div class="anchor-name">${a.name}</div>
+          <div class="anchor-status">${a.status || '在播'}</div>
+        </div>
+        <div class="anchor-arrow">›</div>
+      `;
       btn.onclick = () => selectAnchor(a);
       list.appendChild(btn);
     });
     hideLoading();
     showLogin();
-  } catch(e) { hideLoading(); showLogin(); }
+  } catch(e) {
+    hideLoading();
+    showLogin();
+  }
 }
 
 async function selectAnchor(anchor) {
   const urlParams = new URLSearchParams(window.location.search);
   const key = urlParams.get('key');
   const anchorParam = urlParams.get('anchor');
-  if (anchorParam && key !== 'bm2026' + anchorParam) { alert('链接无效，请联系运营获取专属链接'); return; }
+  if (anchorParam && key !== 'bm2026' + anchorParam) {
+    alert('链接无效，请联系运营获取专属链接');
+    return;
+  }
   currentAnchor = anchor;
   showLoading();
-  document.getElementById('loading').querySelector('.loading-text').textContent = '加载 ' + anchor.name + ' 的数据...';
+  document.getElementById('loading').querySelector('.loading-text').textContent = `加载 ${anchor.name} 的数据...`;
+
   try {
-    const [liveData, fansData] = await Promise.all([loadLiveData(anchor.name), loadFansData(anchor.name)]);
+    const [liveData, fansData, sugData] = await Promise.all([
+      loadLiveData(anchor.name),
+      loadFansData(anchor.name),
+      loadSuggestions(anchor.name)
+    ]);
     renderDashboard(anchor, liveData, fansData);
+    allSuggestions = sugData;
+    renderSuggestions(allSuggestions, currentAiDays);
     hideLoading();
     showDashboard();
-  } catch(e) { hideLoading(); showDashboard(); }
+  } catch(e) {
+    hideLoading();
+    showDashboard();
+  }
 }
 
 function renderDashboard(anchor, liveData, fansData) {
-  document.querySelectorAll('.metric-card, .streak-card, .motivation-card, .bro-item').forEach(el => el.classList.remove('visible'));
-
   document.getElementById('d-avatar').textContent = anchor.name[0].toUpperCase();
   document.getElementById('d-name').textContent = anchor.name;
   document.getElementById('d-level').textContent = anchor.level || '在播主播';
 
   const lives = liveData.lives || [];
   const fans = fansData.fans || [];
+
+  // 本月数据
   const now = new Date();
-  const monthPrefix = now.getFullYear() + '-' + String(now.getMonth()+1).padStart(2,'0');
+  const nowYear = now.getFullYear();
+  const nowMonth = String(now.getMonth() + 1).padStart(2, '0');
+  const monthPrefix = `${nowYear}-${nowMonth}`;
   const thisMonth = lives.filter(l => l.date && l.date.startsWith(monthPrefix));
-  const monthTotal = thisMonth.reduce((s,l) => s+(l.diamonds||0), 0);
+  const monthTotal = thisMonth.reduce((s, l) => s + (l.diamonds || 0), 0);
   const target = anchor.target || 500000;
   const pct = Math.min(100, Math.round(monthTotal / target * 100));
 
-  const monthEl = document.getElementById('d-monthly');
-  monthEl.textContent = '0';
-  setTimeout(() => animateNumber(monthEl, monthTotal, 1200), 200);
-  document.getElementById('d-monthly-sub').textContent = (now.getMonth()+1) + '月累计 · ' + thisMonth.length + ' 场直播';
+  document.getElementById('d-monthly').textContent = monthTotal.toLocaleString();
+  document.getElementById('d-monthly-sub').textContent = `6月累计 · ${thisMonth.length} 场直播`;
   document.getElementById('d-sessions').textContent = thisMonth.length + ' 场';
 
+  // 今日
   const today = now.toISOString().split('T')[0];
-  const todayLives = lives.filter(l => l.date === today);
+  const todayLives = lives.filter(l => l.date && l.date.startsWith(today.replace(/-/g,'').slice(0,8)));
   const todayDiamonds = todayLives.reduce((s,l) => s+(l.diamonds||0), 0);
   const todayFans = todayLives.reduce((s,l) => s+(l.new_fans||0), 0);
   const todayGifters = todayLives.reduce((s,l) => s+(l.gifters||0), 0);
 
-  const lastLive = todayLives.length > 0 ? todayLives[0] : lives[0];
-  const prevLive = lives[todayLives.length > 0 ? todayLives.length : 1];
-  const displayDiamonds = todayDiamonds > 0 ? todayDiamonds : (lastLive?.diamonds || 0);
-  const displayFans = todayFans > 0 ? todayFans : (lastLive?.new_fans || 0);
-  const displayGifters = todayGifters > 0 ? todayGifters : (lastLive?.gifters || 0);
+  document.getElementById('d-today').textContent = todayDiamonds > 0 ? todayDiamonds.toLocaleString() : (lives[0]?.diamonds||0).toLocaleString();
+  document.getElementById('d-fans').textContent = todayFans > 0 ? todayFans : (lives[0]?.new_fans || '--');
+  document.getElementById('d-gifters').textContent = todayGifters > 0 ? todayGifters : (lives[0]?.gifters || '--');
 
-  document.getElementById('d-today').textContent = displayDiamonds.toLocaleString();
-  document.getElementById('d-fans').textContent = displayFans;
-  document.getElementById('d-gifters').textContent = displayGifters;
-
-  const recent10 = lives.slice(0, 10);
-  const avgDiamonds = recent10.length > 0 ? Math.round(recent10.reduce((s,l) => s+(l.diamonds||0), 0) / recent10.length) : 0;
-
-  if (prevLive) {
-    const fansDiff = displayFans - (prevLive.new_fans || 0);
-    const giftersDiff = displayGifters - (prevLive.gifters || 0);
-    const fansT = document.getElementById('d-fans-trend');
-    const giftersT = document.getElementById('d-gifters-trend');
-    if (fansDiff !== 0) { fansT.className = 'metric-trend ' + (fansDiff > 0 ? 'up' : 'down'); fansT.textContent = (fansDiff > 0 ? '↑ ' : '↓ ') + Math.abs(fansDiff) + ' 比上场'; }
-    if (giftersDiff !== 0) { giftersT.className = 'metric-trend ' + (giftersDiff > 0 ? 'up' : 'down'); giftersT.textContent = (giftersDiff > 0 ? '↑ ' : '↓ ') + Math.abs(giftersDiff) + ' 比上场'; }
-  }
-
+  // 进度
   document.getElementById('d-progress-pct').textContent = pct + '%';
-  document.getElementById('d-progress-fill').style.width = '0%';
-  setTimeout(() => { document.getElementById('d-progress-fill').style.width = pct + '%'; }, 400);
+  setTimeout(() => {
+    document.getElementById('d-progress-fill').style.width = pct + '%';
+  }, 300);
   document.getElementById('d-progress-current').textContent = '已完成 ' + monthTotal.toLocaleString();
   document.getElementById('d-progress-target').textContent = '目标 ' + target.toLocaleString();
 
+  // VIP粉丝
   const vipFans = fans.filter(f => f.tier === '超级vip' || f.tier === 'vip' || f.total_coins >= 1000);
   document.getElementById('d-vip').textContent = vipFans.length;
-  const vipT = document.getElementById('d-vip-trend');
-  vipT.className = 'metric-trend up';
-  vipT.textContent = '总计 ' + fans.length + ' 位粉丝';
 
+  // 流失预警（7天未见）
   const sevenDaysAgo = new Date(now - 7*24*60*60*1000);
-  const lostFans = fans.filter(f => f.last_active && new Date(f.last_active) < sevenDaysAgo && f.total_coins >= 1000);
+  const lostFans = fans.filter(f => {
+    if (!f.last_active) return false;
+    return new Date(f.last_active) < sevenDaysAgo && f.total_coins >= 1000;
+  });
   document.getElementById('d-lost').textContent = lostFans.length;
-  const lostT = document.getElementById('d-lost-trend');
-  if (lostFans.length > 0) { lostT.className = 'metric-trend down'; lostT.textContent = '需要主动联系'; }
-  else { lostT.className = 'metric-trend up'; lostT.textContent = '暂无流失风险'; }
 
-  const streak = calcStreak(lives);
-  document.getElementById('d-streak').textContent = streak + ' 天';
-  document.getElementById('d-streak-text').textContent = streak >= 7 ? '🏆 连续直播，超棒的！' : streak >= 3 ? '连续直播中，保持状态！' : '加油，继续坚持！';
-  document.getElementById('d-streak-best').textContent = streak > 0 ? '近期持续在播，稳定性很高' : '';
-
-  document.getElementById('motivation-card').innerHTML = genMotivation(anchor.name, displayDiamonds, avgDiamonds, streak, pct, displayFans);
-
+  // 趋势图
   const recent = lives.slice(0, 10).reverse();
+  const labels = recent.map(l => l.date ? l.date.slice(4,8).replace(/(\d{2})(\d{2})/, '$1/$2') : '');
+  const values = recent.map(l => l.diamonds || 0);
+
   if (trendChartInst) trendChartInst.destroy();
-  trendChartInst = new Chart(document.getElementById('trendChart'), {
+  const ctx = document.getElementById('trendChart');
+  trendChartInst = new Chart(ctx, {
     type: 'line',
     data: {
-      labels: recent.map(l => l.date ? l.date.slice(5) : ''),
-      datasets: [{ data: recent.map(l => l.diamonds||0), borderColor: '#7c6ff7', backgroundColor: 'rgba(124,111,247,0.1)', fill: true, tension: 0.4, pointBackgroundColor: '#7c6ff7', pointRadius: 4, borderWidth: 2 }]
+      labels,
+      datasets: [{
+        data: values,
+        borderColor: '#7c6ff7',
+        backgroundColor: 'rgba(124,111,247,0.1)',
+        fill: true,
+        tension: 0.4,
+        pointBackgroundColor: '#7c6ff7',
+        pointRadius: 4,
+        borderWidth: 2
+      }]
     },
     options: {
-      responsive: true, maintainAspectRatio: false,
-      animation: { duration: 1000, easing: 'easeInOutQuart' },
+      responsive: true,
+      maintainAspectRatio: false,
       plugins: { legend: { display: false } },
       scales: {
-        y: { ticks: { callback: v => Math.round(v/1000)+'K', color: '#9090a8', font: {size:11} }, grid: { color: 'rgba(255,255,255,0.05)' } },
-        x: { ticks: { color: '#9090a8', font: {size:11} }, grid: { display: false } }
+        y: {
+          ticks: { callback: v => Math.round(v/1000)+'K', color: '#9090a8', font: {size: 11} },
+          grid: { color: 'rgba(255,255,255,0.05)' }
+        },
+        x: {
+          ticks: { color: '#9090a8', font: {size: 11} },
+          grid: { display: false }
+        }
       }
     }
   });
 
+  // Top大哥
+  const topFans = [...fans].sort((a,b) => (b.total_coins||0)-(a.total_coins||0)).slice(0,5);
   const broList = document.getElementById('d-bros');
   broList.innerHTML = '';
-  [...fans].sort((a,b) => (b.total_coins||0)-(a.total_coins||0)).slice(0,5).forEach((f, i) => {
+  topFans.forEach((f, i) => {
     const rankClass = i===0?'top1':i===1?'top2':i===2?'top3':'';
     const tier = f.total_coins >= 3000 ? 'svip' : f.total_coins >= 1000 ? 'vip' : '';
-    const tagHtml = tier ? '<span class="bro-tag tag-' + tier + '">' + (tier==='svip'?'超级VIP':'VIP') + '</span>' : '';
-    const div = document.createElement('div');
-    div.className = 'bro-item';
-    div.innerHTML = '<div class="bro-rank ' + rankClass + '">' + (i+1) + '</div><div class="bro-name">' + f.username + tagHtml + '</div><div class="bro-coins">' + (f.total_coins||0).toLocaleString() + ' coins</div>';
-    broList.appendChild(div);
-    revealWithDelay(div, 800 + i * 80);
+    const tagHtml = tier ? `<span class="bro-tag tag-${tier}">${tier==='svip'?'超级VIP':'VIP'}</span>` : '';
+    broList.innerHTML += `
+      <div class="bro-item">
+        <div class="bro-rank ${rankClass}">${i+1}</div>
+        <div class="bro-name">${f.username}${tagHtml}</div>
+        <div class="bro-coins">${(f.total_coins||0).toLocaleString()} coins</div>
+      </div>
+    `;
   });
 
+  // 待跟进
   const todos = document.getElementById('d-todos');
   todos.innerHTML = '';
   lostFans.slice(0,3).forEach(f => {
-    todos.innerHTML += '<div class="todo-item"><div class="todo-dot dot-red"></div><div class="todo-text"><span class="todo-name">' + f.username + '</span> 超过7天未出现，累计 ' + (f.total_coins||0).toLocaleString() + ' coins</div></div>';
+    todos.innerHTML += `
+      <div class="todo-item">
+        <div class="todo-dot dot-red"></div>
+        <div class="todo-text"><span class="todo-name">${f.username}</span> 超过7天未出现，累计 ${(f.total_coins||0).toLocaleString()} coins</div>
+      </div>
+    `;
   });
-  if (!todos.innerHTML) todos.innerHTML = '<div class="todo-item"><div class="todo-dot dot-green"></div><div class="todo-text">暂无待跟进粉丝，继续保持！</div></div>';
-
-  revealWithDelay(document.getElementById('streak-card'), 300);
-  revealWithDelay(document.getElementById('mc-fans'), 500);
-  revealWithDelay(document.getElementById('mc-vip'), 600);
-  revealWithDelay(document.getElementById('mc-gifters'), 700);
-  revealWithDelay(document.getElementById('mc-lost'), 800);
-  revealWithDelay(document.getElementById('motivation-card'), 1000);
+  if (todos.innerHTML === '') {
+    todos.innerHTML = '<div class="todo-item"><div class="todo-dot dot-green"></div><div class="todo-text">暂无待跟进粉丝，继续保持！</div></div>';
+  }
 
   document.getElementById('d-timestamp').textContent = '数据更新于 ' + new Date().toLocaleString('zh-CN');
+}
+
+// AI建议相关
+let allSuggestions = [];
+let currentAiDays = 7;
+
+async function loadSuggestions(anchorName) {
+  try {
+    const res = await fetch('/api/suggestions?anchor=' + encodeURIComponent(anchorName));
+    const data = await res.json();
+    return data.suggestions || [];
+  } catch(e) { return []; }
+}
+
+function getLevelClass(level) {
+  if (level === '紧急') return 'urgent';
+  if (level === '高') return 'high';
+  if (level === '重要') return 'important';
+  if (level === '中') return 'mid';
+  return 'low';
+}
+
+function getLevelText(level) {
+  const map = {'紧急':'🔴 紧急','高':'🔴 高','重要':'🟡 重要','中':'🟡 中','常规':'🟢 常规','低':'🟢 低'};
+  return map[level] || level;
+}
+
+function getLevelOrder(level) {
+  const order = {'紧急':0,'高':0,'重要':1,'中':2,'常规':3,'低':4};
+  return order[level] !== undefined ? order[level] : 3;
+}
+
+function switchAiTab(days, btn) {
+  document.querySelectorAll('.ai-tab').forEach(t => t.classList.remove('active'));
+  btn.classList.add('active');
+  currentAiDays = days;
+  renderSuggestions(allSuggestions, days);
+}
+
+function renderSuggestions(suggestions, days) {
+  const list = document.getElementById('ai-list');
+  if (!list) return;
+  if (!suggestions || suggestions.length === 0) {
+    list.innerHTML = '<div class="ai-empty">暂无 AI 建议</div>';
+    document.getElementById('ai-pending-count').textContent = '';
+    return;
+  }
+  const now = new Date();
+  let filtered = suggestions;
+  if (days > 0) {
+    const cutoff = new Date(now - days * 86400000).toISOString().split('T')[0];
+    filtered = suggestions.filter(s => s.date >= cutoff);
+  }
+  const pending = filtered.filter(s => s.status !== '已处理').length;
+  document.getElementById('ai-pending-count').textContent = pending > 0 ? pending + ' 条待处理' : '全部已处理 ✓';
+  if (filtered.length === 0) { list.innerHTML = '<div class="ai-empty">该时间段暂无建议</div>'; return; }
+
+  const groups = {};
+  filtered.forEach(s => {
+    const d = s.date || '未知日期';
+    if (!groups[d]) groups[d] = [];
+    groups[d].push(s);
+  });
+  Object.values(groups).forEach(g => g.sort((a,b) => getLevelOrder(a.level) - getLevelOrder(b.level)));
+  const todayStr = now.toISOString().split('T')[0];
+  const sortedDates = Object.keys(groups).sort().reverse();
+  list.innerHTML = sortedDates.map(function(date) {
+    const items = groups[date].map(function(s) {
+      const isDone = s.status === '已处理';
+      const levelCls = 'ai-level-' + getLevelClass(s.level);
+      const footer = isDone
+        ? '<span class="ai-done-label">✓ 已处理</span>'
+        : '<button class="ai-done-btn" onclick="markDone('' + s.id + '', this)">标记已处理</button>';
+      return '<div class="ai-item ' + (isDone ? 'done' : '') + '" id="ai-' + s.id + '">'
+        + '<div class="ai-item-header">'
+        + '<span class="ai-level ' + levelCls + '">' + getLevelText(s.level) + '</span>'
+        + '<span class="ai-reason">' + s.reason + '</span>'
+        + '</div>'
+        + '<div class="ai-action">' + s.action + '</div>'
+        + '<div class="ai-footer">' + footer + '</div>'
+        + '</div>';
+    }).join('');
+    const dateLabel = date === todayStr ? '今天' : date;
+    return '<div class="ai-date-group"><div class="ai-date-label">' + dateLabel + '</div>' + items + '</div>';
+  }).join('');
+}
+
+async function markDone(recordId, btn) {
+  btn.disabled = true;
+  btn.textContent = '处理中...';
+  try {
+    const res = await fetch('/api/suggestion-done', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({record_id: recordId})
+    });
+    const data = await res.json();
+    if (data.success) {
+      const item = document.getElementById('ai-' + recordId);
+      if (item) { item.classList.add('done'); item.querySelector('.ai-footer').innerHTML = '<span class="ai-done-label">✓ 已处理</span>'; }
+      const s = allSuggestions.find(x => x.id === recordId);
+      if (s) s.status = '已处理';
+      const pending = allSuggestions.filter(x => x.status !== '已处理').length;
+      document.getElementById('ai-pending-count').textContent = pending > 0 ? pending + ' 条待处理' : '全部已处理 ✓';
+    } else { btn.disabled = false; btn.textContent = '标记已处理'; }
+  } catch(e) { btn.disabled = false; btn.textContent = '标记已处理'; }
 }
 
 initLogin();
