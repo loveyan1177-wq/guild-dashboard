@@ -28,13 +28,13 @@ export default async function handler(req, res) {
       filter: {
         conjunction: 'and',
         conditions: [{
-          field_name: '主播',
-          operator: 'is',
-          value: [anchor]
+          field_name: '单场识别码',
+          operator: 'contains',
+          value: [anchor + '-']
         }]
       },
       sort: [{ field_name: '日期', desc: true }],
-      page_size: 30
+      page_size: 50
     };
 
     const response = await fetch(
