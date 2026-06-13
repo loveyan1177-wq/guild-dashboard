@@ -14,6 +14,18 @@ async function getToken() {
   return data.tenant_access_token;
 }
 
+function extractText(val) {
+  if (!val) return '';
+  if (typeof val === 'string') return val;
+  if (Array.isArray(val)) return val.map(extractText).join('');
+  if (typeof val === 'object') {
+    if (val.text) return val.text;
+    if (val.value) return val.value;
+    if (val.name) return val.name;
+  }
+  return String(val);
+}
+
 export default async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
   const { anchor } = req.query;
@@ -59,9 +71,9 @@ export default async function handler(req, res) {
         lastActiveStr = new Date(lastActive).toISOString().split('T')[0];
       }
       const tier = f['档位'];
-      const tierText = typeof tier === 'object' ? (tier?.text || tier?.value || '') : (tier || '');
+      const tierText = extractText(tier);
       return {
-        username: f['用户名'] || '',
+        username: extractText(f['用户名']),
         total_coins: f['累计金币'] || 0,
         max_single: f['最高单场'] || 0,
         sessions: f['出现场次'] || 0,
