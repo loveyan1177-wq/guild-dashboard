@@ -4,11 +4,17 @@
 async function redisGet(key) {
   const url = process.env.KV_REST_API_URL;
   const token = process.env.KV_REST_API_TOKEN;
-  const res = await fetch(`${url}/get/${key}`, {
+  const res = await fetch(`${url}/get/${encodeURIComponent(key)}`, {
     headers: { Authorization: `Bearer ${token}` }
   });
   const data = await res.json();
-  return data.result ?? null;
+  if (data.result === null || data.result === undefined) return null;
+  // 存的是 JSON 字符串，需要 parse
+  try {
+    return typeof data.result === 'string' ? JSON.parse(data.result) : data.result;
+  } catch {
+    return null;
+  }
 }
 
 async function getToken() {
@@ -95,12 +101,10 @@ export default async function handler(req, res) {
   if (!anchor) return res.status(400).json({ error: 'anchor required' });
 
   try {
-    // 先尝试读缓存
     const cached = await redisGet(`fans:${anchor}`);
-    if (cached) {
+    if (cached && Array.isArray(cached)) {
       return res.json({ fans: cached, source: 'cache' });
     }
-    // 缓存没有，读飞书
     const fans = await fetchFromFeishu(anchor);
     res.json({ fans, source: 'feishu' });
   } catch (e) {
