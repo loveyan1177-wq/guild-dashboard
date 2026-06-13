@@ -385,16 +385,19 @@ async function selectAnchor(anchor) {
   document.getElementById('loading').querySelector('.loading-text').textContent = `加载 ${anchor.name} 的数据...`;
 
   try {
-    const [liveData, fansData, sugData] = await Promise.all([
+    const [liveData, fansData] = await Promise.all([
       loadLiveData(anchor.name),
-      loadFansData(anchor.name),
-      loadSuggestions(anchor.name)
+      loadFansData(anchor.name)
     ]);
     renderDashboard(anchor, liveData, fansData);
-    allSuggestions = sugData;
-    renderSuggestions(allSuggestions, currentAiDays);
     hideLoading();
     showDashboard();
+    // AI 建议后台加载，不阻塞主界面
+    document.getElementById('ai-list').innerHTML = '<div class="ai-empty" style="color:var(--text2);opacity:0.5">建议加载中...</div>';
+    loadSuggestions(anchor.name).then(sugData => {
+      allSuggestions = sugData;
+      renderSuggestions(allSuggestions, currentAiDays);
+    });
   } catch(e) {
     hideLoading();
     showDashboard();
