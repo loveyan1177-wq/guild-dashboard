@@ -27,6 +27,14 @@ async function getToken() {
   return data.tenant_access_token;
 }
 
+function extractDuration(val) {
+  if (!val) return '';
+  if (typeof val === 'number') return val;
+  if (typeof val === 'string') return val;
+  if (Array.isArray(val) && val[0]) return val[0].text || '';
+  return '';
+}
+
 async function fetchFromFeishu(anchor) {
   const token = await getToken();
   const APP_TOKEN = process.env.APP_TOKEN;
@@ -75,7 +83,7 @@ async function fetchFromFeishu(anchor) {
       gifters: f['Gifters 送礼人数'] || 0,
       new_fans: f['新增粉丝'] || 0,
       views: f['Views/观看人数'] || 0,
-      duration: f['直播时长'] || '',
+      duration: extractDuration(f['直播时长']),
       session: f['场次'] || ''
     };
   });
