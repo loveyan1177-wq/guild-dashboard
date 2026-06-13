@@ -1,5 +1,5 @@
 // api/suggestions.js
-// 读取 AI 建议表，支持按主播过滤，优先读 Redis 缓存
+// 读取 AI 建议表，加入 Redis 缓存（5分钟），需要实时性时可手动刷新
 
 async function redisGet(key) {
   const url = process.env.KV_REST_API_URL;
@@ -15,6 +15,24 @@ async function redisGet(key) {
     if (typeof val === 'string') val = JSON.parse(val);
     return Array.isArray(val) ? val : null;
   } catch { return null; }
+}
+
+async function redisSet(key, value, ttl = 300) {
+  const url = process.env.KV_REST_API_URL;
+  const token = process.env.KV_REST_API_TOKEN;
+  await fetch(`${url}/del/${encodeURIComponent(key)}`, {
+    method: 'POST',
+    headers: { Authorization: `Bearer ${token}` }
+  });
+  await fetch(`${url}/set/${encodeURIComponent(key)}`, {
+    method: 'POST',
+    headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
+    body: JSON.stringify(JSON.stringify(value))
+  });
+  await fetch(`${url}/expire/${encodeURIComponent(key)}/${ttl}`, {
+    method: 'POST',
+    headers: { Authorization: `Bearer ${token}` }
+  });
 }
 
 async function getToken() {
@@ -49,11 +67,7 @@ async function fetchFromFeishu(anchor) {
   const body = {
     filter: {
       conjunction: 'and',
-      conditions: [{
-        field_name: '所属主播',
-        operator: 'is',
-        value: [anchor]
-      }]
+      conditions: [{ field_name: '所属主播', operator: 'is', value: [anchor] }]
     },
     sort: [{ field_name: '日期', desc: true }],
     page_size: 100
@@ -63,10 +77,7 @@ async function fetchFromFeishu(anchor) {
     `https://open.feishu.cn/open-apis/bitable/v1/apps/${APP_TOKEN}/tables/${TABLE_AI}/records/search`,
     {
       method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${token}`,
-        'Content-Type': 'application/json'
-      },
+      headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
       body: JSON.stringify(body)
     }
   );
@@ -99,9 +110,15 @@ export default async function handler(req, res) {
   if (!anchor) return res.status(400).json({ error: 'anchor required' });
 
   try {
-    // 建议表不做缓存，直接读飞书（需要实时反映执行状态）
+    const cacheKey = `suggestions:${anchor}`;
+    const cached = await redisGet(cacheKey);
+    if (cached) {
+      return res.json({ suggestions: cached, source: 'cache' });
+    }
     const suggestions = await fetchFromFeishu(anchor);
-    res.json({ suggestions });
+    // 缓存 5 分钟
+    redisSet(cacheKey, suggestions, 300).catch(() => {});
+    res.json({ suggestions, source: 'feishu' });
   } catch (e) {
     res.status(500).json({ error: e.message, suggestions: [] });
   }
