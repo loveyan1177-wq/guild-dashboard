@@ -93,7 +93,8 @@ async function fetchFromFeishu(anchor) {
       max_single: f['最高单场'] || 0,
       sessions: f['出现场次'] || 0,
       tier: extractText(f['档位']),
-      last_active: lastActiveStr
+      last_active: lastActiveStr,
+      script: extractText(f['跟踪话术']) || ''
     };
   });
 }

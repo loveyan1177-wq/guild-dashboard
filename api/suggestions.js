@@ -93,7 +93,8 @@ async function fetchFromFeishu(anchor) {
       level: extractText(f['建议等级']) || '',
       reason: extractText(f['触发原因']) || '',
       action: extractText(f['建议行动']) || '',
-      status: extractText(f['执行状态']) || '待执行'
+      status: extractText(f['执行状态']) || '待执行',
+      linked_fan: extractText(f['关联粉丝']) || ''  // 新增字段
     };
   });
 }

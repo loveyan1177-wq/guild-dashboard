@@ -708,16 +708,16 @@ function toggleBroDetail(el, fan, idx) {
     + '<div class="bro-stat">最后活跃 <span>' + lastActive + '</span></div>'
     + '</div>';
 
-  let aiHtml = '<div class="bro-ai-title">🤖 相关 AI 建议</div>';
-  if (relatedSuggestions.length > 0) {
-    aiHtml += relatedSuggestions.map(s =>
-      '<div class="bro-ai-item">' + s.action + '</div>'
-    ).join('');
+  let scriptHtml = '';
+  if (fan.script) {
+    scriptHtml = '<div class="bro-ai-title">💬 跟踪话术</div>'
+      + '<div class="bro-ai-item">' + fan.script + '</div>';
   } else {
-    aiHtml += '<div class="bro-ai-none">暂无相关建议</div>';
+    scriptHtml = '<div class="bro-ai-title">💬 跟踪话术</div>'
+      + '<div class="bro-ai-none">暂无话术，可在飞书粉丝大盘填写</div>';
   }
 
-  detail.innerHTML = statsHtml + aiHtml;
+  detail.innerHTML = statsHtml + scriptHtml;
   detail.classList.add('show');
 }
 
@@ -738,12 +738,10 @@ function toggleTodoDetail(el, fan, idx) {
   ).slice(0, 3);
 
   let aiHtml = '';
-  if (relatedSuggestions.length > 0) {
-    aiHtml = relatedSuggestions.map(s =>
-      '<div class="todo-ai-item">' + s.action + '</div>'
-    ).join('');
+  if (fan.script) {
+    aiHtml = '<div class="todo-ai-item">' + fan.script + '</div>';
   } else {
-    aiHtml = '<div class="bro-ai-none">暂无相关建议，可私信关心近况</div>';
+    aiHtml = '<div class="bro-ai-none">暂无话术，可在飞书粉丝大盘填写</div>';
   }
   detail.innerHTML = aiHtml;
   detail.classList.add('show');
