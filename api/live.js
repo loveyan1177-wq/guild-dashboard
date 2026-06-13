@@ -57,9 +57,9 @@ export default async function handler(req, res) {
       let dateStr = '';
       if (typeof dateVal === 'number') {
         const d = new Date(dateVal);
-        dateStr = d.toISOString().split('T')[0].replace(/-/g, '');
+        dateStr = d.toISOString().split('T')[0];
       } else if (typeof dateVal === 'string') {
-        dateStr = dateVal.replace(/\//g, '').replace(/-/g, '');
+        dateStr = dateVal.replace(/\//g, '-');
       }
       return {
         id: item.record_id,
@@ -73,7 +73,7 @@ export default async function handler(req, res) {
       };
     });
 
-    res.json({ lives });
+    res.json({ lives, debug: lives.slice(0,3).map(l => l.date) });
   } catch(e) {
     res.status(500).json({ error: e.message, lives: [] });
   }
