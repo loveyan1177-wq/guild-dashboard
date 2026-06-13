@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>主播驾驶舱</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg: #0a0a0f;
+    --bg2: #12121a;
+    --bg3: #1a1a26;
+    --border: rgba(255,255,255,0.08);
+    --border2: rgba(255,255,255,0.15);
+    --text: #f0f0f5;
+    --text2: #9090a8;
+    --purple: #7c6ff7;
+    --purple2: #a89ff9;
+    --green: #34d399;
+    --red: #f87171;
+    --amber: #fbbf24;
+    --blue: #60a5fa;
+  }
+  body { background: var(--bg); color: var(--text); font-family: -apple-system, 'PingFang SC', sans-serif; min-height: 100vh; }
+
+  /* 登录页 */
+  #login-page { display: flex; align-items: center; justify-content: center; min-height: 100vh; padding: 2rem; }
+  .login-card { background: var(--bg2); border: 1px solid var(--border); border-radius: 16px; padding: 2.5rem; width: 100%; max-width: 380px; text-align: center; }
+  .login-logo { font-size: 32px; margin-bottom: 0.5rem; }
+  .login-title { font-size: 22px; font-weight: 600; margin-bottom: 0.5rem; }
+  .login-sub { font-size: 14px; color: var(--text2); margin-bottom: 2rem; }
+  .anchor-list { display: flex; flex-direction: column; gap: 10px; }
+  .anchor-btn { background: var(--bg3); border: 1px solid var(--border); border-radius: 10px; padding: 14px 20px; cursor: pointer; display: flex; align-items: center; gap: 12px; transition: all 0.2s; color: var(--text); font-size: 15px; }
+  .anchor-btn:hover { border-color: var(--purple); background: rgba(124,111,247,0.1); }
+  .anchor-avatar { width: 36px; height: 36px; border-radius: 50%; background: linear-gradient(135deg, #7c6ff7, #a89ff9); display: flex; align-items: center; justify-content: center; font-weight: 600; font-size: 14px; flex-shrink: 0; }
+  .anchor-info { text-align: left; flex: 1; }
+  .anchor-name { font-weight: 500; }
+  .anchor-status { font-size: 12px; color: var(--text2); margin-top: 2px; }
+  .anchor-arrow { color: var(--text2); font-size: 18px; }
+
+  /* 主驾驶舱 */
+  #dashboard { display: none; max-width: 480px; margin: 0 auto; padding: 1.5rem 1rem 3rem; }
+
+  /* 头部 */
+  .dash-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.5rem; }
+  .dash-profile { display: flex; align-items: center; gap: 12px; }
+  .dash-avatar { width: 44px; height: 44px; border-radius: 50%; background: linear-gradient(135deg, #7c6ff7, #34d399); display: flex; align-items: center; justify-content: center; font-weight: 600; font-size: 18px; }
+  .dash-name { font-size: 18px; font-weight: 600; }
+  .dash-level { font-size: 12px; color: var(--purple2); margin-top: 2px; }
+  .back-btn { background: var(--bg2); border: 1px solid var(--border); border-radius: 8px; padding: 8px 14px; cursor: pointer; font-size: 13px; color: var(--text2); }
+
+  /* 收入卡片 */
+  .income-card { background: linear-gradient(135deg, #1e1a3a, #12121a); border: 1px solid rgba(124,111,247,0.3); border-radius: 16px; padding: 1.5rem; margin-bottom: 1rem; position: relative; overflow: hidden; }
+  .income-card::before { content: ''; position: absolute; top: -50px; right: -50px; width: 150px; height: 150px; background: radial-gradient(circle, rgba(124,111,247,0.15), transparent 70%); }
+  .income-label { font-size: 13px; color: var(--text2); margin-bottom: 0.5rem; }
+  .income-value { font-size: 36px; font-weight: 700; color: var(--purple2); letter-spacing: -1px; }
+  .income-sub { font-size: 13px; color: var(--text2); margin-top: 0.5rem; }
+  .income-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 1rem; }
+  .income-mini { background: rgba(255,255,255,0.05); border-radius: 10px; padding: 12px; }
+  .income-mini-label { font-size: 11px; color: var(--text2); margin-bottom: 4px; }
+  .income-mini-value { font-size: 18px; font-weight: 600; }
+
+  /* 指标卡片网格 */
+  .metrics-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 1rem; }
+  .metric-card { background: var(--bg2); border: 1px solid var(--border); border-radius: 12px; padding: 1rem; }
+  .metric-icon { font-size: 20px; margin-bottom: 8px; }
+  .metric-value { font-size: 22px; font-weight: 600; }
+  .metric-label { font-size: 12px; color: var(--text2); margin-top: 4px; }
+  .metric-trend { font-size: 12px; margin-top: 6px; }
+  .up { color: var(--green); }
+  .down { color: var(--red); }
+  .warn { color: var(--amber); }
+
+  /* 进度条 */
+  .progress-card { background: var(--bg2); border: 1px solid var(--border); border-radius: 12px; padding: 1.25rem; margin-bottom: 1rem; }
+  .progress-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; }
+  .progress-title { font-size: 14px; font-weight: 500; }
+  .progress-pct { font-size: 14px; color: var(--purple2); font-weight: 600; }
+  .progress-bar { height: 6px; background: rgba(255,255,255,0.1); border-radius: 3px; overflow: hidden; }
+  .progress-fill { height: 100%; border-radius: 3px; background: linear-gradient(90deg, #7c6ff7, #34d399); transition: width 1s ease; }
+
+  /* Section标题 */
+  .section { margin-bottom: 1rem; }
+  .section-title { font-size: 13px; font-weight: 500; color: var(--text2); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 10px; }
+
+  /* 大哥排行 */
+  .bro-list { display: flex; flex-direction: column; gap: 8px; }
+  .bro-item { background: var(--bg2); border: 1px solid var(--border); border-radius: 10px; padding: 12px 14px; display: flex; align-items: center; gap: 12px; }
+  .bro-rank { font-size: 13px; color: var(--text2); width: 18px; font-weight: 600; }
+  .bro-rank.top1 { color: var(--amber); }
+  .bro-rank.top2 { color: #c0c0c0; }
+  .bro-rank.top3 { color: #cd7f32; }
+  .bro-name { flex: 1; font-size: 14px; font-weight: 500; }
+  .bro-coins { font-size: 13px; color: var(--text2); }
+  .bro-tag { font-size: 10px; padding: 2px 7px; border-radius: 20px; margin-left: 6px; }
+  .tag-svip { background: rgba(124,111,247,0.2); color: var(--purple2); }
+  .tag-vip { background: rgba(52,211,153,0.2); color: var(--green); }
+  .tag-new { background: rgba(251,191,36,0.2); color: var(--amber); }
+
+  /* 待跟进 */
+  .todo-list { display: flex; flex-direction: column; gap: 8px; }
+  .todo-item { background: var(--bg2); border: 1px solid var(--border); border-radius: 10px; padding: 12px 14px; display: flex; align-items: flex-start; gap: 10px; }
+  .todo-dot { width: 8px; height: 8px; border-radius: 50%; margin-top: 5px; flex-shrink: 0; }
+  .dot-red { background: var(--red); box-shadow: 0 0 6px var(--red); }
+  .dot-amber { background: var(--amber); box-shadow: 0 0 6px var(--amber); }
+  .dot-green { background: var(--green); box-shadow: 0 0 6px var(--green); }
+  .todo-text { font-size: 13px; line-height: 1.5; color: var(--text); flex: 1; }
+  .todo-name { font-weight: 600; color: var(--text); }
+
+  /* 趋势图 */
+  .chart-card { background: var(--bg2); border: 1px solid var(--border); border-radius: 12px; padding: 1.25rem; margin-bottom: 1rem; }
+  .chart-wrap { position: relative; height: 160px; margin-top: 12px; }
+
+  /* 加载 */
+  #loading { display: flex; align-items: center; justify-content: center; min-height: 100vh; flex-direction: column; gap: 16px; }
+  .spinner { width: 40px; height: 40px; border: 3px solid var(--border); border-top-color: var(--purple); border-radius: 50%; animation: spin 0.8s linear infinite; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .loading-text { font-size: 14px; color: var(--text2); }
+
+  /* 数字动画 */
+  @keyframes countUp { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+  .animated { animation: countUp 0.6s ease forwards; }
+
+  /* 时间戳 */
+  .timestamp { text-align: center; font-size: 12px; color: var(--text2); margin-top: 2rem; opacity: 0.6; }
+</style>
+</head>
+<body>
+
+<div id="loading">
+  <div class="spinner"></div>
+  <div class="loading-text">正在加载...</div>
+</div>
+
+<div id="login-page" style="display:none;">
+  <div class="login-card">
+    <div class="login-logo">🎙</div>
+    <div class="login-title">主播驾驶舱</div>
+    <div class="login-sub">选择你的账号</div>
+    <div class="anchor-list" id="anchor-list"></div>
+  </div>
+</div>
+
+<div id="dashboard" style="display:none;">
+  <div class="dash-header">
+    <div class="dash-profile">
+      <div class="dash-avatar" id="d-avatar">L</div>
+      <div>
+        <div class="dash-name" id="d-name">Lila</div>
+        <div class="dash-level" id="d-level">骨干档 T4</div>
+      </div>
+    </div>
+    <div class="back-btn" onclick="showLogin()">切换</div>
+  </div>
+
+  <div class="income-card">
+    <div class="income-label">本月累计钻石</div>
+    <div class="income-value animated" id="d-monthly">--</div>
+    <div class="income-sub" id="d-monthly-sub">正在加载...</div>
+    <div class="income-grid">
+      <div class="income-mini">
+        <div class="income-mini-label">今日钻石</div>
+        <div class="income-mini-value" id="d-today" style="color:var(--purple2)">--</div>
+      </div>
+      <div class="income-mini">
+        <div class="income-mini-label">本月场次</div>
+        <div class="income-mini-value" id="d-sessions" style="color:var(--green)">--</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="progress-card">
+      <div class="progress-header">
+        <div class="progress-title">本月目标进度</div>
+        <div class="progress-pct" id="d-progress-pct">0%</div>
+      </div>
+      <div class="progress-bar">
+        <div class="progress-fill" id="d-progress-fill" style="width:0%"></div>
+      </div>
+      <div style="display:flex;justify-content:space-between;margin-top:8px;">
+        <div style="font-size:12px;color:var(--text2)" id="d-progress-current">已完成 --</div>
+        <div style="font-size:12px;color:var(--text2)" id="d-progress-target">目标 --</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="metrics-grid">
+    <div class="metric-card">
+      <div class="metric-icon">✨</div>
+      <div class="metric-value" id="d-fans">--</div>
+      <div class="metric-label">新增粉丝（今日）</div>
+    </div>
+    <div class="metric-card">
+      <div class="metric-icon">👑</div>
+      <div class="metric-value" id="d-vip">--</div>
+      <div class="metric-label">VIP粉丝总数</div>
+    </div>
+    <div class="metric-card">
+      <div class="metric-icon">👥</div>
+      <div class="metric-value" id="d-gifters">--</div>
+      <div class="metric-label">今日送礼人数</div>
+    </div>
+    <div class="metric-card">
+      <div class="metric-icon">⚠️</div>
+      <div class="metric-value warn" id="d-lost">--</div>
+      <div class="metric-label">流失预警</div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="chart-card">
+      <div class="section-title">近期钻石趋势</div>
+      <div class="chart-wrap">
+        <canvas id="trendChart" role="img" aria-label="主播近期钻石趋势"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">本场Top大哥</div>
+    <div class="bro-list" id="d-bros"></div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">今日待跟进</div>
+    <div class="todo-list" id="d-todos"></div>
+  </div>
+
+  <div class="timestamp" id="d-timestamp"></div>
+</div>
+
+<script>
+const FEISHU_APP_ID = 'cli_aaa0a0786b391bec';
+const FEISHU_APP_SECRET = '0bIlPficAAbs9jrVm5S0vcDf2iVj50fm';
+const APP_TOKEN = 'ONg9bbRwoampbAsJd71c7RKsn7e';
+const TABLE_ANCHORS = 'tbl7bMJLN66tBB7M';
+const TABLE_LIVE = 'tbl4VQMLt9PH4QNy';
+const TABLE_FANS = 'tblSpn2p5LW9TCjX';
+
+let token = '';
+let currentAnchor = null;
+let trendChartInst = null;
+
+async function getToken() {
+  const res = await fetch('/api/token');
+  const data = await res.json();
+  token = data.token;
+  return token;
+}
+
+async function feishuGet(url) {
+  const res = await fetch(url, { headers: { 'Authorization': 'Bearer ' + token } });
+  return res.json();
+}
+
+async function feishuSearch(tableId, filter) {
+  const res = await fetch(`/api/search?table=${tableId}&filter=${encodeURIComponent(JSON.stringify(filter))}`);
+  return res.json();
+}
+
+async function loadAnchors() {
+  const res = await fetch('/api/anchors');
+  const data = await res.json();
+  return data.anchors || [];
+}
+
+async function loadLiveData(anchorName) {
+  const res = await fetch(`/api/live?anchor=${encodeURIComponent(anchorName)}`);
+  return res.json();
+}
+
+async function loadFansData(anchorName) {
+  const res = await fetch(`/api/fans?anchor=${encodeURIComponent(anchorName)}`);
+  return res.json();
+}
+
+function showLogin() {
+  document.getElementById('dashboard').style.display = 'none';
+  document.getElementById('login-page').style.display = 'flex';
+}
+
+function showDashboard() {
+  document.getElementById('login-page').style.display = 'none';
+  document.getElementById('dashboard').style.display = 'block';
+}
+
+function showLoading() {
+  document.getElementById('loading').style.display = 'flex';
+  document.getElementById('login-page').style.display = 'none';
+  document.getElementById('dashboard').style.display = 'none';
+}
+
+function hideLoading() {
+  document.getElementById('loading').style.display = 'none';
+}
+
+async function initLogin() {
+  showLoading();
+  try {
+    const anchors = await loadAnchors();
+    const list = document.getElementById('anchor-list');
+    list.innerHTML = '';
+    anchors.forEach(a => {
+      const btn = document.createElement('div');
+      btn.className = 'anchor-btn';
+      btn.innerHTML = `
+        <div class="anchor-avatar">${a.name[0].toUpperCase()}</div>
+        <div class="anchor-info">
+          <div class="anchor-name">${a.name}</div>
+          <div class="anchor-status">${a.status || '在播'}</div>
+        </div>
+        <div class="anchor-arrow">›</div>
+      `;
+      btn.onclick = () => selectAnchor(a);
+      list.appendChild(btn);
+    });
+    hideLoading();
+    showLogin();
+  } catch(e) {
+    hideLoading();
+    showLogin();
+  }
+}
+
+async function selectAnchor(anchor) {
+  currentAnchor = anchor;
+  showLoading();
+  document.getElementById('loading').querySelector('.loading-text').textContent = `加载 ${anchor.name} 的数据...`;
+
+  try {
+    const [liveData, fansData] = await Promise.all([
+      loadLiveData(anchor.name),
+      loadFansData(anchor.name)
+    ]);
+    renderDashboard(anchor, liveData, fansData);
+    hideLoading();
+    showDashboard();
+  } catch(e) {
+    hideLoading();
+    showDashboard();
+  }
+}
+
+function renderDashboard(anchor, liveData, fansData) {
+  document.getElementById('d-avatar').textContent = anchor.name[0].toUpperCase();
+  document.getElementById('d-name').textContent = anchor.name;
+  document.getElementById('d-level').textContent = anchor.level || '在播主播';
+
+  const lives = liveData.lives || [];
+  const fans = fansData.fans || [];
+
+  // 本月数据
+  const now = new Date();
+  const thisMonth = lives.filter(l => {
+    const d = new Date(l.date);
+    return d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear();
+  });
+  const monthTotal = thisMonth.reduce((s, l) => s + (l.diamonds || 0), 0);
+  const target = anchor.target || 500000;
+  const pct = Math.min(100, Math.round(monthTotal / target * 100));
+
+  document.getElementById('d-monthly').textContent = monthTotal.toLocaleString();
+  document.getElementById('d-monthly-sub').textContent = `6月累计 · ${thisMonth.length} 场直播`;
+  document.getElementById('d-sessions').textContent = thisMonth.length + ' 场';
+
+  // 今日
+  const today = now.toISOString().split('T')[0];
+  const todayLives = lives.filter(l => l.date && l.date.startsWith(today.replace(/-/g,'').slice(0,8)));
+  const todayDiamonds = todayLives.reduce((s,l) => s+(l.diamonds||0), 0);
+  const todayFans = todayLives.reduce((s,l) => s+(l.new_fans||0), 0);
+  const todayGifters = todayLives.reduce((s,l) => s+(l.gifters||0), 0);
+
+  document.getElementById('d-today').textContent = todayDiamonds > 0 ? todayDiamonds.toLocaleString() : (lives[0]?.diamonds||0).toLocaleString();
+  document.getElementById('d-fans').textContent = todayFans > 0 ? todayFans : (lives[0]?.new_fans || '--');
+  document.getElementById('d-gifters').textContent = todayGifters > 0 ? todayGifters : (lives[0]?.gifters || '--');
+
+  // 进度
+  document.getElementById('d-progress-pct').textContent = pct + '%';
+  setTimeout(() => {
+    document.getElementById('d-progress-fill').style.width = pct + '%';
+  }, 300);
+  document.getElementById('d-progress-current').textContent = '已完成 ' + monthTotal.toLocaleString();
+  document.getElementById('d-progress-target').textContent = '目标 ' + target.toLocaleString();
+
+  // VIP粉丝
+  const vipFans = fans.filter(f => f.tier === '超级vip' || f.tier === 'vip' || f.total_coins >= 1000);
+  document.getElementById('d-vip').textContent = vipFans.length;
+
+  // 流失预警（7天未见）
+  const sevenDaysAgo = new Date(now - 7*24*60*60*1000);
+  const lostFans = fans.filter(f => {
+    if (!f.last_active) return false;
+    return new Date(f.last_active) < sevenDaysAgo && f.total_coins >= 1000;
+  });
+  document.getElementById('d-lost').textContent = lostFans.length;
+
+  // 趋势图
+  const recent = lives.slice(0, 10).reverse();
+  const labels = recent.map(l => l.date ? l.date.slice(4,8).replace(/(\d{2})(\d{2})/, '$1/$2') : '');
+  const values = recent.map(l => l.diamonds || 0);
+
+  if (trendChartInst) trendChartInst.destroy();
+  const ctx = document.getElementById('trendChart');
+  trendChartInst = new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels,
+      datasets: [{
+        data: values,
+        borderColor: '#7c6ff7',
+        backgroundColor: 'rgba(124,111,247,0.1)',
+        fill: true,
+        tension: 0.4,
+        pointBackgroundColor: '#7c6ff7',
+        pointRadius: 4,
+        borderWidth: 2
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: { legend: { display: false } },
+      scales: {
+        y: {
+          ticks: { callback: v => Math.round(v/1000)+'K', color: '#9090a8', font: {size: 11} },
+          grid: { color: 'rgba(255,255,255,0.05)' }
+        },
+        x: {
+          ticks: { color: '#9090a8', font: {size: 11} },
+          grid: { display: false }
+        }
+      }
+    }
+  });
+
+  // Top大哥
+  const topFans = [...fans].sort((a,b) => (b.total_coins||0)-(a.total_coins||0)).slice(0,5);
+  const broList = document.getElementById('d-bros');
+  broList.innerHTML = '';
+  topFans.forEach((f, i) => {
+    const rankClass = i===0?'top1':i===1?'top2':i===2?'top3':'';
+    const tier = f.total_coins >= 3000 ? 'svip' : f.total_coins >= 1000 ? 'vip' : '';
+    const tagHtml = tier ? `<span class="bro-tag tag-${tier}">${tier==='svip'?'超级VIP':'VIP'}</span>` : '';
+    broList.innerHTML += `
+      <div class="bro-item">
+        <div class="bro-rank ${rankClass}">${i+1}</div>
+        <div class="bro-name">${f.username}${tagHtml}</div>
+        <div class="bro-coins">${(f.total_coins||0).toLocaleString()} coins</div>
+      </div>
+    `;
+  });
+
+  // 待跟进
+  const todos = document.getElementById('d-todos');
+  todos.innerHTML = '';
+  lostFans.slice(0,3).forEach(f => {
+    todos.innerHTML += `
+      <div class="todo-item">
+        <div class="todo-dot dot-red"></div>
+        <div class="todo-text"><span class="todo-name">${f.username}</span> 超过7天未出现，累计 ${(f.total_coins||0).toLocaleString()} coins</div>
+      </div>
+    `;
+  });
+  if (todos.innerHTML === '') {
+    todos.innerHTML = '<div class="todo-item"><div class="todo-dot dot-green"></div><div class="todo-text">暂无待跟进粉丝，继续保持！</div></div>';
+  }
+
+  document.getElementById('d-timestamp').textContent = '数据更新于 ' + new Date().toLocaleString('zh-CN');
+}
+
+initLogin();
+</script>
+</body>
+</html>
