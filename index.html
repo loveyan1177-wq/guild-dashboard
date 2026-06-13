@@ -54,20 +54,31 @@
   .income-card { background: linear-gradient(135deg, #1e1a3a, #12121a); border: 1px solid rgba(124,111,247,0.3); border-radius: 16px; padding: 1.5rem; margin-bottom: 1rem; position: relative; overflow: hidden; }
   .income-card::before { content: ''; position: absolute; top: -50px; right: -50px; width: 150px; height: 150px; background: radial-gradient(circle, rgba(124,111,247,0.15), transparent 70%); }
   .income-label { font-size: 13px; color: var(--text2); margin-bottom: 0.5rem; }
-  .income-value { font-size: 36px; font-weight: 700; color: var(--purple2); letter-spacing: -1px; }
+  .income-value { font-size: 36px; font-weight: 700; color: var(--purple2); letter-spacing: -1px; min-height: 44px; }
   .income-sub { font-size: 13px; color: var(--text2); margin-top: 0.5rem; }
   .income-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 1rem; }
   .income-mini { background: rgba(255,255,255,0.05); border-radius: 10px; padding: 12px; }
   .income-mini-label { font-size: 11px; color: var(--text2); margin-bottom: 4px; }
   .income-mini-value { font-size: 18px; font-weight: 600; }
 
+  /* 连续天数卡片 */
+  .streak-card { background: rgba(251,191,36,0.07); border: 1px solid rgba(251,191,36,0.2); border-radius: 14px; padding: 14px 16px; margin-bottom: 1rem; display: flex; align-items: center; gap: 14px; opacity: 0; transform: translateY(10px); transition: opacity 0.5s ease, transform 0.5s ease; }
+  .streak-card.visible { opacity: 1; transform: translateY(0); }
+  .streak-fire { font-size: 30px; animation: pulse-fire 2s ease-in-out infinite; flex-shrink: 0; }
+  @keyframes pulse-fire { 0%,100%{transform:scale(1)} 50%{transform:scale(1.12)} }
+  .streak-info { flex: 1; }
+  .streak-num { font-size: 26px; font-weight: 700; color: var(--amber); line-height: 1; }
+  .streak-text { font-size: 12px; color: rgba(251,191,36,0.6); margin-top: 3px; }
+  .streak-best { font-size: 11px; color: var(--text2); margin-top: 5px; }
+
   /* 指标卡片网格 */
   .metrics-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 1rem; }
-  .metric-card { background: var(--bg2); border: 1px solid var(--border); border-radius: 12px; padding: 1rem; }
+  .metric-card { background: var(--bg2); border: 1px solid var(--border); border-radius: 12px; padding: 1rem; opacity: 0; transform: translateY(10px); transition: opacity 0.4s ease, transform 0.4s ease; }
+  .metric-card.visible { opacity: 1; transform: translateY(0); }
   .metric-icon { font-size: 20px; margin-bottom: 8px; }
   .metric-value { font-size: 22px; font-weight: 600; }
   .metric-label { font-size: 12px; color: var(--text2); margin-top: 4px; }
-  .metric-trend { font-size: 12px; margin-top: 6px; }
+  .metric-trend { font-size: 11px; margin-top: 6px; }
   .up { color: var(--green); }
   .down { color: var(--red); }
   .warn { color: var(--amber); }
@@ -77,8 +88,13 @@
   .progress-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; }
   .progress-title { font-size: 14px; font-weight: 500; }
   .progress-pct { font-size: 14px; color: var(--purple2); font-weight: 600; }
-  .progress-bar { height: 6px; background: rgba(255,255,255,0.1); border-radius: 3px; overflow: hidden; }
-  .progress-fill { height: 100%; border-radius: 3px; background: linear-gradient(90deg, #7c6ff7, #34d399); transition: width 1s ease; }
+  .progress-bar { height: 8px; background: rgba(255,255,255,0.1); border-radius: 4px; overflow: hidden; }
+  .progress-fill { height: 100%; border-radius: 4px; background: linear-gradient(90deg, #7c6ff7, #34d399); width: 0%; transition: width 1.2s cubic-bezier(0.22,1,0.36,1); }
+
+  /* 激励文案 */
+  .motivation-card { background: rgba(124,111,247,0.08); border: 1px solid rgba(124,111,247,0.2); border-radius: 12px; padding: 14px 16px; margin-bottom: 1rem; font-size: 13px; color: var(--text2); line-height: 1.7; opacity: 0; transform: translateY(10px); transition: opacity 0.5s ease, transform 0.5s ease; }
+  .motivation-card.visible { opacity: 1; transform: translateY(0); }
+  .motivation-card strong { color: var(--purple2); font-weight: 600; }
 
   /* Section标题 */
   .section { margin-bottom: 1rem; }
@@ -86,7 +102,8 @@
 
   /* 大哥排行 */
   .bro-list { display: flex; flex-direction: column; gap: 8px; }
-  .bro-item { background: var(--bg2); border: 1px solid var(--border); border-radius: 10px; padding: 12px 14px; display: flex; align-items: center; gap: 12px; }
+  .bro-item { background: var(--bg2); border: 1px solid var(--border); border-radius: 10px; padding: 12px 14px; display: flex; align-items: center; gap: 12px; opacity: 0; transform: translateX(-8px); transition: opacity 0.3s ease, transform 0.3s ease; }
+  .bro-item.visible { opacity: 1; transform: translateX(0); }
   .bro-rank { font-size: 13px; color: var(--text2); width: 18px; font-weight: 600; }
   .bro-rank.top1 { color: var(--amber); }
   .bro-rank.top2 { color: #c0c0c0; }
@@ -102,9 +119,10 @@
   .todo-list { display: flex; flex-direction: column; gap: 8px; }
   .todo-item { background: var(--bg2); border: 1px solid var(--border); border-radius: 10px; padding: 12px 14px; display: flex; align-items: flex-start; gap: 10px; }
   .todo-dot { width: 8px; height: 8px; border-radius: 50%; margin-top: 5px; flex-shrink: 0; }
-  .dot-red { background: var(--red); box-shadow: 0 0 6px var(--red); }
+  .dot-red { background: var(--red); box-shadow: 0 0 6px var(--red); animation: pulse-dot 2s ease-in-out infinite; }
   .dot-amber { background: var(--amber); box-shadow: 0 0 6px var(--amber); }
   .dot-green { background: var(--green); box-shadow: 0 0 6px var(--green); }
+  @keyframes pulse-dot { 0%,100%{opacity:1} 50%{opacity:0.4} }
   .todo-text { font-size: 13px; line-height: 1.5; color: var(--text); flex: 1; }
   .todo-name { font-weight: 600; color: var(--text); }
 
@@ -118,11 +136,9 @@
   @keyframes spin { to { transform: rotate(360deg); } }
   .loading-text { font-size: 14px; color: var(--text2); }
 
-  /* 数字动画 */
-  @keyframes countUp { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
-  .animated { animation: countUp 0.6s ease forwards; }
+  @keyframes fadeSlideUp { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+  .animated { animation: fadeSlideUp 0.6s ease forwards; }
 
-  /* 时间戳 */
   .timestamp { text-align: center; font-size: 12px; color: var(--text2); margin-top: 2rem; opacity: 0.6; }
 </style>
 </head>
@@ -170,6 +186,15 @@
     </div>
   </div>
 
+  <div class="streak-card" id="streak-card">
+    <div class="streak-fire">🔥</div>
+    <div class="streak-info">
+      <div class="streak-num" id="d-streak">-- 天</div>
+      <div class="streak-text" id="d-streak-text">连续直播中，保持状态！</div>
+      <div class="streak-best" id="d-streak-best"></div>
+    </div>
+  </div>
+
   <div class="section">
     <div class="progress-card">
       <div class="progress-header">
@@ -187,27 +212,33 @@
   </div>
 
   <div class="metrics-grid">
-    <div class="metric-card">
+    <div class="metric-card" id="mc-fans">
       <div class="metric-icon">✨</div>
       <div class="metric-value" id="d-fans">--</div>
       <div class="metric-label">新增粉丝（今日）</div>
+      <div class="metric-trend" id="d-fans-trend"></div>
     </div>
-    <div class="metric-card">
+    <div class="metric-card" id="mc-vip">
       <div class="metric-icon">👑</div>
       <div class="metric-value" id="d-vip">--</div>
       <div class="metric-label">VIP粉丝总数</div>
+      <div class="metric-trend" id="d-vip-trend"></div>
     </div>
-    <div class="metric-card">
+    <div class="metric-card" id="mc-gifters">
       <div class="metric-icon">👥</div>
       <div class="metric-value" id="d-gifters">--</div>
       <div class="metric-label">今日送礼人数</div>
+      <div class="metric-trend" id="d-gifters-trend"></div>
     </div>
-    <div class="metric-card">
+    <div class="metric-card" id="mc-lost">
       <div class="metric-icon">⚠️</div>
       <div class="metric-value warn" id="d-lost">--</div>
       <div class="metric-label">流失预警</div>
+      <div class="metric-trend" id="d-lost-trend"></div>
     </div>
   </div>
+
+  <div class="motivation-card" id="motivation-card"></div>
 
   <div class="section">
     <div class="chart-card">
@@ -232,32 +263,53 @@
 </div>
 
 <script>
-const FEISHU_APP_ID = 'cli_aaa0a0786b391bec';
-const FEISHU_APP_SECRET = '0bIlPficAAbs9jrVm5S0vcDf2iVj50fm';
-const APP_TOKEN = 'ONg9bbRwoampbAsJd71c7RKsn7e';
-const TABLE_ANCHORS = 'tbl7bMJLN66tBB7M';
-const TABLE_LIVE = 'tbl4VQMLt9PH4QNy';
-const TABLE_FANS = 'tblSpn2p5LW9TCjX';
-
-let token = '';
 let currentAnchor = null;
 let trendChartInst = null;
 
-async function getToken() {
-  const res = await fetch('/api/token');
-  const data = await res.json();
-  token = data.token;
-  return token;
+function animateNumber(el, target, duration) {
+  const start = performance.now();
+  function update(now) {
+    const p = Math.min((now - start) / duration, 1);
+    const ease = 1 - Math.pow(1 - p, 4);
+    el.textContent = Math.floor(ease * target).toLocaleString();
+    if (p < 1) requestAnimationFrame(update);
+  }
+  requestAnimationFrame(update);
 }
 
-async function feishuGet(url) {
-  const res = await fetch(url, { headers: { 'Authorization': 'Bearer ' + token } });
-  return res.json();
+function revealWithDelay(el, delay) {
+  setTimeout(() => { if (el) el.classList.add('visible'); }, delay);
 }
 
-async function feishuSearch(tableId, filter) {
-  const res = await fetch(`/api/search?table=${tableId}&filter=${encodeURIComponent(JSON.stringify(filter))}`);
-  return res.json();
+function calcStreak(lives) {
+  if (!lives || lives.length === 0) return 0;
+  const dates = [...new Set(lives.map(l => l.date).filter(Boolean))].sort().reverse();
+  if (dates.length === 0) return 0;
+  let streak = 1;
+  for (let i = 0; i < dates.length - 1; i++) {
+    const diff = (new Date(dates[i]) - new Date(dates[i+1])) / 86400000;
+    if (diff === 1) streak++;
+    else break;
+  }
+  return streak;
+}
+
+function genMotivation(anchorName, todayDiamonds, avgDiamonds, streak, pct, newFans) {
+  const parts = [];
+  if (todayDiamonds > 0 && avgDiamonds > 0) {
+    if (todayDiamonds > avgDiamonds * 1.2) {
+      parts.push('今天表现超棒！💎 <strong>' + todayDiamonds.toLocaleString() + ' 钻石</strong>，高于近期平均 ' + Math.round((todayDiamonds/avgDiamonds-1)*100) + '%');
+    } else if (todayDiamonds >= avgDiamonds * 0.8) {
+      parts.push('今天状态稳定，<strong>' + todayDiamonds.toLocaleString() + ' 钻石</strong>，继续保持');
+    } else {
+      parts.push('今天辛苦了，<strong>' + todayDiamonds.toLocaleString() + ' 钻石</strong>，明天继续加油');
+    }
+  }
+  if (streak >= 7) parts.push('连续直播 <strong>' + streak + ' 天</strong>，毅力满分！');
+  else if (streak >= 3) parts.push('已连续直播 <strong>' + streak + ' 天</strong>，保持势头');
+  if (newFans > 0) parts.push('今日新增 <strong>' + newFans + ' 位粉丝</strong>');
+  if (pct >= 50) parts.push('本月目标已完成 <strong>' + pct + '%</strong>，冲刺阶段加油');
+  return parts.length > 0 ? parts.join('，') + '！' : '数据已更新，继续加油！';
 }
 
 async function loadAnchors() {
@@ -267,12 +319,12 @@ async function loadAnchors() {
 }
 
 async function loadLiveData(anchorName) {
-  const res = await fetch(`/api/live?anchor=${encodeURIComponent(anchorName)}`);
+  const res = await fetch('/api/live?anchor=' + encodeURIComponent(anchorName));
   return res.json();
 }
 
 async function loadFansData(anchorName) {
-  const res = await fetch(`/api/fans?anchor=${encodeURIComponent(anchorName)}`);
+  const res = await fetch('/api/fans?anchor=' + encodeURIComponent(anchorName));
   return res.json();
 }
 
@@ -280,18 +332,15 @@ function showLogin() {
   document.getElementById('dashboard').style.display = 'none';
   document.getElementById('login-page').style.display = 'flex';
 }
-
 function showDashboard() {
   document.getElementById('login-page').style.display = 'none';
   document.getElementById('dashboard').style.display = 'block';
 }
-
 function showLoading() {
   document.getElementById('loading').style.display = 'flex';
   document.getElementById('login-page').style.display = 'none';
   document.getElementById('dashboard').style.display = 'none';
 }
-
 function hideLoading() {
   document.getElementById('loading').style.display = 'none';
 }
@@ -305,184 +354,159 @@ async function initLogin() {
     const anchors = await loadAnchors();
     if (anchorParam && keyParam === 'bm2026' + anchorParam) {
       const matched = anchors.find(a => a.name.toLowerCase() === anchorParam.toLowerCase() || a.id === anchorParam);
-      if (matched) {
-        selectAnchor(matched);
-        return;
-      }
+      if (matched) { selectAnchor(matched); return; }
     }
     const list = document.getElementById('anchor-list');
     list.innerHTML = '';
     anchors.forEach(a => {
       const btn = document.createElement('div');
       btn.className = 'anchor-btn';
-      btn.innerHTML = `
-        <div class="anchor-avatar">${a.name[0].toUpperCase()}</div>
-        <div class="anchor-info">
-          <div class="anchor-name">${a.name}</div>
-          <div class="anchor-status">${a.status || '在播'}</div>
-        </div>
-        <div class="anchor-arrow">›</div>
-      `;
+      btn.innerHTML = '<div class="anchor-avatar">' + a.name[0].toUpperCase() + '</div><div class="anchor-info"><div class="anchor-name">' + a.name + '</div><div class="anchor-status">' + (a.status || '在播') + '</div></div><div class="anchor-arrow">›</div>';
       btn.onclick = () => selectAnchor(a);
       list.appendChild(btn);
     });
     hideLoading();
     showLogin();
-  } catch(e) {
-    hideLoading();
-    showLogin();
-  }
+  } catch(e) { hideLoading(); showLogin(); }
 }
 
 async function selectAnchor(anchor) {
   const urlParams = new URLSearchParams(window.location.search);
   const key = urlParams.get('key');
   const anchorParam = urlParams.get('anchor');
-  if (anchorParam && key !== 'bm2026' + anchorParam) {
-    alert('链接无效，请联系运营获取专属链接');
-    return;
-  }
+  if (anchorParam && key !== 'bm2026' + anchorParam) { alert('链接无效，请联系运营获取专属链接'); return; }
   currentAnchor = anchor;
   showLoading();
-  document.getElementById('loading').querySelector('.loading-text').textContent = `加载 ${anchor.name} 的数据...`;
-
+  document.getElementById('loading').querySelector('.loading-text').textContent = '加载 ' + anchor.name + ' 的数据...';
   try {
-    const [liveData, fansData] = await Promise.all([
-      loadLiveData(anchor.name),
-      loadFansData(anchor.name)
-    ]);
+    const [liveData, fansData] = await Promise.all([loadLiveData(anchor.name), loadFansData(anchor.name)]);
     renderDashboard(anchor, liveData, fansData);
     hideLoading();
     showDashboard();
-  } catch(e) {
-    hideLoading();
-    showDashboard();
-  }
+  } catch(e) { hideLoading(); showDashboard(); }
 }
 
 function renderDashboard(anchor, liveData, fansData) {
+  document.querySelectorAll('.metric-card, .streak-card, .motivation-card, .bro-item').forEach(el => el.classList.remove('visible'));
+
   document.getElementById('d-avatar').textContent = anchor.name[0].toUpperCase();
   document.getElementById('d-name').textContent = anchor.name;
   document.getElementById('d-level').textContent = anchor.level || '在播主播';
 
   const lives = liveData.lives || [];
   const fans = fansData.fans || [];
-
-  // 本月数据
   const now = new Date();
-  const nowYear = now.getFullYear();
-  const nowMonth = String(now.getMonth() + 1).padStart(2, '0');
-  const monthPrefix = `${nowYear}-${nowMonth}`;
+  const monthPrefix = now.getFullYear() + '-' + String(now.getMonth()+1).padStart(2,'0');
   const thisMonth = lives.filter(l => l.date && l.date.startsWith(monthPrefix));
-  const monthTotal = thisMonth.reduce((s, l) => s + (l.diamonds || 0), 0);
+  const monthTotal = thisMonth.reduce((s,l) => s+(l.diamonds||0), 0);
   const target = anchor.target || 500000;
   const pct = Math.min(100, Math.round(monthTotal / target * 100));
 
-  document.getElementById('d-monthly').textContent = monthTotal.toLocaleString();
-  document.getElementById('d-monthly-sub').textContent = `6月累计 · ${thisMonth.length} 场直播`;
+  const monthEl = document.getElementById('d-monthly');
+  monthEl.textContent = '0';
+  setTimeout(() => animateNumber(monthEl, monthTotal, 1200), 200);
+  document.getElementById('d-monthly-sub').textContent = (now.getMonth()+1) + '月累计 · ' + thisMonth.length + ' 场直播';
   document.getElementById('d-sessions').textContent = thisMonth.length + ' 场';
 
-  // 今日
   const today = now.toISOString().split('T')[0];
-  const todayLives = lives.filter(l => l.date && l.date.startsWith(today.replace(/-/g,'').slice(0,8)));
+  const todayLives = lives.filter(l => l.date === today);
   const todayDiamonds = todayLives.reduce((s,l) => s+(l.diamonds||0), 0);
   const todayFans = todayLives.reduce((s,l) => s+(l.new_fans||0), 0);
   const todayGifters = todayLives.reduce((s,l) => s+(l.gifters||0), 0);
 
-  document.getElementById('d-today').textContent = todayDiamonds > 0 ? todayDiamonds.toLocaleString() : (lives[0]?.diamonds||0).toLocaleString();
-  document.getElementById('d-fans').textContent = todayFans > 0 ? todayFans : (lives[0]?.new_fans || '--');
-  document.getElementById('d-gifters').textContent = todayGifters > 0 ? todayGifters : (lives[0]?.gifters || '--');
+  const lastLive = todayLives.length > 0 ? todayLives[0] : lives[0];
+  const prevLive = lives[todayLives.length > 0 ? todayLives.length : 1];
+  const displayDiamonds = todayDiamonds > 0 ? todayDiamonds : (lastLive?.diamonds || 0);
+  const displayFans = todayFans > 0 ? todayFans : (lastLive?.new_fans || 0);
+  const displayGifters = todayGifters > 0 ? todayGifters : (lastLive?.gifters || 0);
 
-  // 进度
+  document.getElementById('d-today').textContent = displayDiamonds.toLocaleString();
+  document.getElementById('d-fans').textContent = displayFans;
+  document.getElementById('d-gifters').textContent = displayGifters;
+
+  const recent10 = lives.slice(0, 10);
+  const avgDiamonds = recent10.length > 0 ? Math.round(recent10.reduce((s,l) => s+(l.diamonds||0), 0) / recent10.length) : 0;
+
+  if (prevLive) {
+    const fansDiff = displayFans - (prevLive.new_fans || 0);
+    const giftersDiff = displayGifters - (prevLive.gifters || 0);
+    const fansT = document.getElementById('d-fans-trend');
+    const giftersT = document.getElementById('d-gifters-trend');
+    if (fansDiff !== 0) { fansT.className = 'metric-trend ' + (fansDiff > 0 ? 'up' : 'down'); fansT.textContent = (fansDiff > 0 ? '↑ ' : '↓ ') + Math.abs(fansDiff) + ' 比上场'; }
+    if (giftersDiff !== 0) { giftersT.className = 'metric-trend ' + (giftersDiff > 0 ? 'up' : 'down'); giftersT.textContent = (giftersDiff > 0 ? '↑ ' : '↓ ') + Math.abs(giftersDiff) + ' 比上场'; }
+  }
+
   document.getElementById('d-progress-pct').textContent = pct + '%';
-  setTimeout(() => {
-    document.getElementById('d-progress-fill').style.width = pct + '%';
-  }, 300);
+  document.getElementById('d-progress-fill').style.width = '0%';
+  setTimeout(() => { document.getElementById('d-progress-fill').style.width = pct + '%'; }, 400);
   document.getElementById('d-progress-current').textContent = '已完成 ' + monthTotal.toLocaleString();
   document.getElementById('d-progress-target').textContent = '目标 ' + target.toLocaleString();
 
-  // VIP粉丝
   const vipFans = fans.filter(f => f.tier === '超级vip' || f.tier === 'vip' || f.total_coins >= 1000);
   document.getElementById('d-vip').textContent = vipFans.length;
+  const vipT = document.getElementById('d-vip-trend');
+  vipT.className = 'metric-trend up';
+  vipT.textContent = '总计 ' + fans.length + ' 位粉丝';
 
-  // 流失预警（7天未见）
   const sevenDaysAgo = new Date(now - 7*24*60*60*1000);
-  const lostFans = fans.filter(f => {
-    if (!f.last_active) return false;
-    return new Date(f.last_active) < sevenDaysAgo && f.total_coins >= 1000;
-  });
+  const lostFans = fans.filter(f => f.last_active && new Date(f.last_active) < sevenDaysAgo && f.total_coins >= 1000);
   document.getElementById('d-lost').textContent = lostFans.length;
+  const lostT = document.getElementById('d-lost-trend');
+  if (lostFans.length > 0) { lostT.className = 'metric-trend down'; lostT.textContent = '需要主动联系'; }
+  else { lostT.className = 'metric-trend up'; lostT.textContent = '暂无流失风险'; }
 
-  // 趋势图
+  const streak = calcStreak(lives);
+  document.getElementById('d-streak').textContent = streak + ' 天';
+  document.getElementById('d-streak-text').textContent = streak >= 7 ? '🏆 连续直播，超棒的！' : streak >= 3 ? '连续直播中，保持状态！' : '加油，继续坚持！';
+  document.getElementById('d-streak-best').textContent = streak > 0 ? '近期持续在播，稳定性很高' : '';
+
+  document.getElementById('motivation-card').innerHTML = genMotivation(anchor.name, displayDiamonds, avgDiamonds, streak, pct, displayFans);
+
   const recent = lives.slice(0, 10).reverse();
-  const labels = recent.map(l => l.date ? l.date.slice(4,8).replace(/(\d{2})(\d{2})/, '$1/$2') : '');
-  const values = recent.map(l => l.diamonds || 0);
-
   if (trendChartInst) trendChartInst.destroy();
-  const ctx = document.getElementById('trendChart');
-  trendChartInst = new Chart(ctx, {
+  trendChartInst = new Chart(document.getElementById('trendChart'), {
     type: 'line',
     data: {
-      labels,
-      datasets: [{
-        data: values,
-        borderColor: '#7c6ff7',
-        backgroundColor: 'rgba(124,111,247,0.1)',
-        fill: true,
-        tension: 0.4,
-        pointBackgroundColor: '#7c6ff7',
-        pointRadius: 4,
-        borderWidth: 2
-      }]
+      labels: recent.map(l => l.date ? l.date.slice(5) : ''),
+      datasets: [{ data: recent.map(l => l.diamonds||0), borderColor: '#7c6ff7', backgroundColor: 'rgba(124,111,247,0.1)', fill: true, tension: 0.4, pointBackgroundColor: '#7c6ff7', pointRadius: 4, borderWidth: 2 }]
     },
     options: {
-      responsive: true,
-      maintainAspectRatio: false,
+      responsive: true, maintainAspectRatio: false,
+      animation: { duration: 1000, easing: 'easeInOutQuart' },
       plugins: { legend: { display: false } },
       scales: {
-        y: {
-          ticks: { callback: v => Math.round(v/1000)+'K', color: '#9090a8', font: {size: 11} },
-          grid: { color: 'rgba(255,255,255,0.05)' }
-        },
-        x: {
-          ticks: { color: '#9090a8', font: {size: 11} },
-          grid: { display: false }
-        }
+        y: { ticks: { callback: v => Math.round(v/1000)+'K', color: '#9090a8', font: {size:11} }, grid: { color: 'rgba(255,255,255,0.05)' } },
+        x: { ticks: { color: '#9090a8', font: {size:11} }, grid: { display: false } }
       }
     }
   });
 
-  // Top大哥
-  const topFans = [...fans].sort((a,b) => (b.total_coins||0)-(a.total_coins||0)).slice(0,5);
   const broList = document.getElementById('d-bros');
   broList.innerHTML = '';
-  topFans.forEach((f, i) => {
+  [...fans].sort((a,b) => (b.total_coins||0)-(a.total_coins||0)).slice(0,5).forEach((f, i) => {
     const rankClass = i===0?'top1':i===1?'top2':i===2?'top3':'';
     const tier = f.total_coins >= 3000 ? 'svip' : f.total_coins >= 1000 ? 'vip' : '';
-    const tagHtml = tier ? `<span class="bro-tag tag-${tier}">${tier==='svip'?'超级VIP':'VIP'}</span>` : '';
-    broList.innerHTML += `
-      <div class="bro-item">
-        <div class="bro-rank ${rankClass}">${i+1}</div>
-        <div class="bro-name">${f.username}${tagHtml}</div>
-        <div class="bro-coins">${(f.total_coins||0).toLocaleString()} coins</div>
-      </div>
-    `;
+    const tagHtml = tier ? '<span class="bro-tag tag-' + tier + '">' + (tier==='svip'?'超级VIP':'VIP') + '</span>' : '';
+    const div = document.createElement('div');
+    div.className = 'bro-item';
+    div.innerHTML = '<div class="bro-rank ' + rankClass + '">' + (i+1) + '</div><div class="bro-name">' + f.username + tagHtml + '</div><div class="bro-coins">' + (f.total_coins||0).toLocaleString() + ' coins</div>';
+    broList.appendChild(div);
+    revealWithDelay(div, 800 + i * 80);
   });
 
-  // 待跟进
   const todos = document.getElementById('d-todos');
   todos.innerHTML = '';
   lostFans.slice(0,3).forEach(f => {
-    todos.innerHTML += `
-      <div class="todo-item">
-        <div class="todo-dot dot-red"></div>
-        <div class="todo-text"><span class="todo-name">${f.username}</span> 超过7天未出现，累计 ${(f.total_coins||0).toLocaleString()} coins</div>
-      </div>
-    `;
+    todos.innerHTML += '<div class="todo-item"><div class="todo-dot dot-red"></div><div class="todo-text"><span class="todo-name">' + f.username + '</span> 超过7天未出现，累计 ' + (f.total_coins||0).toLocaleString() + ' coins</div></div>';
   });
-  if (todos.innerHTML === '') {
-    todos.innerHTML = '<div class="todo-item"><div class="todo-dot dot-green"></div><div class="todo-text">暂无待跟进粉丝，继续保持！</div></div>';
-  }
+  if (!todos.innerHTML) todos.innerHTML = '<div class="todo-item"><div class="todo-dot dot-green"></div><div class="todo-text">暂无待跟进粉丝，继续保持！</div></div>';
+
+  revealWithDelay(document.getElementById('streak-card'), 300);
+  revealWithDelay(document.getElementById('mc-fans'), 500);
+  revealWithDelay(document.getElementById('mc-vip'), 600);
+  revealWithDelay(document.getElementById('mc-gifters'), 700);
+  revealWithDelay(document.getElementById('mc-lost'), 800);
+  revealWithDelay(document.getElementById('motivation-card'), 1000);
 
   document.getElementById('d-timestamp').textContent = '数据更新于 ' + new Date().toLocaleString('zh-CN');
 }
