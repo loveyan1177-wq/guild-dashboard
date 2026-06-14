@@ -703,14 +703,11 @@ function toggleBroDetail(el, fan, idx) {
     + '<div class="bro-stat">最后活跃 <span>' + lastActive + '</span></div>'
     + '</div>';
 
-  // 送礼记录（从互动备注解析）
+  // 送礼记录（直接显示原始备注）
   let historyHtml = '';
   if (fan.notes) {
-    const entries = fan.notes.split('/').map(s => s.trim()).filter(s => s && s !== '—');
-    if (entries.length > 0) {
-      historyHtml = '<div class="bro-ai-title">📅 送礼记录</div>'
-        + entries.map(e => '<div class="bro-ai-item">' + e + '</div>').join('');
-    }
+    historyHtml = '<div class="bro-ai-title">📅 送礼记录</div>'
+      + '<div class="bro-ai-item" style="white-space:pre-wrap;line-height:1.8">' + fan.notes + '</div>';
   }
 
   // 跟踪话术
