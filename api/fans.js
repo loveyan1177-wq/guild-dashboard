@@ -94,7 +94,8 @@ async function fetchFromFeishu(anchor) {
       sessions: f['出现场次'] || 0,
       tier: extractText(f['档位']),
       last_active: lastActiveStr,
-      script: extractText(f['跟踪话术']) || ''
+      script: extractText(f['跟踪话术']) || '',
+      notes: extractText(f['互动备注']) || ''
     };
   });
 }
