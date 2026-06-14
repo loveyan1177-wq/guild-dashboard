@@ -125,30 +125,28 @@
   /* 时间戳 */
   .timestamp { text-align: center; font-size: 12px; color: var(--text2); margin-top: 2rem; opacity: 0.6; }
 
-  /* AI建议模块 */
-  .ai-section-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
-  .ai-section-title { font-size: 13px; font-weight: 500; color: var(--text2); text-transform: uppercase; letter-spacing: 0.08em; }
-  .ai-badge { font-size: 11px; padding: 2px 8px; border-radius: 20px; background: rgba(124,111,247,0.2); color: var(--purple2); font-weight: 600; }
-  .ai-tabs { display: flex; gap: 6px; margin-bottom: 12px; }
-  .ai-tab { font-size: 12px; padding: 5px 12px; border-radius: 20px; border: 1px solid var(--border); background: transparent; color: var(--text2); cursor: pointer; transition: all 0.2s; }
-  .ai-tab.active { background: rgba(124,111,247,0.15); border-color: var(--purple); color: var(--purple2); }
-  .ai-date-group { margin-bottom: 14px; }
-  .ai-date-label { font-size: 11px; color: var(--text2); margin-bottom: 8px; padding-left: 2px; letter-spacing: 0.04em; }
-  .ai-item { background: var(--bg2); border: 1px solid var(--border); border-radius: 12px; padding: 12px 14px; margin-bottom: 8px; transition: opacity 0.3s; }
-  .ai-item.done { opacity: 0.45; }
-  .ai-item-header { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
-  .ai-level { font-size: 10px; padding: 2px 8px; border-radius: 20px; font-weight: 600; flex-shrink: 0; }
-  .ai-level-urgent, .ai-level-high { background: rgba(248,113,113,0.15); color: var(--red); border: 1px solid rgba(248,113,113,0.3); }
-  .ai-level-important, .ai-level-mid { background: rgba(251,191,36,0.15); color: var(--amber); border: 1px solid rgba(251,191,36,0.3); }
-  .ai-level-normal, .ai-level-low { background: rgba(52,211,153,0.1); color: var(--green); border: 1px solid rgba(52,211,153,0.2); }
-  .ai-reason { font-size: 13px; color: var(--text); line-height: 1.5; flex: 1; }
-  .ai-action { font-size: 12px; color: var(--text2); line-height: 1.6; margin-bottom: 10px; padding: 8px 10px; background: rgba(255,255,255,0.03); border-radius: 8px; border-left: 2px solid rgba(124,111,247,0.4); }
-  .ai-footer { display: flex; align-items: center; justify-content: flex-end; }
-  .ai-done-btn { font-size: 12px; padding: 5px 14px; border-radius: 20px; border: 1px solid var(--border2); background: transparent; color: var(--text2); cursor: pointer; transition: all 0.2s; }
-  .ai-done-btn:hover { border-color: var(--green); color: var(--green); background: rgba(52,211,153,0.08); }
-  .ai-done-btn:disabled { opacity: 0.4; cursor: default; }
-  .ai-done-label { font-size: 11px; color: var(--green); }
-  .ai-empty { text-align: center; padding: 2rem; font-size: 13px; color: var(--text2); }
+  /* 行动清单模块 */
+  .task-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+  .task-title { font-size: 13px; font-weight: 500; color: var(--text2); text-transform: uppercase; letter-spacing: 0.08em; }
+  .task-badge { font-size: 11px; padding: 2px 8px; border-radius: 20px; background: rgba(248,113,113,0.15); color: var(--red); font-weight: 600; }
+  .task-badge.done { background: rgba(52,211,153,0.1); color: var(--green); }
+  .task-date-group { margin-bottom: 14px; }
+  .task-date-label { font-size: 11px; color: var(--text2); margin-bottom: 8px; padding-left: 2px; letter-spacing: 0.04em; }
+  .task-item { background: var(--bg2); border: 1px solid var(--border); border-radius: 12px; padding: 14px; margin-bottom: 8px; display: flex; align-items: flex-start; gap: 12px; transition: all 0.2s; }
+  .task-item.completed { opacity: 0.4; }
+  .task-check { width: 20px; height: 20px; border-radius: 50%; border: 2px solid var(--border2); flex-shrink: 0; cursor: pointer; display: flex; align-items: center; justify-content: center; margin-top: 1px; transition: all 0.2s; }
+  .task-check:hover { border-color: var(--green); background: rgba(52,211,153,0.1); }
+  .task-item.completed .task-check { border-color: var(--green); background: var(--green); }
+  .task-check-icon { display: none; color: #0a0a0f; font-size: 11px; font-weight: 700; }
+  .task-item.completed .task-check-icon { display: block; }
+  .task-body { flex: 1; }
+  .task-text { font-size: 14px; color: var(--text); line-height: 1.6; }
+  .task-item.completed .task-text { text-decoration: line-through; color: var(--text2); }
+  .task-priority { display: inline-block; font-size: 10px; padding: 1px 7px; border-radius: 20px; margin-bottom: 6px; font-weight: 600; }
+  .priority-red { background: rgba(248,113,113,0.15); color: var(--red); }
+  .priority-amber { background: rgba(251,191,36,0.15); color: var(--amber); }
+  .priority-green { background: rgba(52,211,153,0.1); color: var(--green); }
+  .task-empty { text-align: center; padding: 2rem; font-size: 13px; color: var(--text2); }
 
   /* 大哥展开详情 */
   .bro-item { cursor: pointer; transition: all 0.2s; }
@@ -275,17 +273,12 @@
     <div class="todo-list" id="d-todos"></div>
   </div>
 
-  <div class="section" id="ai-section">
-    <div class="ai-section-header">
-      <div class="ai-section-title">🤖 AI 建议</div>
-      <div class="ai-badge" id="ai-pending-count"></div>
+  <div class="section" id="task-section">
+    <div class="task-header">
+      <div class="task-title">📋 今日行动清单</div>
+      <div class="task-badge" id="task-pending-count"></div>
     </div>
-    <div class="ai-tabs">
-      <button class="ai-tab active" onclick="switchAiTab(7, this)">最近7天</button>
-      <button class="ai-tab" onclick="switchAiTab(30, this)">本月</button>
-      <button class="ai-tab" onclick="switchAiTab(0, this)">全部</button>
-    </div>
-    <div id="ai-list"></div>
+    <div id="task-list"></div>
   </div>
 
   <div class="timestamp" id="d-timestamp"></div>
@@ -376,10 +369,10 @@ async function initLogin() {
     renderDashboard(matched, liveData, fansData);
     hideLoading();
     showDashboard();
-    document.getElementById('ai-list').innerHTML = '<div class="ai-empty" style="color:var(--text2);opacity:0.5">建议加载中...</div>';
-    loadSuggestions(anchorParam).then(sugData => {
-      allSuggestions = sugData;
-      renderSuggestions(allSuggestions, currentAiDays);
+    document.getElementById('task-list').innerHTML = '<div class="task-empty" style="opacity:0.5">加载中...</div>';
+    loadTasks(anchorParam).then(data => {
+      allTasks = data;
+      renderTasks(allTasks);
     });
     return;
   }
@@ -431,11 +424,11 @@ async function selectAnchor(anchor) {
     renderDashboard(anchor, liveData, fansData);
     hideLoading();
     showDashboard();
-    // AI 建议后台加载，不阻塞主界面
-    document.getElementById('ai-list').innerHTML = '<div class="ai-empty" style="color:var(--text2);opacity:0.5">建议加载中...</div>';
-    loadSuggestions(anchor.name).then(sugData => {
-      allSuggestions = sugData;
-      renderSuggestions(allSuggestions, currentAiDays);
+    // 行动清单后台加载，不阻塞主界面
+    document.getElementById('task-list').innerHTML = '<div class="task-empty" style="opacity:0.5">加载中...</div>';
+    loadTasks(anchor.name).then(data => {
+      allTasks = data;
+      renderTasks(allTasks);
     });
   } catch(e) {
     hideLoading();
@@ -574,11 +567,10 @@ function renderDashboard(anchor, liveData, fansData) {
   document.getElementById('d-timestamp').textContent = '数据更新于 ' + new Date().toLocaleString('zh-CN');
 }
 
-// AI建议相关
-let allSuggestions = [];
-let currentAiDays = 7;
+// 行动清单相关
+let allTasks = [];
 
-async function loadSuggestions(anchorName) {
+async function loadTasks(anchorName) {
   try {
     const res = await fetch('/api/suggestions?anchor=' + encodeURIComponent(anchorName));
     const data = await res.json();
@@ -586,100 +578,109 @@ async function loadSuggestions(anchorName) {
   } catch(e) { return []; }
 }
 
-function getLevelClass(level) {
-  if (level === '紧急') return 'urgent';
-  if (level === '高') return 'high';
-  if (level === '重要') return 'important';
-  if (level === '中') return 'mid';
-  return 'low';
-}
-
-function getLevelText(level) {
-  const map = {'紧急':'🔴 紧急','高':'🔴 高','重要':'🟡 重要','中':'🟡 中','常规':'🟢 常规','低':'🟢 低'};
-  return map[level] || level;
-}
-
-function getLevelOrder(level) {
+function getPriorityOrder(level) {
   const order = {'紧急':0,'高':0,'重要':1,'中':2,'常规':3,'低':4};
   return order[level] !== undefined ? order[level] : 3;
 }
 
-function switchAiTab(days, btn) {
-  document.querySelectorAll('.ai-tab').forEach(t => t.classList.remove('active'));
-  btn.classList.add('active');
-  currentAiDays = days;
-  renderSuggestions(allSuggestions, days);
+function getPriorityClass(level) {
+  if (level === '紧急' || level === '高') return 'red';
+  if (level === '重要' || level === '中') return 'amber';
+  return 'green';
 }
 
-function renderSuggestions(suggestions, days) {
-  const list = document.getElementById('ai-list');
+function getPriorityEmoji(level) {
+  if (level === '紧急' || level === '高') return '🔴';
+  if (level === '重要' || level === '中') return '🟡';
+  return '🟢';
+}
+
+function renderTasks(tasks) {
+  const list = document.getElementById('task-list');
+  const badge = document.getElementById('task-pending-count');
   if (!list) return;
-  if (!suggestions || suggestions.length === 0) {
-    list.innerHTML = '<div class="ai-empty">暂无 AI 建议</div>';
-    document.getElementById('ai-pending-count').textContent = '';
+
+  if (!tasks || tasks.length === 0) {
+    list.innerHTML = '<div class="task-empty">今日暂无待办 🎉</div>';
+    if (badge) { badge.textContent = ''; badge.className = 'task-badge done'; }
     return;
   }
-  const now = new Date();
-  let filtered = suggestions;
-  if (days > 0) {
-    const cutoff = new Date(now - days * 86400000).toISOString().split('T')[0];
-    filtered = suggestions.filter(s => s.date >= cutoff);
-  }
-  const pending = filtered.filter(s => s.status !== '已处理').length;
-  document.getElementById('ai-pending-count').textContent = pending > 0 ? pending + ' 条待处理' : '全部已处理 ✓';
-  if (filtered.length === 0) { list.innerHTML = '<div class="ai-empty">该时间段暂无建议</div>'; return; }
 
+  // 只显示最近7天，未处理优先，按优先级排序
+  const now = new Date();
+  const cutoff = new Date(now - 7 * 86400000).toISOString().split('T')[0];
+  const filtered = tasks.filter(s => !s.date || s.date >= cutoff);
+  const sorted = [...filtered].sort((a, b) => {
+    const doneDiff = (a.status === '已处理' ? 1 : 0) - (b.status === '已处理' ? 1 : 0);
+    if (doneDiff !== 0) return doneDiff;
+    return getPriorityOrder(a.level) - getPriorityOrder(b.level);
+  });
+
+  const pending = sorted.filter(s => s.status !== '已处理').length;
+  if (badge) {
+    badge.textContent = pending > 0 ? pending + ' 项待完成' : '全部完成 ✓';
+    badge.className = 'task-badge' + (pending === 0 ? ' done' : '');
+  }
+
+  if (sorted.length === 0) { list.innerHTML = '<div class="task-empty">最近7天暂无行动项</div>'; return; }
+
+  // 按日期分组
   const groups = {};
-  filtered.forEach(s => {
+  sorted.forEach(s => {
     const d = s.date || '未知日期';
     if (!groups[d]) groups[d] = [];
     groups[d].push(s);
   });
-  Object.values(groups).forEach(g => g.sort((a,b) => getLevelOrder(a.level) - getLevelOrder(b.level)));
   const todayStr = now.toISOString().split('T')[0];
   const anchorName = currentAnchor ? currentAnchor.name : '';
   const sortedDates = Object.keys(groups).sort().reverse();
+
   list.innerHTML = sortedDates.map(function(date) {
+    const dateLabel = date === todayStr ? '今天' : date.slice(5).replace('-', '月') + '日';
     const items = groups[date].map(function(s) {
       const isDone = s.status === '已处理';
-      const levelCls = 'ai-level-' + getLevelClass(s.level);
-      const btnOnclick = "markDone('" + s.id + "', '" + anchorName + "', this)";
-      const footer = isDone
-        ? '<span class="ai-done-label">✓ 已处理</span>'
-        : '<button class="ai-done-btn" onclick="' + btnOnclick + '">标记已处理</button>';
-      return '<div class="ai-item ' + (isDone ? 'done' : '') + '" id="ai-' + s.id + '">'
-        + '<div class="ai-item-header">'
-        + '<span class="ai-level ' + levelCls + '">' + getLevelText(s.level) + '</span>'
-        + '<span class="ai-reason">' + s.reason + '</span>'
+      const priClass = getPriorityClass(s.level);
+      const priEmoji = getPriorityEmoji(s.level);
+      const taskText = s.action || s.reason || '';
+      return '<div class="task-item ' + (isDone ? 'completed' : '') + '" id="task-' + s.id + '">'
+        + '<div class="task-check" onclick="toggleTask(\'' + s.id + '\', \'' + anchorName + '\', event)">'
+        + '<span class="task-check-icon">✓</span>'
         + '</div>'
-        + '<div class="ai-action">' + s.action + '</div>'
-        + '<div class="ai-footer">' + footer + '</div>'
+        + '<div class="task-body">'
+        + '<span class="task-priority priority-' + priClass + '">' + priEmoji + ' ' + (s.level||'常规') + '</span>'
+        + '<div class="task-text">' + taskText + '</div>'
+        + '</div>'
         + '</div>';
     }).join('');
-    const dateLabel = date === todayStr ? '今天' : date;
-    return '<div class="ai-date-group"><div class="ai-date-label">' + dateLabel + '</div>' + items + '</div>';
+    return '<div class="task-date-group"><div class="task-date-label">' + dateLabel + '</div>' + items + '</div>';
   }).join('');
 }
 
-async function markDone(recordId, anchorName, btn) {
-  btn.disabled = true;
-  btn.textContent = '处理中...';
+async function toggleTask(recordId, anchorName, e) {
+  e.stopPropagation();
+  const item = document.getElementById('task-' + recordId);
+  if (!item) return;
+  const isDone = item.classList.contains('completed');
+  if (isDone) return; // 只允许勾选，不允许取消
+  item.classList.add('completed');
+  // 更新本地状态
+  const s = allTasks.find(x => x.id === recordId);
+  if (s) s.status = '已处理';
+  // 更新badge
+  const pending = allTasks.filter(x => x.status !== '已处理').length;
+  const badge = document.getElementById('task-pending-count');
+  if (badge) {
+    badge.textContent = pending > 0 ? pending + ' 项待完成' : '全部完成 ✓';
+    badge.className = 'task-badge' + (pending === 0 ? ' done' : '');
+  }
+  // 后台同步飞书
   try {
-    const res = await fetch('/api/suggestion-done', {
+    await fetch('/api/suggestion-done', {
       method: 'POST',
       headers: {'Content-Type': 'application/json'},
       body: JSON.stringify({record_id: recordId, anchor: anchorName})
     });
-    const data = await res.json();
-    if (data.success) {
-      const item = document.getElementById('ai-' + recordId);
-      if (item) { item.classList.add('done'); item.querySelector('.ai-footer').innerHTML = '<span class="ai-done-label">✓ 已处理</span>'; }
-      const s = allSuggestions.find(x => x.id === recordId);
-      if (s) s.status = '已处理';
-      const pending = allSuggestions.filter(x => x.status !== '已处理').length;
-      document.getElementById('ai-pending-count').textContent = pending > 0 ? pending + ' 条待处理' : '全部已处理 ✓';
-    } else { btn.disabled = false; btn.textContent = '标记已处理'; }
-  } catch(e) { btn.disabled = false; btn.textContent = '标记已处理'; }
+  } catch(err) {}
 }
 
 // 大哥展开详情
@@ -714,7 +715,7 @@ function toggleBroDetail(el, fan, idx) {
       + '<div class="bro-ai-item">' + fan.script + '</div>';
   } else {
     scriptHtml = '<div class="bro-ai-title">💬 跟踪话术</div>'
-      + '<div class="bro-ai-none">暂无话术，可在飞书粉丝大盘填写</div>';
+      + '<div class="bro-ai-none">暂无话术</div>';
   }
 
   detail.innerHTML = statsHtml + scriptHtml;
@@ -741,7 +742,7 @@ function toggleTodoDetail(el, fan, idx) {
   if (fan.script) {
     aiHtml = '<div class="todo-ai-item">' + fan.script + '</div>';
   } else {
-    aiHtml = '<div class="bro-ai-none">暂无话术，可在飞书粉丝大盘填写</div>';
+    aiHtml = '<div class="bro-ai-none">暂无话术</div>';
   }
   detail.innerHTML = aiHtml;
   detail.classList.add('show');
