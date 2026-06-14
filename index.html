@@ -528,24 +528,38 @@ function renderDashboard(anchor, liveData, fansData) {
     }
   });
 
-  // 累计Top大哥（可展开）
-  const topFans = [...fans].sort((a,b) => (b.total_coins||0)-(a.total_coins||0)).slice(0,5);
+  // 累计Top大哥（默认5人，可展开全部）
+  const allFansSorted = [...fans].sort((a,b) => (b.total_coins||0)-(a.total_coins||0));
   const broList = document.getElementById('d-bros');
-  broList.innerHTML = '';
-  topFans.forEach((f, i) => {
-    const rankClass = i===0?'top1':i===1?'top2':i===2?'top3':'';
-    const tier = f.total_coins >= 3000 ? 'svip' : f.total_coins >= 1000 ? 'vip' : '';
-    const tagHtml = tier ? '<span class="bro-tag tag-' + tier + '">' + (tier==='svip'?'超级VIP':'VIP') + '</span>' : '';
-    const div = document.createElement('div');
-    div.className = 'bro-item';
-    div.innerHTML = '<div class="bro-rank ' + rankClass + '">' + (i+1) + '</div>'
-      + '<div class="bro-name">' + f.username + tagHtml + '</div>'
-      + '<div class="bro-coins">' + (f.total_coins||0).toLocaleString() + ' coins</div>'
-      + '<div class="bro-arrow">▾</div>'
-      + '<div class="bro-detail" id="bro-detail-' + i + '"></div>';
-    div.onclick = function() { toggleBroDetail(this, f, i); };
-    broList.appendChild(div);
-  });
+  let broShowAll = false;
+
+  function renderBroList() {
+    const topFans = broShowAll ? allFansSorted : allFansSorted.slice(0,5);
+    broList.innerHTML = '';
+    topFans.forEach((f, i) => {
+      const rankClass = i===0?'top1':i===1?'top2':i===2?'top3':'';
+      const tier = f.total_coins >= 3000 ? 'svip' : f.total_coins >= 1000 ? 'vip' : '';
+      const tagHtml = tier ? '<span class="bro-tag tag-' + tier + '">' + (tier==='svip'?'超级VIP':'VIP') + '</span>' : '';
+      const div = document.createElement('div');
+      div.className = 'bro-item';
+      div.innerHTML = '<div class="bro-rank ' + rankClass + '">' + (i+1) + '</div>'
+        + '<div class="bro-name">' + f.username + tagHtml + '</div>'
+        + '<div class="bro-coins">' + (f.total_coins||0).toLocaleString() + ' coins</div>'
+        + '<div class="bro-arrow">▾</div>'
+        + '<div class="bro-detail" id="bro-detail-' + i + '"></div>';
+      div.onclick = function() { toggleBroDetail(this, f, i); };
+      broList.appendChild(div);
+    });
+    // 展开/收起按钮
+    if (allFansSorted.length > 5) {
+      const btn = document.createElement('div');
+      btn.style.cssText = 'text-align:center;padding:10px;font-size:13px;color:var(--purple2);cursor:pointer;';
+      btn.textContent = broShowAll ? '▴ 收起' : '查看全部 ' + allFansSorted.length + ' 位 ▾';
+      btn.onclick = function(e) { e.stopPropagation(); broShowAll = !broShowAll; renderBroList(); };
+      broList.appendChild(btn);
+    }
+  }
+  renderBroList();
 
   // 待跟进（可展开AI建议）
   const todos = document.getElementById('d-todos');
