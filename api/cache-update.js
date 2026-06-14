@@ -23,6 +23,33 @@ async function redisSet(key, value, ttl) {
   }
 }
 
+async function redisGet(key) {
+  const url = process.env.KV_REST_API_URL;
+  const token = process.env.KV_REST_API_TOKEN;
+  const res = await fetch(`${url}/get/${encodeURIComponent(key)}`, {
+    headers: { Authorization: `Bearer ${token}` }
+  });
+  const data = await res.json();
+  if (!data.result) return null;
+  try {
+    let val = data.result;
+    if (typeof val === 'string') val = JSON.parse(val);
+    if (typeof val === 'string') val = JSON.parse(val);
+    return Array.isArray(val) ? val : null;
+  } catch { return null; }
+}
+
+// fans增量upsert：只更新本场出现的粉丝，其余保持不变
+async function upsertFans(anchor, newFans) {
+  const existing = await redisGet(`fans:${anchor}`) || [];
+  const map = {};
+  existing.forEach(f => { map[f.username] = f; });
+  newFans.forEach(f => { map[f.username] = { ...map[f.username], ...f }; });
+  const merged = Object.values(map).sort((a, b) => (b.total_coins || 0) - (a.total_coins || 0));
+  await redisSet(`fans:${anchor}`, merged);
+  return merged.length;
+}
+
 async function redisDel(key) {
   const url = process.env.KV_REST_API_URL;
   const token = process.env.KV_REST_API_TOKEN;
@@ -46,8 +73,8 @@ export default async function handler(req, res) {
       results.lives = 'ok';
     }
     if (fans !== undefined) {
-      await redisSet(`fans:${anchor}`, fans);
-      results.fans = 'ok';
+      const total = await upsertFans(anchor, fans);
+      results.fans = `upserted, total ${total}`;
     }
     if (suggestions !== undefined) {
       await redisSet(`suggestions:${anchor}`, suggestions, 300);
