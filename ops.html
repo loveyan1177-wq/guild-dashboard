@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BIG.monster 运营总览</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg: #0a0a0f;
+    --bg2: #12121a;
+    --bg3: #1a1a26;
+    --border: rgba(255,255,255,0.08);
+    --border2: rgba(255,255,255,0.15);
+    --text: #f0f0f5;
+    --text2: #9090a8;
+    --purple: #7c6ff7;
+    --purple2: #a89ff9;
+    --green: #34d399;
+    --red: #f87171;
+    --amber: #fbbf24;
+    --blue: #60a5fa;
+  }
+  body { background: var(--bg); color: var(--text); font-family: -apple-system, 'PingFang SC', sans-serif; min-height: 100vh; }
+
+  /* 顶部导航 */
+  .ops-nav { background: var(--bg2); border-bottom: 1px solid var(--border); padding: 0 1.5rem; display: flex; align-items: center; justify-content: space-between; height: 56px; position: sticky; top: 0; z-index: 100; }
+  .ops-logo { display: flex; align-items: center; gap: 10px; }
+  .ops-logo-icon { font-size: 22px; }
+  .ops-logo-text { font-size: 16px; font-weight: 600; }
+  .ops-logo-sub { font-size: 12px; color: var(--text2); margin-left: 6px; }
+  .ops-date { font-size: 13px; color: var(--text2); }
+
+  /* 主体 */
+  .ops-main { max-width: 1100px; margin: 0 auto; padding: 1.5rem; }
+
+  /* 总览数据条 */
+  .ops-summary { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 1.5rem; }
+  .summary-card { background: var(--bg2); border: 1px solid var(--border); border-radius: 12px; padding: 1rem 1.2rem; }
+  .summary-label { font-size: 12px; color: var(--text2); margin-bottom: 6px; }
+  .summary-value { font-size: 24px; font-weight: 700; }
+  .summary-sub { font-size: 11px; color: var(--text2); margin-top: 4px; }
+
+  /* 主播卡片网格 */
+  .section-title { font-size: 13px; font-weight: 500; color: var(--text2); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 12px; }
+  .anchor-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 14px; margin-bottom: 2rem; }
+  .anchor-card { background: var(--bg2); border: 1px solid var(--border); border-radius: 14px; padding: 1.2rem; cursor: pointer; transition: all 0.2s; }
+  .anchor-card:hover { border-color: rgba(124,111,247,0.5); background: rgba(124,111,247,0.04); transform: translateY(-1px); }
+  .anchor-card-header { display: flex; align-items: center; gap: 12px; margin-bottom: 1rem; }
+  .anchor-card-avatar { width: 42px; height: 42px; border-radius: 50%; background: linear-gradient(135deg, #7c6ff7, #34d399); display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 17px; flex-shrink: 0; }
+  .anchor-card-info { flex: 1; }
+  .anchor-card-name { font-size: 16px; font-weight: 600; }
+  .anchor-card-level { font-size: 12px; color: var(--purple2); margin-top: 2px; }
+  .anchor-card-arrow { font-size: 18px; color: var(--text2); }
+
+  /* 主播指标行 */
+  .anchor-metrics { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 10px; }
+  .anchor-metric { background: rgba(255,255,255,0.03); border-radius: 8px; padding: 8px 10px; }
+  .anchor-metric-label { font-size: 11px; color: var(--text2); margin-bottom: 3px; }
+  .anchor-metric-value { font-size: 16px; font-weight: 600; }
+
+  /* 进度条 */
+  .anchor-progress { margin-top: 10px; }
+  .anchor-progress-header { display: flex; justify-content: space-between; margin-bottom: 5px; }
+  .anchor-progress-label { font-size: 11px; color: var(--text2); }
+  .anchor-progress-pct { font-size: 11px; color: var(--purple2); font-weight: 600; }
+  .anchor-progress-bar { height: 4px; background: rgba(255,255,255,0.08); border-radius: 2px; overflow: hidden; }
+  .anchor-progress-fill { height: 100%; border-radius: 2px; background: linear-gradient(90deg, #7c6ff7, #34d399); transition: width 1s ease; }
+
+  /* 预警徽标 */
+  .anchor-badges { display: flex; gap: 6px; margin-top: 10px; flex-wrap: wrap; }
+  .badge { font-size: 11px; padding: 2px 8px; border-radius: 20px; font-weight: 500; }
+  .badge-red { background: rgba(248,113,113,0.15); color: var(--red); }
+  .badge-amber { background: rgba(251,191,36,0.15); color: var(--amber); }
+  .badge-green { background: rgba(52,211,153,0.1); color: var(--green); }
+  .badge-purple { background: rgba(124,111,247,0.15); color: var(--purple2); }
+
+  /* 行动清单汇总 */
+  .tasks-section { margin-bottom: 2rem; }
+  .task-row { background: var(--bg2); border: 1px solid var(--border); border-radius: 10px; padding: 10px 14px; margin-bottom: 6px; display: flex; align-items: flex-start; gap: 10px; }
+  .task-row-anchor { font-size: 11px; padding: 1px 7px; border-radius: 20px; background: rgba(124,111,247,0.15); color: var(--purple2); flex-shrink: 0; margin-top: 2px; font-weight: 500; }
+  .task-row-text { font-size: 13px; color: var(--text); line-height: 1.5; flex: 1; }
+  .task-row-check { width: 18px; height: 18px; border-radius: 50%; border: 2px solid var(--border2); flex-shrink: 0; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.2s; margin-top: 2px; }
+  .task-row-check:hover { border-color: var(--green); }
+  .task-row.done { opacity: 0.35; }
+  .task-row.done .task-row-check { border-color: var(--green); background: var(--green); }
+  .task-row-check-icon { display: none; color: #0a0a0f; font-size: 10px; font-weight: 700; }
+  .task-row.done .task-row-check-icon { display: block; }
+  .task-row.done .task-row-text { text-decoration: line-through; color: var(--text2); }
+
+  /* 空状态 */
+  .empty { text-align: center; padding: 2rem; font-size: 13px; color: var(--text2); opacity: 0.6; }
+
+  /* 加载 */
+  #loading { display: flex; align-items: center; justify-content: center; min-height: 100vh; flex-direction: column; gap: 16px; }
+  .spinner { width: 36px; height: 36px; border: 3px solid var(--border); border-top-color: var(--purple); border-radius: 50%; animation: spin 0.8s linear infinite; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .loading-text { font-size: 14px; color: var(--text2); }
+
+  .timestamp { text-align: center; font-size: 12px; color: var(--text2); margin-top: 1rem; opacity: 0.5; padding-bottom: 2rem; }
+
+  @media (max-width: 600px) {
+    .ops-summary { grid-template-columns: repeat(2, 1fr); }
+    .anchor-grid { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<div id="loading">
+  <div class="spinner"></div>
+  <div class="loading-text">加载运营数据...</div>
+</div>
+
+<div id="ops-page" style="display:none;">
+  <nav class="ops-nav">
+    <div class="ops-logo">
+      <div class="ops-logo-icon">🎙</div>
+      <div class="ops-logo-text">BIG.monster</div>
+      <div class="ops-logo-sub">运营总览</div>
+    </div>
+    <div class="ops-date" id="ops-date"></div>
+  </nav>
+
+  <div class="ops-main">
+    <div class="ops-summary">
+      <div class="summary-card">
+        <div class="summary-label">今日总钻石</div>
+        <div class="summary-value" id="s-today" style="color:var(--purple2)">--</div>
+        <div class="summary-sub">全公会合计</div>
+      </div>
+      <div class="summary-card">
+        <div class="summary-label">在播主播</div>
+        <div class="summary-value" id="s-anchors" style="color:var(--green)">--</div>
+        <div class="summary-sub">本月活跃</div>
+      </div>
+      <div class="summary-card">
+        <div class="summary-label">待处理行动</div>
+        <div class="summary-value" id="s-tasks" style="color:var(--amber)">--</div>
+        <div class="summary-sub">所有主播合计</div>
+      </div>
+      <div class="summary-card">
+        <div class="summary-label">流失预警</div>
+        <div class="summary-value" id="s-lost" style="color:var(--red)">--</div>
+        <div class="summary-sub">VIP 7天未出现</div>
+      </div>
+    </div>
+
+    <div class="section-title">主播状态</div>
+    <div class="anchor-grid" id="anchor-grid"></div>
+
+    <div class="tasks-section">
+      <div class="section-title">📋 待处理行动清单</div>
+      <div id="ops-tasks"></div>
+    </div>
+
+    <div class="timestamp" id="ops-timestamp"></div>
+  </div>
+</div>
+
+<script>
+async function loadAnchors() {
+  const res = await fetch('/api/anchors');
+  const data = await res.json();
+  return data.anchors || [];
+}
+
+async function loadLiveData(anchor) {
+  try {
+    const res = await fetch('/api/live?anchor=' + encodeURIComponent(anchor));
+    return res.json();
+  } catch(e) { return { lives: [] }; }
+}
+
+async function loadFansData(anchor) {
+  try {
+    const res = await fetch('/api/fans?anchor=' + encodeURIComponent(anchor));
+    return res.json();
+  } catch(e) { return { fans: [] }; }
+}
+
+async function loadTasks(anchor) {
+  try {
+    const res = await fetch('/api/suggestions?anchor=' + encodeURIComponent(anchor));
+    const data = await res.json();
+    return (data.suggestions || []).filter(s => s.status !== '已处理');
+  } catch(e) { return []; }
+}
+
+function getPriorityEmoji(level) {
+  if (level === '紧急' || level === '高') return '🔴';
+  if (level === '重要' || level === '中') return '🟡';
+  return '🟢';
+}
+
+function getPriorityOrder(level) {
+  const o = {'紧急':0,'高':0,'重要':1,'中':2,'常规':3,'低':4};
+  return o[level] !== undefined ? o[level] : 3;
+}
+
+async function init() {
+  const now = new Date();
+  document.getElementById('ops-date').textContent = now.toLocaleDateString('zh-CN', {month:'long', day:'numeric', weekday:'short'});
+
+  const anchors = await loadAnchors();
+  document.getElementById('s-anchors').textContent = anchors.length + ' 人';
+
+  const allData = await Promise.all(anchors.map(async a => {
+    const [liveData, fansData, tasks] = await Promise.all([
+      loadLiveData(a.name),
+      loadFansData(a.name),
+      loadTasks(a.name)
+    ]);
+    return { anchor: a, lives: liveData.lives || [], fans: fansData.fans || [], tasks };
+  }));
+
+  const today = now.toISOString().split('T')[0];
+  const monthPrefix = today.slice(0, 7);
+  const sevenDaysAgo = new Date(now - 7*24*60*60*1000);
+  let totalToday = 0, totalLost = 0, totalPending = 0;
+
+  allData.forEach(d => {
+    const todayLives = d.lives.filter(l => l.date && l.date.startsWith(today));
+    totalToday += todayLives.reduce((s, l) => s + (l.diamonds||0), 0);
+    totalLost += d.fans.filter(f => f.last_active && new Date(f.last_active) < sevenDaysAgo && f.total_coins >= 1000).length;
+    totalPending += d.tasks.length;
+  });
+
+  document.getElementById('s-today').textContent = totalToday > 0 ? (totalToday/1000).toFixed(1)+'K' : '--';
+  document.getElementById('s-lost').textContent = totalLost;
+  document.getElementById('s-tasks').textContent = totalPending;
+
+  // 主播卡片
+  const grid = document.getElementById('anchor-grid');
+  grid.innerHTML = '';
+  allData.forEach(d => {
+    const a = d.anchor;
+    const thisMonth = d.lives.filter(l => l.date && l.date.startsWith(monthPrefix));
+    const monthTotal = thisMonth.reduce((s, l) => s + (l.diamonds||0), 0);
+    const todayLives = d.lives.filter(l => l.date && l.date.startsWith(today));
+    const todayDiamonds = todayLives.reduce((s, l) => s + (l.diamonds||0), 0);
+    const target = a.target || 500000;
+    const pct = Math.min(100, Math.round(monthTotal / target * 100));
+    const vipCount = d.fans.filter(f => f.total_coins >= 1000).length;
+    const lostCount = d.fans.filter(f => f.last_active && new Date(f.last_active) < sevenDaysAgo && f.total_coins >= 1000).length;
+    const pendingCount = d.tasks.length;
+
+    const badges = [];
+    if (lostCount > 0) badges.push('<span class="badge badge-red">⚠️ 流失 ' + lostCount + '</span>');
+    if (pendingCount > 0) badges.push('<span class="badge badge-amber">📋 待办 ' + pendingCount + '</span>');
+    if (vipCount > 0) badges.push('<span class="badge badge-purple">👑 VIP ' + vipCount + '</span>');
+    if (todayDiamonds > 0) badges.push('<span class="badge badge-green">今日 ' + (todayDiamonds/1000).toFixed(1) + 'K💎</span>');
+
+    const card = document.createElement('div');
+    card.className = 'anchor-card';
+    card.innerHTML =
+      '<div class="anchor-card-header">'
+      + '<div class="anchor-card-avatar">' + a.name[0].toUpperCase() + '</div>'
+      + '<div class="anchor-card-info">'
+      + '<div class="anchor-card-name">' + a.name + '</div>'
+      + '<div class="anchor-card-level">' + (a.level || '在播主播') + '</div>'
+      + '</div>'
+      + '<div class="anchor-card-arrow">›</div>'
+      + '</div>'
+      + '<div class="anchor-metrics">'
+      + '<div class="anchor-metric"><div class="anchor-metric-label">本月钻石</div><div class="anchor-metric-value" style="color:var(--purple2)">' + (monthTotal/1000).toFixed(1) + 'K</div></div>'
+      + '<div class="anchor-metric"><div class="anchor-metric-label">今日钻石</div><div class="anchor-metric-value">' + (todayDiamonds > 0 ? (todayDiamonds/1000).toFixed(1)+'K' : '--') + '</div></div>'
+      + '<div class="anchor-metric"><div class="anchor-metric-label">本月场次</div><div class="anchor-metric-value">' + thisMonth.length + ' 场</div></div>'
+      + '</div>'
+      + '<div class="anchor-progress">'
+      + '<div class="anchor-progress-header"><span class="anchor-progress-label">月目标进度</span><span class="anchor-progress-pct">' + pct + '%</span></div>'
+      + '<div class="anchor-progress-bar"><div class="anchor-progress-fill" style="width:' + pct + '%"></div></div>'
+      + '</div>'
+      + '<div class="anchor-badges">' + (badges.length ? badges.join('') : '<span style="font-size:11px;color:var(--text2)">暂无异常</span>') + '</div>';
+
+    card.onclick = () => window.open('/?anchor=' + encodeURIComponent(a.name) + '&key=bm2026' + a.name, '_blank');
+    grid.appendChild(card);
+  });
+
+  // 行动清单汇总
+  const allTasks = [];
+  allData.forEach(d => d.tasks.forEach(t => allTasks.push({...t, anchorName: d.anchor.name})));
+  allTasks.sort((a, b) => getPriorityOrder(a.level) - getPriorityOrder(b.level));
+
+  const taskContainer = document.getElementById('ops-tasks');
+  if (allTasks.length === 0) {
+    taskContainer.innerHTML = '<div class="empty">所有行动项已处理完毕 🎉</div>';
+  } else {
+    taskContainer.innerHTML = allTasks.map(t =>
+      '<div class="task-row" id="ops-task-' + t.id + '">'
+      + '<div class="task-row-check" onclick="doneTask(\'' + t.id + '\',\'' + t.anchorName + '\',event)"><span class="task-row-check-icon">✓</span></div>'
+      + '<span class="task-row-anchor">' + t.anchorName + '</span>'
+      + '<div class="task-row-text">' + getPriorityEmoji(t.level) + ' ' + (t.action || t.reason || '') + '</div>'
+      + '</div>'
+    ).join('');
+  }
+
+  document.getElementById('ops-timestamp').textContent = '数据更新于 ' + now.toLocaleString('zh-CN');
+  document.getElementById('loading').style.display = 'none';
+  document.getElementById('ops-page').style.display = 'block';
+}
+
+async function doneTask(recordId, anchorName, e) {
+  e.stopPropagation();
+  const row = document.getElementById('ops-task-' + recordId);
+  if (!row || row.classList.contains('done')) return;
+  row.classList.add('done');
+  const remaining = document.querySelectorAll('.task-row:not(.done)').length;
+  document.getElementById('s-tasks').textContent = remaining;
+  try {
+    await fetch('/api/suggestion-done', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({record_id: recordId, anchor: anchorName})
+    });
+  } catch(e) {}
+}
+
+init();
+</script>
+</body>
+</html>
