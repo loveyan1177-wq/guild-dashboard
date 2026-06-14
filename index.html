@@ -687,19 +687,13 @@ async function toggleTask(recordId, anchorName, e) {
 function toggleBroDetail(el, fan, idx) {
   const detail = document.getElementById('bro-detail-' + idx);
   const isExpanded = el.classList.contains('expanded');
-  // 收起其他
   document.querySelectorAll('.bro-item.expanded').forEach(item => {
     item.classList.remove('expanded');
-    item.querySelector('.bro-detail').classList.remove('show');
+    const d = item.querySelector('.bro-detail');
+    if (d) d.classList.remove('show');
   });
   if (isExpanded) return;
   el.classList.add('expanded');
-
-  // 找匹配的AI建议
-  const relatedSuggestions = allSuggestions.filter(s =>
-    s.reason && s.reason.includes(fan.username) ||
-    s.action && s.action.includes(fan.username)
-  ).slice(0, 3);
 
   const lastActive = fan.last_active || '暂无记录';
   const statsHtml = '<div class="bro-stats">'
@@ -709,41 +703,41 @@ function toggleBroDetail(el, fan, idx) {
     + '<div class="bro-stat">最后活跃 <span>' + lastActive + '</span></div>'
     + '</div>';
 
-  let scriptHtml = '';
-  if (fan.script) {
-    scriptHtml = '<div class="bro-ai-title">💬 跟踪话术</div>'
-      + '<div class="bro-ai-item">' + fan.script + '</div>';
-  } else {
-    scriptHtml = '<div class="bro-ai-title">💬 跟踪话术</div>'
-      + '<div class="bro-ai-none">暂无话术</div>';
+  // 送礼记录（从互动备注解析）
+  let historyHtml = '';
+  if (fan.notes) {
+    const entries = fan.notes.split('/').map(s => s.trim()).filter(s => s && s !== '—');
+    if (entries.length > 0) {
+      historyHtml = '<div class="bro-ai-title">📅 送礼记录</div>'
+        + entries.map(e => '<div class="bro-ai-item">' + e + '</div>').join('');
+    }
   }
 
-  detail.innerHTML = statsHtml + scriptHtml;
+  // 跟踪话术
+  let scriptHtml = '';
+  if (fan.script) {
+    scriptHtml = '<div class="bro-ai-title" style="margin-top:8px">💬 跟踪话术</div>'
+      + '<div class="bro-ai-item">' + fan.script + '</div>';
+  }
+
+  detail.innerHTML = statsHtml + (historyHtml || '') + (scriptHtml || '');
   detail.classList.add('show');
 }
 
-// 待跟进展开AI建议
+// 待跟进展开
 function toggleTodoDetail(el, fan, idx) {
   const detail = document.getElementById('todo-detail-' + idx);
   const isExpanded = el.classList.contains('expanded');
   document.querySelectorAll('.todo-item.expanded').forEach(item => {
     item.classList.remove('expanded');
-    item.querySelector('.todo-detail').classList.remove('show');
+    const d = item.querySelector('.todo-detail');
+    if (d) d.classList.remove('show');
   });
   if (isExpanded) return;
   el.classList.add('expanded');
-
-  const relatedSuggestions = allSuggestions.filter(s =>
-    s.reason && s.reason.includes(fan.username) ||
-    s.action && s.action.includes(fan.username)
-  ).slice(0, 3);
-
-  let aiHtml = '';
-  if (fan.script) {
-    aiHtml = '<div class="todo-ai-item">' + fan.script + '</div>';
-  } else {
-    aiHtml = '<div class="bro-ai-none">暂无话术</div>';
-  }
+  const aiHtml = fan.script
+    ? '<div class="todo-ai-item">' + fan.script + '</div>'
+    : '<div class="bro-ai-none">暂无话术</div>';
   detail.innerHTML = aiHtml;
   detail.classList.add('show');
 }
