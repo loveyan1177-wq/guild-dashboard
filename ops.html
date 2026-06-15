@@ -5,104 +5,106 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>BIG.monster 运营总览</title>
 <style>
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-  :root {
-    --bg: #0a0a0f;
-    --bg2: #12121a;
-    --bg3: #1a1a26;
-    --border: rgba(255,255,255,0.08);
-    --border2: rgba(255,255,255,0.15);
-    --text: #f0f0f5;
-    --text2: #9090a8;
-    --purple: #7c6ff7;
-    --purple2: #a89ff9;
-    --green: #34d399;
-    --red: #f87171;
-    --amber: #fbbf24;
-    --blue: #60a5fa;
-  }
-  body { background: var(--bg); color: var(--text); font-family: -apple-system, 'PingFang SC', sans-serif; min-height: 100vh; }
+* { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --bg: #0a0a0f; --bg2: #12121a; --bg3: #1a1a26;
+  --border: rgba(255,255,255,0.07); --border2: rgba(255,255,255,0.14);
+  --text: #f0f0f5; --text2: #8888a0;
+  --purple: #7c6ff7; --purple2: #a89ff9;
+  --green: #34d399; --red: #f87171; --amber: #fbbf24; --gold: #f59e0b;
+}
+body { background: var(--bg); color: var(--text); font-family: -apple-system,'PingFang SC',sans-serif; min-height:100vh; }
 
-  /* 顶部导航 */
-  .ops-nav { background: var(--bg2); border-bottom: 1px solid var(--border); padding: 0 1.5rem; display: flex; align-items: center; justify-content: space-between; height: 56px; position: sticky; top: 0; z-index: 100; }
-  .ops-logo { display: flex; align-items: center; gap: 10px; }
-  .ops-logo-icon { font-size: 22px; }
-  .ops-logo-text { font-size: 16px; font-weight: 600; }
-  .ops-logo-sub { font-size: 12px; color: var(--text2); margin-left: 6px; }
-  .ops-date { font-size: 13px; color: var(--text2); }
+/* NAV */
+.nav { background: var(--bg2); border-bottom: 1px solid var(--border); height: 52px; display: flex; align-items: center; justify-content: space-between; padding: 0 1.5rem; position: sticky; top:0; z-index:100; }
+.nav-logo { display:flex; align-items:center; gap:8px; font-size:15px; font-weight:700; }
+.nav-logo span { font-size:12px; color:var(--text2); font-weight:400; margin-left:4px; }
+.nav-date { font-size:12px; color:var(--text2); }
 
-  /* 主体 */
-  .ops-main { max-width: 1100px; margin: 0 auto; padding: 1.5rem; }
+/* MAIN */
+.main { max-width:960px; margin:0 auto; padding:1.2rem 1.5rem 3rem; }
 
-  /* 总览数据条 */
-  .ops-summary { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 1.5rem; }
-  .summary-card { background: var(--bg2); border: 1px solid var(--border); border-radius: 12px; padding: 1rem 1.2rem; }
-  .summary-label { font-size: 12px; color: var(--text2); margin-bottom: 6px; }
-  .summary-value { font-size: 24px; font-weight: 700; }
-  .summary-sub { font-size: 11px; color: var(--text2); margin-top: 4px; }
+/* 总流水 Hero */
+.hero { background: linear-gradient(135deg, rgba(124,111,247,0.12), rgba(52,211,153,0.06)); border: 1px solid rgba(124,111,247,0.2); border-radius:16px; padding:1.6rem 2rem; margin-bottom:1.2rem; display:flex; align-items:center; justify-content:space-between; gap:1rem; flex-wrap:wrap; }
+.hero-left {}
+.hero-label { font-size:12px; color:var(--text2); margin-bottom:6px; letter-spacing:0.06em; }
+.hero-diamonds { font-size:42px; font-weight:800; color:var(--purple2); line-height:1; }
+.hero-diamonds span { font-size:18px; font-weight:500; margin-left:4px; color:var(--text2); }
+.hero-sub { font-size:13px; color:var(--text2); margin-top:6px; }
+.hero-right { display:flex; gap:1.2rem; flex-wrap:wrap; }
+.hero-stat { text-align:center; }
+.hero-stat-val { font-size:22px; font-weight:700; }
+.hero-stat-label { font-size:11px; color:var(--text2); margin-top:3px; }
 
-  /* 主播卡片网格 */
-  .section-title { font-size: 13px; font-weight: 500; color: var(--text2); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 12px; }
-  .anchor-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 14px; margin-bottom: 2rem; }
-  .anchor-card { background: var(--bg2); border: 1px solid var(--border); border-radius: 14px; padding: 1.2rem; cursor: pointer; transition: all 0.2s; }
-  .anchor-card:hover { border-color: rgba(124,111,247,0.5); background: rgba(124,111,247,0.04); transform: translateY(-1px); }
-  .anchor-card-header { display: flex; align-items: center; gap: 12px; margin-bottom: 1rem; }
-  .anchor-card-avatar { width: 42px; height: 42px; border-radius: 50%; background: linear-gradient(135deg, #7c6ff7, #34d399); display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 17px; flex-shrink: 0; }
-  .anchor-card-info { flex: 1; }
-  .anchor-card-name { font-size: 16px; font-weight: 600; }
-  .anchor-card-level { font-size: 12px; color: var(--purple2); margin-top: 2px; }
-  .anchor-card-arrow { font-size: 18px; color: var(--text2); }
+/* 顶部4格 */
+.stats-row { display:grid; grid-template-columns:repeat(4,1fr); gap:10px; margin-bottom:1.2rem; }
+.stat-card { background:var(--bg2); border:1px solid var(--border); border-radius:12px; padding:.9rem 1rem; }
+.stat-label { font-size:11px; color:var(--text2); margin-bottom:5px; }
+.stat-val { font-size:20px; font-weight:700; }
+.stat-sub { font-size:11px; color:var(--text2); margin-top:3px; }
 
-  /* 主播指标行 */
-  .anchor-metrics { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 10px; }
-  .anchor-metric { background: rgba(255,255,255,0.03); border-radius: 8px; padding: 8px 10px; }
-  .anchor-metric-label { font-size: 11px; color: var(--text2); margin-bottom: 3px; }
-  .anchor-metric-value { font-size: 16px; font-weight: 600; }
+/* 两栏布局 */
+.two-col { display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:1.2rem; }
 
-  /* 进度条 */
-  .anchor-progress { margin-top: 10px; }
-  .anchor-progress-header { display: flex; justify-content: space-between; margin-bottom: 5px; }
-  .anchor-progress-label { font-size: 11px; color: var(--text2); }
-  .anchor-progress-pct { font-size: 11px; color: var(--purple2); font-weight: 600; }
-  .anchor-progress-bar { height: 4px; background: rgba(255,255,255,0.08); border-radius: 2px; overflow: hidden; }
-  .anchor-progress-fill { height: 100%; border-radius: 2px; background: linear-gradient(90deg, #7c6ff7, #34d399); transition: width 1s ease; }
+/* 区块 */
+.block { background:var(--bg2); border:1px solid var(--border); border-radius:14px; overflow:hidden; }
+.block-header { padding:.9rem 1.1rem; border-bottom:1px solid var(--border); display:flex; align-items:center; justify-content:space-between; }
+.block-title { font-size:12px; font-weight:600; color:var(--text2); letter-spacing:0.07em; text-transform:uppercase; }
+.block-badge { font-size:11px; padding:2px 8px; border-radius:20px; font-weight:600; }
+.badge-red { background:rgba(248,113,113,0.15); color:var(--red); }
+.badge-amber { background:rgba(251,191,36,0.12); color:var(--amber); }
+.badge-green { background:rgba(52,211,153,0.1); color:var(--green); }
+.badge-purple { background:rgba(124,111,247,0.15); color:var(--purple2); }
 
-  /* 预警徽标 */
-  .anchor-badges { display: flex; gap: 6px; margin-top: 10px; flex-wrap: wrap; }
-  .badge { font-size: 11px; padding: 2px 8px; border-radius: 20px; font-weight: 500; }
-  .badge-red { background: rgba(248,113,113,0.15); color: var(--red); }
-  .badge-amber { background: rgba(251,191,36,0.15); color: var(--amber); }
-  .badge-green { background: rgba(52,211,153,0.1); color: var(--green); }
-  .badge-purple { background: rgba(124,111,247,0.15); color: var(--purple2); }
+/* 主播排名 */
+.rank-list { padding:.4rem 0; }
+.rank-item { display:flex; align-items:center; gap:10px; padding:.7rem 1.1rem; cursor:pointer; transition:background .15s; }
+.rank-item:hover { background:rgba(255,255,255,0.03); }
+.rank-num { width:22px; font-size:13px; font-weight:700; color:var(--text2); text-align:center; flex-shrink:0; }
+.rank-num.r1 { color:var(--gold); }
+.rank-num.r2 { color:#c0c0c0; }
+.rank-num.r3 { color:#cd7f32; }
+.rank-avatar { width:32px; height:32px; border-radius:50%; background:linear-gradient(135deg,#7c6ff7,#34d399); display:flex; align-items:center; justify-content:center; font-weight:700; font-size:13px; flex-shrink:0; }
+.rank-info { flex:1; min-width:0; }
+.rank-name { font-size:14px; font-weight:600; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.rank-meta { font-size:11px; color:var(--text2); margin-top:2px; }
+.rank-bar-wrap { width:80px; flex-shrink:0; }
+.rank-bar-bg { height:4px; background:rgba(255,255,255,0.07); border-radius:2px; overflow:hidden; }
+.rank-bar-fill { height:100%; border-radius:2px; background:linear-gradient(90deg,#7c6ff7,#34d399); }
+.rank-diamonds { font-size:13px; font-weight:700; color:var(--purple2); white-space:nowrap; flex-shrink:0; min-width:52px; text-align:right; }
+.rank-divider { height:1px; background:var(--border); margin:0 1.1rem; }
 
-  /* 行动清单汇总 */
-  .tasks-section { margin-bottom: 2rem; }
-  .task-row { background: var(--bg2); border: 1px solid var(--border); border-radius: 10px; padding: 10px 14px; margin-bottom: 6px; display: flex; align-items: flex-start; gap: 10px; }
-  .task-row-anchor { font-size: 11px; padding: 1px 7px; border-radius: 20px; background: rgba(124,111,247,0.15); color: var(--purple2); flex-shrink: 0; margin-top: 2px; font-weight: 500; }
-  .task-row-text { font-size: 13px; color: var(--text); line-height: 1.5; flex: 1; }
-  .task-row-check { width: 18px; height: 18px; border-radius: 50%; border: 2px solid var(--border2); flex-shrink: 0; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.2s; margin-top: 2px; }
-  .task-row-check:hover { border-color: var(--green); }
-  .task-row.done { opacity: 0.35; }
-  .task-row.done .task-row-check { border-color: var(--green); background: var(--green); }
-  .task-row-check-icon { display: none; color: #0a0a0f; font-size: 10px; font-weight: 700; }
-  .task-row.done .task-row-check-icon { display: block; }
-  .task-row.done .task-row-text { text-decoration: line-through; color: var(--text2); }
+/* 待办 */
+.task-section { margin-bottom:1.2rem; }
+.task-group { margin-bottom:.8rem; }
+.task-group-label { font-size:11px; color:var(--text2); padding:.5rem 1.1rem .3rem; display:flex; align-items:center; gap:6px; }
+.task-item { display:flex; align-items:flex-start; gap:10px; padding:.7rem 1.1rem; border-top:1px solid var(--border); transition:background .15s; }
+.task-item:hover { background:rgba(255,255,255,0.02); }
+.task-check { width:18px; height:18px; border-radius:50%; border:2px solid var(--border2); flex-shrink:0; cursor:pointer; display:flex; align-items:center; justify-content:center; transition:all .2s; margin-top:1px; }
+.task-check:hover { border-color:var(--green); }
+.task-item.done .task-check { border-color:var(--green); background:var(--green); }
+.task-check-icon { display:none; color:#0a0a0f; font-size:10px; font-weight:800; }
+.task-item.done .task-check-icon { display:block; }
+.task-anchor-tag { font-size:10px; padding:1px 6px; border-radius:20px; background:rgba(124,111,247,0.15); color:var(--purple2); flex-shrink:0; margin-top:2px; font-weight:600; white-space:nowrap; }
+.task-text { font-size:13px; line-height:1.5; flex:1; }
+.task-item.done .task-text { text-decoration:line-through; color:var(--text2); }
+.task-toggle { font-size:12px; color:var(--text2); cursor:pointer; padding:.5rem 1.1rem; text-align:center; border-top:1px solid var(--border); }
+.task-toggle:hover { color:var(--purple2); }
+.empty { text-align:center; padding:1.5rem; font-size:13px; color:var(--text2); opacity:.6; }
 
-  /* 空状态 */
-  .empty { text-align: center; padding: 2rem; font-size: 13px; color: var(--text2); opacity: 0.6; }
+/* loading */
+#loading { display:flex; align-items:center; justify-content:center; min-height:100vh; flex-direction:column; gap:14px; }
+.spinner { width:34px; height:34px; border:3px solid var(--border); border-top-color:var(--purple); border-radius:50%; animation:spin .8s linear infinite; }
+@keyframes spin { to { transform:rotate(360deg); } }
+.loading-text { font-size:13px; color:var(--text2); }
+.timestamp { text-align:center; font-size:11px; color:var(--text2); opacity:.4; padding-bottom:1rem; }
 
-  /* 加载 */
-  #loading { display: flex; align-items: center; justify-content: center; min-height: 100vh; flex-direction: column; gap: 16px; }
-  .spinner { width: 36px; height: 36px; border: 3px solid var(--border); border-top-color: var(--purple); border-radius: 50%; animation: spin 0.8s linear infinite; }
-  @keyframes spin { to { transform: rotate(360deg); } }
-  .loading-text { font-size: 14px; color: var(--text2); }
-
-  .timestamp { text-align: center; font-size: 12px; color: var(--text2); margin-top: 1rem; opacity: 0.5; padding-bottom: 2rem; }
-
-  @media (max-width: 600px) {
-    .ops-summary { grid-template-columns: repeat(2, 1fr); }
-    .anchor-grid { grid-template-columns: 1fr; }
-  }
+@media(max-width:640px){
+  .stats-row { grid-template-columns:repeat(2,1fr); }
+  .two-col { grid-template-columns:1fr; }
+  .hero-diamonds { font-size:32px; }
+  .rank-bar-wrap { display:none; }
+}
 </style>
 </head>
 <body>
@@ -112,46 +114,86 @@
   <div class="loading-text">加载运营数据...</div>
 </div>
 
-<div id="ops-page" style="display:none;">
-  <nav class="ops-nav">
-    <div class="ops-logo">
-      <div class="ops-logo-icon">🎙</div>
-      <div class="ops-logo-text">BIG.monster</div>
-      <div class="ops-logo-sub">运营总览</div>
-    </div>
-    <div class="ops-date" id="ops-date"></div>
+<div id="ops-page" style="display:none">
+  <nav class="nav">
+    <div class="nav-logo">🎙 BIG.monster <span>运营总览</span></div>
+    <div class="nav-date" id="nav-date"></div>
   </nav>
 
-  <div class="ops-main">
-    <div class="ops-summary">
-      <div class="summary-card">
-        <div class="summary-label">今日总钻石</div>
-        <div class="summary-value" id="s-today" style="color:var(--purple2)">--</div>
-        <div class="summary-sub">全公会合计</div>
+  <div class="main">
+
+    <!-- 总流水 Hero -->
+    <div class="hero">
+      <div class="hero-left">
+        <div class="hero-label">本月总流水</div>
+        <div class="hero-diamonds" id="h-month">-- <span>💎</span></div>
+        <div class="hero-sub" id="h-month-sub">加载中...</div>
       </div>
-      <div class="summary-card">
-        <div class="summary-label">在播主播</div>
-        <div class="summary-value" id="s-anchors" style="color:var(--green)">--</div>
-        <div class="summary-sub">本月活跃</div>
-      </div>
-      <div class="summary-card">
-        <div class="summary-label">待处理行动</div>
-        <div class="summary-value" id="s-tasks" style="color:var(--amber)">--</div>
-        <div class="summary-sub">所有主播合计</div>
-      </div>
-      <div class="summary-card">
-        <div class="summary-label">流失预警</div>
-        <div class="summary-value" id="s-lost" style="color:var(--red)">--</div>
-        <div class="summary-sub">VIP 7天未出现</div>
+      <div class="hero-right">
+        <div class="hero-stat">
+          <div class="hero-stat-val" id="h-today" style="color:var(--purple2)">--</div>
+          <div class="hero-stat-label">今日钻石</div>
+        </div>
+        <div class="hero-stat">
+          <div class="hero-stat-val" id="h-sessions" style="color:var(--green)">--</div>
+          <div class="hero-stat-label">本月场次</div>
+        </div>
+        <div class="hero-stat">
+          <div class="hero-stat-val" id="h-anchors" style="color:var(--amber)">--</div>
+          <div class="hero-stat-label">活跃主播</div>
+        </div>
       </div>
     </div>
 
-    <div class="section-title">主播状态</div>
-    <div class="anchor-grid" id="anchor-grid"></div>
+    <!-- 4格快览 -->
+    <div class="stats-row">
+      <div class="stat-card">
+        <div class="stat-label">待处理行动</div>
+        <div class="stat-val" id="s-tasks" style="color:var(--amber)">--</div>
+        <div class="stat-sub">全公会合计</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">流失预警</div>
+        <div class="stat-val" id="s-lost" style="color:var(--red)">--</div>
+        <div class="stat-sub">VIP 7天未出现</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">VIP粉丝总数</div>
+        <div class="stat-val" id="s-vip" style="color:var(--purple2)">--</div>
+        <div class="stat-sub">全公会合计</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">今日开播</div>
+        <div class="stat-val" id="s-live" style="color:var(--green)">--</div>
+        <div class="stat-sub">场次合计</div>
+      </div>
+    </div>
 
-    <div class="tasks-section">
-      <div class="section-title">📋 待处理行动清单</div>
-      <div id="ops-tasks"></div>
+    <!-- 两栏：排名 + 待办 -->
+    <div class="two-col">
+
+      <!-- 主播排名 -->
+      <div class="block">
+        <div class="block-header">
+          <div class="block-title">本月主播排名</div>
+          <div class="block-badge badge-purple" id="rank-month-label">6月</div>
+        </div>
+        <div class="rank-list" id="rank-list"></div>
+      </div>
+
+      <!-- 待办清单 -->
+      <div class="block task-section">
+        <div class="block-header">
+          <div class="block-title">待处理行动</div>
+          <div class="block-badge badge-red" id="task-count-badge"></div>
+        </div>
+        <div id="task-urgent"></div>
+        <div id="task-others-wrap" style="display:none">
+          <div id="task-others"></div>
+        </div>
+        <div class="task-toggle" id="task-toggle-btn" onclick="toggleOthers()" style="display:none"></div>
+      </div>
+
     </div>
 
     <div class="timestamp" id="ops-timestamp"></div>
@@ -159,32 +201,23 @@
 </div>
 
 <script>
-async function loadAnchors() {
-  const res = await fetch('/api/anchors');
-  const data = await res.json();
-  return data.anchors || [];
+const DIAMOND_TO_USD = 0.005; // 每钻石约$0.005，可调整
+let othersVisible = false;
+let allTasksData = [];
+
+function fmt(n) {
+  if (n >= 10000) return (n/1000).toFixed(0) + 'K';
+  if (n >= 1000) return (n/1000).toFixed(1) + 'K';
+  return n.toString();
 }
 
-async function loadLiveData(anchor) {
-  try {
-    const res = await fetch('/api/live?anchor=' + encodeURIComponent(anchor));
-    return res.json();
-  } catch(e) { return { lives: [] }; }
+function getPriorityOrder(level) {
+  const o = {'紧急':0,'高':0,'重要':1,'中':2,'常规':3,'低':4};
+  return o[level] !== undefined ? o[level] : 3;
 }
 
-async function loadFansData(anchor) {
-  try {
-    const res = await fetch('/api/fans?anchor=' + encodeURIComponent(anchor));
-    return res.json();
-  } catch(e) { return { fans: [] }; }
-}
-
-async function loadTasks(anchor) {
-  try {
-    const res = await fetch('/api/suggestions?anchor=' + encodeURIComponent(anchor));
-    const data = await res.json();
-    return (data.suggestions || []).filter(s => s.status !== '已处理');
-  } catch(e) { return []; }
+function isUrgent(level) {
+  return level === '紧急' || level === '高';
 }
 
 function getPriorityEmoji(level) {
@@ -193,111 +226,50 @@ function getPriorityEmoji(level) {
   return '🟢';
 }
 
-function getPriorityOrder(level) {
-  const o = {'紧急':0,'高':0,'重要':1,'中':2,'常规':3,'低':4};
-  return o[level] !== undefined ? o[level] : 3;
+function renderTaskItem(t) {
+  return '<div class="task-item" id="ops-task-' + t.id + '">'
+    + '<div class="task-check" onclick="doneTask(\'' + t.id + '\',\'' + t.anchorName + '\',event)"><span class="task-check-icon">✓</span></div>'
+    + '<span class="task-anchor-tag">' + t.anchorName + '</span>'
+    + '<div class="task-text">' + getPriorityEmoji(t.level) + ' ' + (t.action || t.reason || '') + '</div>'
+    + '</div>';
 }
 
-async function init() {
-  const now = new Date();
-  document.getElementById('ops-date').textContent = now.toLocaleDateString('zh-CN', {month:'long', day:'numeric', weekday:'short'});
+function renderTasks(tasks) {
+  const urgent = tasks.filter(t => isUrgent(t.level));
+  const others = tasks.filter(t => !isUrgent(t.level));
+  const badge = document.getElementById('task-count-badge');
+  badge.textContent = tasks.length > 0 ? tasks.length + ' 项待处理' : '全部完成 ✓';
+  badge.className = 'block-badge ' + (tasks.length > 0 ? 'badge-red' : 'badge-green');
 
-  const anchors = await loadAnchors();
-  document.getElementById('s-anchors').textContent = anchors.length + ' 人';
-
-  const allData = await Promise.all(anchors.map(async a => {
-    const [liveData, fansData, tasks] = await Promise.all([
-      loadLiveData(a.name),
-      loadFansData(a.name),
-      loadTasks(a.name)
-    ]);
-    return { anchor: a, lives: liveData.lives || [], fans: fansData.fans || [], tasks };
-  }));
-
-  const today = now.toISOString().split('T')[0];
-  const monthPrefix = today.slice(0, 7);
-  const sevenDaysAgo = new Date(now - 7*24*60*60*1000);
-  let totalToday = 0, totalLost = 0, totalPending = 0;
-
-  allData.forEach(d => {
-    const todayLives = d.lives.filter(l => l.date && l.date.startsWith(today));
-    totalToday += todayLives.reduce((s, l) => s + (l.diamonds||0), 0);
-    totalLost += d.fans.filter(f => f.last_active && new Date(f.last_active) < sevenDaysAgo && f.total_coins >= 1000).length;
-    totalPending += d.tasks.length;
-  });
-
-  document.getElementById('s-today').textContent = totalToday > 0 ? (totalToday/1000).toFixed(1)+'K' : '--';
-  document.getElementById('s-lost').textContent = totalLost;
-  document.getElementById('s-tasks').textContent = totalPending;
-
-  // 主播卡片
-  const grid = document.getElementById('anchor-grid');
-  grid.innerHTML = '';
-  allData.forEach(d => {
-    const a = d.anchor;
-    const thisMonth = d.lives.filter(l => l.date && l.date.startsWith(monthPrefix));
-    const monthTotal = thisMonth.reduce((s, l) => s + (l.diamonds||0), 0);
-    const todayLives = d.lives.filter(l => l.date && l.date.startsWith(today));
-    const todayDiamonds = todayLives.reduce((s, l) => s + (l.diamonds||0), 0);
-    const target = a.target || 500000;
-    const pct = Math.min(100, Math.round(monthTotal / target * 100));
-    const vipCount = d.fans.filter(f => f.total_coins >= 1000).length;
-    const lostCount = d.fans.filter(f => f.last_active && new Date(f.last_active) < sevenDaysAgo && f.total_coins >= 1000).length;
-    const pendingCount = d.tasks.length;
-
-    const badges = [];
-    if (lostCount > 0) badges.push('<span class="badge badge-red">⚠️ 流失 ' + lostCount + '</span>');
-    if (pendingCount > 0) badges.push('<span class="badge badge-amber">📋 待办 ' + pendingCount + '</span>');
-    if (vipCount > 0) badges.push('<span class="badge badge-purple">👑 VIP ' + vipCount + '</span>');
-    if (todayDiamonds > 0) badges.push('<span class="badge badge-green">今日 ' + (todayDiamonds/1000).toFixed(1) + 'K💎</span>');
-
-    const card = document.createElement('div');
-    card.className = 'anchor-card';
-    card.innerHTML =
-      '<div class="anchor-card-header">'
-      + '<div class="anchor-card-avatar">' + a.name[0].toUpperCase() + '</div>'
-      + '<div class="anchor-card-info">'
-      + '<div class="anchor-card-name">' + a.name + '</div>'
-      + '<div class="anchor-card-level">' + (a.level || '在播主播') + '</div>'
-      + '</div>'
-      + '<div class="anchor-card-arrow">›</div>'
-      + '</div>'
-      + '<div class="anchor-metrics">'
-      + '<div class="anchor-metric"><div class="anchor-metric-label">本月钻石</div><div class="anchor-metric-value" style="color:var(--purple2)">' + (monthTotal/1000).toFixed(1) + 'K</div></div>'
-      + '<div class="anchor-metric"><div class="anchor-metric-label">今日钻石</div><div class="anchor-metric-value">' + (todayDiamonds > 0 ? (todayDiamonds/1000).toFixed(1)+'K' : '--') + '</div></div>'
-      + '<div class="anchor-metric"><div class="anchor-metric-label">本月场次</div><div class="anchor-metric-value">' + thisMonth.length + ' 场</div></div>'
-      + '</div>'
-      + '<div class="anchor-progress">'
-      + '<div class="anchor-progress-header"><span class="anchor-progress-label">月目标进度</span><span class="anchor-progress-pct">' + pct + '%</span></div>'
-      + '<div class="anchor-progress-bar"><div class="anchor-progress-fill" style="width:' + pct + '%"></div></div>'
-      + '</div>'
-      + '<div class="anchor-badges">' + (badges.length ? badges.join('') : '<span style="font-size:11px;color:var(--text2)">暂无异常</span>') + '</div>';
-
-    card.onclick = () => window.open('/?anchor=' + encodeURIComponent(a.name) + '&key=bm2026' + a.name, '_blank');
-    grid.appendChild(card);
-  });
-
-  // 行动清单汇总
-  const allTasks = [];
-  allData.forEach(d => d.tasks.forEach(t => allTasks.push({...t, anchorName: d.anchor.name})));
-  allTasks.sort((a, b) => getPriorityOrder(a.level) - getPriorityOrder(b.level));
-
-  const taskContainer = document.getElementById('ops-tasks');
-  if (allTasks.length === 0) {
-    taskContainer.innerHTML = '<div class="empty">所有行动项已处理完毕 🎉</div>';
+  const urgentEl = document.getElementById('task-urgent');
+  if (urgent.length === 0 && others.length === 0) {
+    urgentEl.innerHTML = '<div class="empty">所有行动项已处理完毕 🎉</div>';
+  } else if (urgent.length === 0) {
+    urgentEl.innerHTML = '<div class="empty" style="padding:.8rem;opacity:.5;font-size:12px">暂无紧急行动</div>';
   } else {
-    taskContainer.innerHTML = allTasks.map(t =>
-      '<div class="task-row" id="ops-task-' + t.id + '">'
-      + '<div class="task-row-check" onclick="doneTask(\'' + t.id + '\',\'' + t.anchorName + '\',event)"><span class="task-row-check-icon">✓</span></div>'
-      + '<span class="task-row-anchor">' + t.anchorName + '</span>'
-      + '<div class="task-row-text">' + getPriorityEmoji(t.level) + ' ' + (t.action || t.reason || '') + '</div>'
-      + '</div>'
-    ).join('');
+    urgentEl.innerHTML = urgent.map(renderTaskItem).join('');
   }
 
-  document.getElementById('ops-timestamp').textContent = '数据更新于 ' + now.toLocaleString('zh-CN');
-  document.getElementById('loading').style.display = 'none';
-  document.getElementById('ops-page').style.display = 'block';
+  const othersEl = document.getElementById('task-others');
+  const toggleBtn = document.getElementById('task-toggle-btn');
+  const othersWrap = document.getElementById('task-others-wrap');
+  if (others.length > 0) {
+    othersEl.innerHTML = others.map(renderTaskItem).join('');
+    toggleBtn.style.display = 'block';
+    toggleBtn.textContent = '查看其他 ' + others.length + ' 项 ▾';
+  } else {
+    toggleBtn.style.display = 'none';
+    othersWrap.style.display = 'none';
+  }
+}
+
+function toggleOthers() {
+  othersVisible = !othersVisible;
+  const wrap = document.getElementById('task-others-wrap');
+  const btn = document.getElementById('task-toggle-btn');
+  const others = allTasksData.filter(t => !isUrgent(t.level));
+  wrap.style.display = othersVisible ? 'block' : 'none';
+  btn.textContent = othersVisible ? '▴ 收起' : '查看其他 ' + others.length + ' 项 ▾';
 }
 
 async function doneTask(recordId, anchorName, e) {
@@ -305,15 +277,115 @@ async function doneTask(recordId, anchorName, e) {
   const row = document.getElementById('ops-task-' + recordId);
   if (!row || row.classList.contains('done')) return;
   row.classList.add('done');
-  const remaining = document.querySelectorAll('.task-row:not(.done)').length;
+  allTasksData = allTasksData.filter(t => t.id !== recordId);
+  const remaining = allTasksData.length;
   document.getElementById('s-tasks').textContent = remaining;
+  const badge = document.getElementById('task-count-badge');
+  badge.textContent = remaining > 0 ? remaining + ' 项待处理' : '全部完成 ✓';
+  badge.className = 'block-badge ' + (remaining > 0 ? 'badge-red' : 'badge-green');
   try {
     await fetch('/api/suggestion-done', {
-      method: 'POST',
-      headers: {'Content-Type': 'application/json'},
+      method:'POST', headers:{'Content-Type':'application/json'},
       body: JSON.stringify({record_id: recordId, anchor: anchorName})
     });
   } catch(e) {}
+}
+
+async function init() {
+  const now = new Date();
+  const today = now.toISOString().split('T')[0];
+  const monthPrefix = today.slice(0,7);
+  const monthLabel = (now.getMonth()+1) + '月';
+  document.getElementById('nav-date').textContent = now.toLocaleDateString('zh-CN',{month:'long',day:'numeric',weekday:'short'});
+  document.getElementById('rank-month-label').textContent = monthLabel;
+
+  const anchorsRes = await fetch('/api/anchors');
+  const anchorsData = await anchorsRes.json();
+  const anchors = anchorsData.anchors || [];
+
+  const allData = await Promise.all(anchors.map(async a => {
+    const [liveRes, fansRes, taskRes] = await Promise.all([
+      fetch('/api/live?anchor=' + encodeURIComponent(a.name)).then(r=>r.json()).catch(()=>({lives:[]})),
+      fetch('/api/fans?anchor=' + encodeURIComponent(a.name)).then(r=>r.json()).catch(()=>({fans:[]})),
+      fetch('/api/suggestions?anchor=' + encodeURIComponent(a.name)).then(r=>r.json()).catch(()=>({suggestions:[]}))
+    ]);
+    return {
+      anchor: a,
+      lives: liveRes.lives || [],
+      fans: fansRes.fans || [],
+      tasks: (taskRes.suggestions || []).filter(s => s.status !== '已处理')
+    };
+  }));
+
+  // 计算汇总数据
+  const sevenDaysAgo = new Date(now - 7*24*60*60*1000);
+  let totalMonth = 0, totalToday = 0, totalSessions = 0, totalTodaySessions = 0;
+  let totalLost = 0, totalVIP = 0, totalPending = 0;
+  let activeAnchors = 0;
+
+  allData.forEach(d => {
+    const monthLives = d.lives.filter(l => l.date && l.date.startsWith(monthPrefix));
+    const todayLives = d.lives.filter(l => l.date && l.date.startsWith(today));
+    const monthDiamonds = monthLives.reduce((s,l) => s+(l.diamonds||0), 0);
+    const todayDiamonds = todayLives.reduce((s,l) => s+(l.diamonds||0), 0);
+    totalMonth += monthDiamonds;
+    totalToday += todayDiamonds;
+    totalSessions += monthLives.length;
+    totalTodaySessions += todayLives.length;
+    if (monthDiamonds > 0) activeAnchors++;
+    totalLost += d.fans.filter(f => f.last_active && new Date(f.last_active) < sevenDaysAgo && f.total_coins >= 1000).length;
+    totalVIP += d.fans.filter(f => f.total_coins >= 1000).length;
+    totalPending += d.tasks.length;
+  });
+
+  // Hero
+  document.getElementById('h-month').innerHTML = fmt(totalMonth) + ' <span>💎</span>';
+  document.getElementById('h-month-sub').textContent = monthLabel + ' · 全公会合计 · 约 $' + (totalMonth * DIAMOND_TO_USD).toFixed(0);
+  document.getElementById('h-today').textContent = totalToday > 0 ? fmt(totalToday) : '--';
+  document.getElementById('h-sessions').textContent = totalSessions;
+  document.getElementById('h-anchors').textContent = activeAnchors;
+
+  // 4格
+  document.getElementById('s-tasks').textContent = totalPending;
+  document.getElementById('s-lost').textContent = totalLost;
+  document.getElementById('s-vip').textContent = totalVIP;
+  document.getElementById('s-live').textContent = totalTodaySessions > 0 ? totalTodaySessions + ' 场' : '--';
+
+  // 主播排名（按本月钻石降序）
+  const ranked = allData.map(d => {
+    const monthLives = d.lives.filter(l => l.date && l.date.startsWith(monthPrefix));
+    const monthTotal = monthLives.reduce((s,l) => s+(l.diamonds||0), 0);
+    const target = d.anchor.target || 500000;
+    return { anchor: d.anchor, monthTotal, sessions: monthLives.length, pct: Math.min(100, Math.round(monthTotal/target*100)) };
+  }).sort((a,b) => b.monthTotal - a.monthTotal);
+
+  const maxDiamonds = ranked[0]?.monthTotal || 1;
+  const rankList = document.getElementById('rank-list');
+  rankList.innerHTML = ranked.map((r, i) => {
+    const rankClass = i===0?'r1':i===1?'r2':i===2?'r3':'';
+    const barPct = Math.round(r.monthTotal / maxDiamonds * 100);
+    return '<div class="rank-item" onclick="window.open(\'/?anchor=' + encodeURIComponent(r.anchor.name) + '&key=bm2026' + r.anchor.name + '\',\'_blank\')">'
+      + '<div class="rank-num ' + rankClass + '">' + (i===0?'🥇':i===1?'🥈':i===2?'🥉':i+1) + '</div>'
+      + '<div class="rank-avatar">' + r.anchor.name[0].toUpperCase() + '</div>'
+      + '<div class="rank-info">'
+      + '<div class="rank-name">' + r.anchor.name + '</div>'
+      + '<div class="rank-meta">' + r.sessions + '场 · 目标' + r.pct + '%</div>'
+      + '</div>'
+      + '<div class="rank-bar-wrap"><div class="rank-bar-bg"><div class="rank-bar-fill" style="width:' + barPct + '%"></div></div></div>'
+      + '<div class="rank-diamonds">' + (r.monthTotal > 0 ? fmt(r.monthTotal) : '--') + '</div>'
+      + '</div>'
+      + (i < ranked.length-1 ? '<div class="rank-divider"></div>' : '');
+  }).join('');
+
+  // 待办清单
+  allTasksData = [];
+  allData.forEach(d => d.tasks.forEach(t => allTasksData.push({...t, anchorName: d.anchor.name})));
+  allTasksData.sort((a,b) => getPriorityOrder(a.level) - getPriorityOrder(b.level));
+  renderTasks(allTasksData);
+
+  document.getElementById('ops-timestamp').textContent = '数据更新于 ' + now.toLocaleString('zh-CN');
+  document.getElementById('loading').style.display = 'none';
+  document.getElementById('ops-page').style.display = 'block';
 }
 
 init();
