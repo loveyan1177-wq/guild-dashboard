@@ -81,7 +81,8 @@ async function fetchFromFeishu(anchor) {
     const dateVal = f['日期'];
     let dateStr = '';
     if (typeof dateVal === 'number') {
-      dateStr = new Date(dateVal).toISOString().split('T')[0];
+      // 飞书时间戳是毫秒UTC，转成北京时间（UTC+8）
+      dateStr = new Date(dateVal + 8*60*60*1000).toISOString().split('T')[0];
     } else if (typeof dateVal === 'string') {
       dateStr = dateVal.replace(/\//g, '-');
     }
