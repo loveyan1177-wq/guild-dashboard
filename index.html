@@ -491,7 +491,12 @@ function renderDashboard(anchor, liveData, fansData) {
 
   // 趋势图
   const recent = lives.slice(0, 10).reverse();
-  const labels = recent.map(l => l.date ? l.date.slice(4,8).replace(/(\d{2})(\d{2})/, '$1/$2') : '');
+  const labels = recent.map(l => {
+    if (!l.date) return '';
+    // 支持 2026-06-15 和 20260615 两种格式
+    const d = l.date.replace(/-/g, '');
+    return d.slice(4,6) + '/' + d.slice(6,8);
+  });
   const values = recent.map(l => l.diamonds || 0);
 
   if (trendChartInst) trendChartInst.destroy();
