@@ -117,8 +117,8 @@ body { background: var(--bg); color: var(--text); font-family: -apple-system,'Pi
         <div class="block-header">
           <div class="block-title">主播流水排名</div>
           <div class="rank-tabs">
-            <button class="rank-tab active" id="tab-month" onclick="switchRankTab('month')">本月</button>
-            <button class="rank-tab" id="tab-today" onclick="switchRankTab('today')">今日</button>
+            <button class="rank-tab" id="tab-month" onclick="switchRankTab('month')">本月</button>
+            <button class="rank-tab active" id="tab-today" onclick="switchRankTab('today')">今日</button>
           </div>
         </div>
         <div class="rank-list" id="rank-list"></div>
@@ -304,7 +304,7 @@ async function init() {
   document.getElementById('s-vip').textContent = totalVIP;
   document.getElementById('s-live').textContent = totalTodaySessions>0 ? totalTodaySessions+' 场' : '--';
 
-  renderRankList(allData, 'month');
+  renderRankList(allData, 'today');
 
   allTasksData = [];
   allData.forEach(d=>d.tasks.forEach(t=>allTasksData.push({...t,anchorName:d.anchor.name})));
