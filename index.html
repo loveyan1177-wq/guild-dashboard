@@ -460,7 +460,9 @@ function renderDashboard(anchor, liveData, fansData) {
 
   // 今日
   const today = now.toISOString().split('T')[0];
-  const todayLives = lives.filter(l => l.date && l.date.startsWith(today));
+  const yesterday = new Date(now - 24*60*60*1000).toISOString().split('T')[0];
+  const displayDay = lives.some(l => l.date && l.date.startsWith(today)) ? today : yesterday;
+  const todayLives = lives.filter(l => l.date && l.date.startsWith(displayDay));
   const todayDiamonds = todayLives.reduce((s,l) => s+(l.diamonds||0), 0);
   const todayFans = todayLives.reduce((s,l) => s+(l.new_fans||0), 0);
   const todayGifters = todayLives.reduce((s,l) => s+(l.gifters||0), 0);

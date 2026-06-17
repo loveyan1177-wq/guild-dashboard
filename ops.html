@@ -263,7 +263,7 @@ async function init() {
   const monthLabel = (now.getMonth()+1)+'月';
   todayGlobal = today;
   monthPrefixGlobal = monthPrefix;
-  document.getElementById('nav-date').textContent = now.toLocaleDateString('zh-CN',{month:'long',day:'numeric',weekday:'short'}) + ' | today=' + today;
+  document.getElementById('nav-date').textContent = now.toLocaleDateString('zh-CN',{month:'long',day:'numeric',weekday:'short'});
 
   const anchorsRes = await fetch('/api/anchors');
   const anchors = (await anchorsRes.json()).anchors || [];
@@ -278,6 +278,11 @@ async function init() {
   }));
 
   allDataGlobal = allData;
+
+  // 自动选择显示日期：今天有数据用今天，否则用昨天
+  const yesterday = new Date(now - 24*60*60*1000).toISOString().split('T')[0];
+  const hasToday = allData.some(d => d.lives.some(l => l.date && l.date.startsWith(today)));
+  todayGlobal = hasToday ? today : yesterday;
   const sevenDaysAgo = new Date(now - 7*24*60*60*1000);
   let totalMonth=0, totalToday=0, totalSessions=0, totalTodaySessions=0, totalLost=0, totalVIP=0, totalPending=0, activeAnchors=0;
 
