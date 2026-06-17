@@ -263,7 +263,7 @@ async function init() {
   const monthLabel = (now.getMonth()+1)+'月';
   todayGlobal = today;
   monthPrefixGlobal = monthPrefix;
-  document.getElementById('nav-date').textContent = now.toLocaleDateString('zh-CN',{month:'long',day:'numeric',weekday:'short'});
+  document.getElementById('nav-date').textContent = now.toLocaleDateString('zh-CN',{month:'long',day:'numeric',weekday:'short'}) + ' | today=' + today;
 
   const anchorsRes = await fetch('/api/anchors');
   const anchors = (await anchorsRes.json()).anchors || [];
