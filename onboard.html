@@ -1,0 +1,489 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>蛹羽传媒 · 主播入职</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#1C1B19;
+    --surface:#242220;
+    --surface-soft:#2C2925;
+    --gold:#D4A24C;
+    --gold-deep:#B6883A;
+    --cream:#F2EDE4;
+    --tan:#A39B8C;
+    --line:rgba(242,237,228,0.12);
+    --line-strong:rgba(242,237,228,0.22);
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:var(--ink);
+    color:var(--cream);
+    font-family:'Inter',sans-serif;
+    -webkit-font-smoothing:antialiased;
+    min-height:100vh;
+  }
+  .page{
+    max-width:480px;
+    margin:0 auto;
+    padding:48px 24px 64px;
+  }
+  h1,h2{font-family:'Fraunces',serif;font-weight:500;margin:0;}
+  em{font-style:italic;}
+  p{margin:0;}
+
+  /* welcome */
+  .mark{width:44px;height:64px;color:var(--gold);margin:0 0 28px;}
+  .eyebrow{font-size:12.5px;letter-spacing:0.06em;color:var(--tan);margin:0 0 14px;text-transform:uppercase;}
+  .headline{font-size:30px;line-height:1.25;margin:0 0 20px;}
+  .lead{font-size:15px;line-height:1.75;color:var(--tan);margin:0 0 28px;}
+  .meta-row{display:flex;align-items:center;gap:10px;font-size:13.5px;color:var(--tan);margin:0 0 10px;}
+  .meta-row svg{width:16px;height:16px;color:var(--gold);flex-shrink:0;}
+
+  /* buttons */
+  .btn{
+    width:100%;padding:15px;border-radius:10px;border:none;
+    background:var(--gold);color:var(--ink);font-weight:600;font-size:15px;
+    cursor:pointer;font-family:'Inter',sans-serif;transition:background .15s;
+  }
+  .btn:hover{background:var(--gold-deep);}
+  .btn:disabled{opacity:0.6;cursor:not-allowed;}
+  .btn:focus-visible{outline:2px solid var(--gold);outline-offset:3px;}
+  .btn.secondary{background:transparent;border:1px solid var(--line-strong);color:var(--cream);}
+  .btn.secondary:hover{background:var(--surface-soft);}
+  .nav-row{display:flex;gap:10px;margin-top:32px;}
+  .nav-row .btn{flex:1;}
+
+  /* progress (signature element) */
+  .progress{display:flex;align-items:flex-end;gap:6px;justify-content:center;margin-bottom:10px;}
+  .bar{width:4px;border-radius:2px;background:var(--line-strong);transition:background .25s;}
+  .step-counter{text-align:center;font-size:12px;color:var(--tan);margin-bottom:36px;letter-spacing:0.02em;}
+
+  /* steps */
+  .step{display:none;}
+  .step.active{display:block;}
+  .step-title{font-size:22px;margin-bottom:8px;}
+  .step-hint{font-size:14px;color:var(--tan);line-height:1.6;margin-bottom:20px;}
+  .field-label{font-size:13px;color:var(--tan);display:block;margin:0 0 10px;}
+  .field-block{margin-bottom:24px;}
+  .text-input{
+    width:100%;padding:13px 14px;border-radius:8px;border:1px solid var(--line-strong);
+    background:var(--surface);color:var(--cream);font-size:15px;font-family:'Inter',sans-serif;
+  }
+  .text-input:focus-visible{outline:2px solid var(--gold);outline-offset:1px;}
+  textarea.text-input{resize:vertical;min-height:64px;}
+
+  .chip-group{display:flex;flex-wrap:wrap;gap:8px;}
+  .chip{
+    padding:9px 15px;border-radius:999px;border:1px solid var(--line-strong);
+    background:var(--surface-soft);color:var(--tan);font-size:13.5px;cursor:pointer;
+    transition:all .15s;user-select:none;
+  }
+  .chip:hover{border-color:var(--line-strong);color:var(--cream);}
+  .chip.selected{border-color:var(--gold);background:rgba(212,162,76,0.14);color:var(--cream);}
+  .chip:focus-visible{outline:2px solid var(--gold);outline-offset:2px;}
+  .sub-label{font-size:12.5px;font-weight:600;color:var(--tan);margin:0 0 8px;letter-spacing:0.02em;}
+  .audience-group{margin-bottom:18px;}
+
+  .hint-note{font-size:12.5px;color:var(--tan);margin-top:10px;}
+  .error-note{font-size:12.5px;color:#e0876a;margin-top:14px;display:none;}
+
+  [hidden]{display:none !important;}
+
+  @media (prefers-reduced-motion: reduce){
+    *{transition:none !important;}
+  }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <!-- WELCOME -->
+  <div id="welcome">
+    <svg class="mark" viewBox="0 0 48 64" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round">
+      <path d="M24 60 C 23 46, 25 30, 24 6"/>
+      <path d="M24 14 L16 9"/>
+      <path d="M24 14 L32 9"/>
+      <path d="M24 22 L14 18"/>
+      <path d="M24 22 L34 18"/>
+      <path d="M24 30 L13 28"/>
+      <path d="M24 30 L35 28"/>
+      <path d="M24 38 L14 39"/>
+      <path d="M24 38 L34 39"/>
+      <path d="M24 46 L16 50"/>
+      <path d="M24 46 L32 50"/>
+    </svg>
+    <p class="eyebrow">蛹羽传媒 · 主播入职</p>
+    <h1 class="headline">在你开播之前<br><em>先认识真正的你</em></h1>
+    <p class="lead">接下来的8个问题，会帮我们了解你的特点和风格，为你匹配最合适的内容方向与观众群体——不是要把你变成别人，而是帮你找到最舒服的发挥方式。</p>
+    <div class="meta-row">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg>
+      大约需要5分钟
+    </div>
+    <div class="meta-row" style="margin-bottom:28px;">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="5" y="11" width="14" height="9" rx="1.5"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>
+      你的回答只用于内容匹配，不会公开展示
+    </div>
+    <button class="btn" onclick="startForm()">开始填写</button>
+  </div>
+
+  <!-- FORM -->
+  <div id="formWrap" hidden>
+    <div class="progress" id="progressBars">
+      <span class="bar" data-h="14"></span><span class="bar" data-h="20"></span>
+      <span class="bar" data-h="26"></span><span class="bar" data-h="30"></span>
+      <span class="bar" data-h="30"></span><span class="bar" data-h="26"></span>
+      <span class="bar" data-h="20"></span><span class="bar" data-h="14"></span>
+    </div>
+    <div class="step-counter" id="stepCounter">第 1 步 / 共 8 步</div>
+
+    <div class="step active" data-step="1">
+      <h2 class="step-title">基础信息</h2>
+      <p class="step-hint">先认识一下你</p>
+      <div class="field-block">
+        <label class="field-label">主播昵称</label>
+        <input type="text" id="nickname" class="text-input" placeholder="输入你的昵称">
+      </div>
+      <div class="field-block">
+        <label class="field-label">年龄段</label>
+        <div class="chip-group">
+          <div class="chip" tabindex="0" data-group="age" data-single="true" data-value="18-22">18-22</div>
+          <div class="chip" tabindex="0" data-group="age" data-single="true" data-value="23-27">23-27</div>
+          <div class="chip" tabindex="0" data-group="age" data-single="true" data-value="28-32">28-32</div>
+          <div class="chip" tabindex="0" data-group="age" data-single="true" data-value="33+">33岁以上</div>
+        </div>
+      </div>
+      <div class="field-block">
+        <label class="field-label">原直播经验</label>
+        <div class="chip-group">
+          <div class="chip" tabindex="0" data-group="exp" data-single="true" data-value="纯新人">纯新人</div>
+          <div class="chip" tabindex="0" data-group="exp" data-single="true" data-value="国内平台经验">国内平台经验</div>
+          <div class="chip" tabindex="0" data-group="exp" data-single="true" data-value="其他地区经验">其他地区经验</div>
+        </div>
+      </div>
+      <div class="field-block">
+        <label class="field-label">英语能力</label>
+        <div class="chip-group">
+          <div class="chip" tabindex="0" data-group="english" data-single="true" data-value="流利母语水平">流利母语水平</div>
+          <div class="chip" tabindex="0" data-group="english" data-single="true" data-value="日常无障碍">日常无障碍</div>
+          <div class="chip" tabindex="0" data-group="english" data-single="true" data-value="基础交流需要辅助">基础交流需要辅助</div>
+          <div class="chip" tabindex="0" data-group="english" data-single="true" data-value="几乎不会需要脚本">几乎不会需要脚本</div>
+        </div>
+      </div>
+      <div class="nav-row"><button class="btn" onclick="goStep(2)">下一步</button></div>
+    </div>
+
+    <div class="step" data-step="2">
+      <h2 class="step-title">外形标签</h2>
+      <p class="step-hint">想象别人第一眼看到你的造型/穿搭会用什么词形容（可多选）</p>
+      <div class="chip-group">
+        <div class="chip" tabindex="0" data-group="shape" data-value="韩系">韩系</div>
+        <div class="chip" tabindex="0" data-group="shape" data-value="欧美风">欧美风</div>
+        <div class="chip" tabindex="0" data-group="shape" data-value="暗黑风">暗黑风</div>
+        <div class="chip" tabindex="0" data-group="shape" data-value="辣妹">辣妹</div>
+        <div class="chip" tabindex="0" data-group="shape" data-value="邻家女孩">邻家女孩</div>
+        <div class="chip" tabindex="0" data-group="shape" data-value="御姐">御姐</div>
+        <div class="chip" tabindex="0" data-group="shape" data-value="二次元">二次元</div>
+        <div class="chip" tabindex="0" data-group="shape" data-value="运动系">运动系</div>
+        <div class="chip" tabindex="0" data-group="shape" data-value="成熟系">成熟系</div>
+      </div>
+      <div class="nav-row">
+        <button class="btn secondary" onclick="goStep(1)">上一步</button>
+        <button class="btn" onclick="goStep(3)">下一步</button>
+      </div>
+    </div>
+
+    <div class="step" data-step="3">
+      <h2 class="step-title">性格标签</h2>
+      <p class="step-hint">想象你和粉丝聊天互动时，别人会怎么形容你的状态（可多选）</p>
+      <div class="chip-group">
+        <div class="chip" tabindex="0" data-group="personality" data-value="高能量">高能量</div>
+        <div class="chip" tabindex="0" data-group="personality" data-value="社牛">社牛</div>
+        <div class="chip" tabindex="0" data-group="personality" data-value="慢热">慢热</div>
+        <div class="chip" tabindex="0" data-group="personality" data-value="爱吐槽">爱吐槽</div>
+        <div class="chip" tabindex="0" data-group="personality" data-value="幽默搞笑">幽默搞笑</div>
+        <div class="chip" tabindex="0" data-group="personality" data-value="温柔陪伴">温柔陪伴</div>
+        <div class="chip" tabindex="0" data-group="personality" data-value="喜欢聊天">喜欢聊天</div>
+        <div class="chip" tabindex="0" data-group="personality" data-value="情绪稳定">情绪稳定</div>
+      </div>
+      <div class="nav-row">
+        <button class="btn secondary" onclick="goStep(2)">上一步</button>
+        <button class="btn" onclick="goStep(4)">下一步</button>
+      </div>
+    </div>
+
+    <div class="step" data-step="4">
+      <h2 class="step-title">能力标签</h2>
+      <p class="step-hint">你能直接拿来做内容的技能（可多选）</p>
+      <div class="chip-group">
+        <div class="chip" tabindex="0" data-group="skill" data-value="跳舞">跳舞</div>
+        <div class="chip" tabindex="0" data-group="skill" data-value="唱歌">唱歌</div>
+        <div class="chip" tabindex="0" data-group="skill" data-value="配音">配音</div>
+        <div class="chip" tabindex="0" data-group="skill" data-value="Cosplay">Cosplay</div>
+        <div class="chip" tabindex="0" data-group="skill" data-value="游戏">游戏</div>
+        <div class="chip" tabindex="0" data-group="skill" data-value="乐器">乐器</div>
+        <div class="chip" tabindex="0" data-group="skill" data-value="健身">健身</div>
+        <div class="chip" tabindex="0" data-group="skill" data-value="情感聊天">情感聊天</div>
+        <div class="chip" tabindex="0" data-group="skill" data-value="整活搞笑">整活搞笑</div>
+      </div>
+      <div class="nav-row">
+        <button class="btn secondary" onclick="goStep(3)">上一步</button>
+        <button class="btn" onclick="goStep(5)">下一步</button>
+      </div>
+    </div>
+
+    <div class="step" data-step="5">
+      <h2 class="step-title">持续聊天话题</h2>
+      <p class="step-hint">你最容易持续聊天的话题（最多5项）</p>
+      <div class="chip-group">
+        <div class="chip" tabindex="0" data-group="topics" data-max="5" data-value="NBA">NBA</div>
+        <div class="chip" tabindex="0" data-group="topics" data-max="5" data-value="NFL">NFL</div>
+        <div class="chip" tabindex="0" data-group="topics" data-max="5" data-value="足球">足球</div>
+        <div class="chip" tabindex="0" data-group="topics" data-max="5" data-value="健身">健身</div>
+        <div class="chip" tabindex="0" data-group="topics" data-max="5" data-value="减肥">减肥</div>
+        <div class="chip" tabindex="0" data-group="topics" data-max="5" data-value="BBQ">BBQ</div>
+        <div class="chip" tabindex="0" data-group="topics" data-max="5" data-value="美食">美食</div>
+        <div class="chip" tabindex="0" data-group="topics" data-max="5" data-value="宠物">宠物</div>
+        <div class="chip" tabindex="0" data-group="topics" data-max="5" data-value="汽车">汽车</div>
+        <div class="chip" tabindex="0" data-group="topics" data-max="5" data-value="摩托车">摩托车</div>
+        <div class="chip" tabindex="0" data-group="topics" data-max="5" data-value="游戏">游戏</div>
+        <div class="chip" tabindex="0" data-group="topics" data-max="5" data-value="动漫">动漫</div>
+        <div class="chip" tabindex="0" data-group="topics" data-max="5" data-value="科技数码">科技数码</div>
+        <div class="chip" tabindex="0" data-group="topics" data-max="5" data-value="AI">AI</div>
+        <div class="chip" tabindex="0" data-group="topics" data-max="5" data-value="投资理财">投资理财</div>
+        <div class="chip" tabindex="0" data-group="topics" data-max="5" data-value="旅游">旅游</div>
+        <div class="chip" tabindex="0" data-group="topics" data-max="5" data-value="美国文化">美国文化</div>
+        <div class="chip" tabindex="0" data-group="topics" data-max="5" data-value="中国文化">中国文化</div>
+        <div class="chip" tabindex="0" data-group="topics" data-max="5" data-value="两性关系">两性关系</div>
+        <div class="chip" tabindex="0" data-group="topics" data-max="5" data-value="婚姻家庭">婚姻家庭</div>
+        <div class="chip" tabindex="0" data-group="topics" data-max="5" data-value="情感故事">情感故事</div>
+        <div class="chip" tabindex="0" data-group="topics" data-max="5" data-value="音乐">音乐</div>
+        <div class="chip" tabindex="0" data-group="topics" data-max="5" data-value="电影电视剧">电影电视剧</div>
+      </div>
+      <p class="hint-note" id="topicsCount">已选 0 / 5</p>
+      <div class="nav-row">
+        <button class="btn secondary" onclick="goStep(4)">上一步</button>
+        <button class="btn" onclick="goStep(6)">下一步</button>
+      </div>
+    </div>
+
+    <div class="step" data-step="6">
+      <h2 class="step-title">核心竞争力</h2>
+      <p class="step-hint">不开美颜不开滤镜，你最有信心靠什么吸引观众（单选）</p>
+      <div class="chip-group">
+        <div class="chip" tabindex="0" data-group="core" data-single="true" data-value="长相">长相</div>
+        <div class="chip" tabindex="0" data-group="core" data-single="true" data-value="身材">身材</div>
+        <div class="chip" tabindex="0" data-group="core" data-single="true" data-value="声音">声音</div>
+        <div class="chip" tabindex="0" data-group="core" data-single="true" data-value="幽默">幽默</div>
+        <div class="chip" tabindex="0" data-group="core" data-single="true" data-value="才艺">才艺</div>
+        <div class="chip" tabindex="0" data-group="core" data-single="true" data-value="情绪价值">情绪价值</div>
+        <div class="chip" tabindex="0" data-group="core" data-single="true" data-value="聊天能力">聊天能力</div>
+        <div class="chip" tabindex="0" data-group="core" data-single="true" data-value="专业知识">专业知识</div>
+      </div>
+      <div class="nav-row">
+        <button class="btn secondary" onclick="goStep(5)">上一步</button>
+        <button class="btn" onclick="goStep(7)">下一步</button>
+      </div>
+    </div>
+
+    <div class="step" data-step="7">
+      <h2 class="step-title">内容底线</h2>
+      <p class="step-hint">请勾选你不愿意做的内容（可多选）</p>
+      <div class="chip-group">
+        <div class="chip" tabindex="0" data-group="limit" data-value="不接受性暗示互动">不接受性暗示互动</div>
+        <div class="chip" tabindex="0" data-group="limit" data-value="不接受争议政治话题">不接受争议政治话题</div>
+        <div class="chip" tabindex="0" data-group="limit" data-value="不接受身材外貌玩笑">不接受身材外貌玩笑</div>
+        <div class="chip" tabindex="0" data-group="limit" data-value="不接受PK对骂">不接受PK对骂</div>
+        <div class="chip" tabindex="0" data-group="limit" data-value="不接受宗教相关话题">不接受宗教相关话题</div>
+      </div>
+      <div class="field-block" style="margin-top:20px;">
+        <label class="field-label">补充说明（选填）</label>
+        <textarea id="limitNote" class="text-input"></textarea>
+      </div>
+      <div class="nav-row">
+        <button class="btn secondary" onclick="goStep(6)">上一步</button>
+        <button class="btn" onclick="goStep(8)">下一步</button>
+      </div>
+    </div>
+
+    <div class="step" data-step="8">
+      <h2 class="step-title">选择你的主赛道</h2>
+      <p class="step-hint">最多选择2个，作为你的主要内容方向</p>
+
+      <div class="audience-group">
+        <p class="sub-label">蓝领群体</p>
+        <div class="chip-group">
+          <div class="chip" tabindex="0" data-group="audience" data-max="2" data-value="卡车司机">卡车司机</div>
+          <div class="chip" tabindex="0" data-group="audience" data-max="2" data-value="建筑工人">建筑工人</div>
+          <div class="chip" tabindex="0" data-group="audience" data-max="2" data-value="农场主">农场主</div>
+          <div class="chip" tabindex="0" data-group="audience" data-max="2" data-value="维修工">维修工</div>
+        </div>
+      </div>
+      <div class="audience-group">
+        <p class="sub-label">白领群体</p>
+        <div class="chip-group">
+          <div class="chip" tabindex="0" data-group="audience" data-max="2" data-value="IT从业者">IT从业者</div>
+          <div class="chip" tabindex="0" data-group="audience" data-max="2" data-value="金融从业者">金融从业者</div>
+          <div class="chip" tabindex="0" data-group="audience" data-max="2" data-value="企业职员">企业职员</div>
+        </div>
+      </div>
+      <div class="audience-group">
+        <p class="sub-label">兴趣群体</p>
+        <div class="chip-group">
+          <div class="chip" tabindex="0" data-group="audience" data-max="2" data-value="游戏玩家">游戏玩家</div>
+          <div class="chip" tabindex="0" data-group="audience" data-max="2" data-value="动漫爱好者">动漫爱好者</div>
+          <div class="chip" tabindex="0" data-group="audience" data-max="2" data-value="体育迷">体育迷</div>
+          <div class="chip" tabindex="0" data-group="audience" data-max="2" data-value="汽车爱好者">汽车爱好者</div>
+        </div>
+      </div>
+      <div class="audience-group">
+        <p class="sub-label">情感群体</p>
+        <div class="chip-group">
+          <div class="chip" tabindex="0" data-group="audience" data-max="2" data-value="单身男性">单身男性</div>
+          <div class="chip" tabindex="0" data-group="audience" data-max="2" data-value="离婚男性">离婚男性</div>
+          <div class="chip" tabindex="0" data-group="audience" data-max="2" data-value="独居男性">独居男性</div>
+          <div class="chip" tabindex="0" data-group="audience" data-max="2" data-value="陪伴需求用户">陪伴需求用户</div>
+        </div>
+      </div>
+      <div class="audience-group">
+        <p class="sub-label">退伍军人</p>
+        <div class="chip-group">
+          <div class="chip" tabindex="0" data-group="audience" data-max="2" data-value="退伍军人">退伍军人</div>
+        </div>
+      </div>
+      <p class="hint-note" id="audienceCount">已选 0 / 2</p>
+      <p class="error-note" id="submitError">提交失败，请检查网络后重试。</p>
+
+      <div class="nav-row">
+        <button class="btn secondary" onclick="goStep(7)">上一步</button>
+        <button class="btn" id="submitBtn" onclick="submitForm()">完成，提交资料</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- DONE -->
+  <div id="done" hidden>
+    <svg class="mark" viewBox="0 0 48 64" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round">
+      <path d="M24 60 C 23 46, 25 30, 24 6"/>
+      <path d="M24 14 L16 9"/><path d="M24 14 L32 9"/>
+      <path d="M24 22 L14 18"/><path d="M24 22 L34 18"/>
+      <path d="M24 30 L13 28"/><path d="M24 30 L35 28"/>
+      <path d="M24 38 L14 39"/><path d="M24 38 L34 39"/>
+      <path d="M24 46 L16 50"/><path d="M24 46 L32 50"/>
+    </svg>
+    <p class="eyebrow">蛹羽传媒 · 主播入职</p>
+    <h1 class="headline">资料已送达</h1>
+    <p class="lead">接下来的方向不是现在就定死的，会跟着你真实的直播表现慢慢调整。运营团队会跟你联系下一步。</p>
+  </div>
+
+</div>
+
+<script>
+function startForm(){
+  document.getElementById('welcome').hidden = true;
+  document.getElementById('formWrap').hidden = false;
+}
+
+function goStep(n){
+  document.querySelectorAll('.step').forEach(function(s){ s.classList.remove('active'); });
+  document.querySelector('.step[data-step="'+n+'"]').classList.add('active');
+  document.querySelectorAll('.bar').forEach(function(bar,i){
+    bar.style.height = bar.dataset.h + 'px';
+    bar.classList.toggle('filled', i < n);
+    if(bar.classList.contains('filled')){ bar.style.background = 'var(--gold)'; }
+    else { bar.style.background = 'var(--line-strong)'; }
+  });
+  document.getElementById('stepCounter').textContent = '第 ' + n + ' 步 / 共 8 步';
+  window.scrollTo({top:0, behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth'});
+}
+
+function toggleChip(el){
+  var single = el.dataset.single === 'true';
+  var group = el.dataset.group;
+  var max = parseInt(el.dataset.max) || 0;
+  if(single){
+    document.querySelectorAll('.chip[data-group="'+group+'"]').forEach(function(c){ c.classList.remove('selected'); });
+    el.classList.add('selected');
+  } else {
+    if(el.classList.contains('selected')){
+      el.classList.remove('selected');
+    } else {
+      if(max > 0){
+        var count = document.querySelectorAll('.chip[data-group="'+group+'"].selected').length;
+        if(count >= max) return;
+      }
+      el.classList.add('selected');
+    }
+  }
+  updateCounts();
+}
+
+function updateCounts(){
+  var topicsEl = document.getElementById('topicsCount');
+  if(topicsEl){ topicsEl.textContent = '已选 ' + getChipValues('topics').length + ' / 5'; }
+  var audEl = document.getElementById('audienceCount');
+  if(audEl){ audEl.textContent = '已选 ' + getChipValues('audience').length + ' / 2'; }
+}
+
+document.querySelectorAll('.chip').forEach(function(chip){
+  chip.addEventListener('click', function(){ toggleChip(chip); });
+  chip.addEventListener('keydown', function(e){
+    if(e.key === 'Enter' || e.key === ' '){ e.preventDefault(); toggleChip(chip); }
+  });
+});
+
+function getChipValues(group){
+  return Array.from(document.querySelectorAll('.chip[data-group="'+group+'"].selected')).map(function(c){ return c.dataset.value; });
+}
+
+async function submitForm(){
+  var nicknameInput = document.getElementById('nickname').value.trim();
+  var payload = {
+    主播昵称: nicknameInput || null,
+    年龄段: getChipValues('age')[0] || null,
+    原直播经验: getChipValues('exp')[0] || null,
+    英语口语水平: getChipValues('english')[0] || null,
+    外形标签: getChipValues('shape'),
+    性格标签: getChipValues('personality'),
+    能力标签: getChipValues('skill'),
+    持续聊天话题: getChipValues('topics'),
+    核心竞争力: getChipValues('core')[0] || null,
+    内容底线: getChipValues('limit'),
+    底线补充说明: document.getElementById('limitNote').value.trim() || null,
+    主赛道: getChipValues('audience'),
+    填写时间: new Date().toISOString()
+  };
+
+  var btn = document.getElementById('submitBtn');
+  var errEl = document.getElementById('submitError');
+  errEl.style.display = 'none';
+  btn.disabled = true;
+  btn.textContent = '提交中...';
+
+  try {
+    const res = await fetch('/api/onboarding-submit', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify(payload)
+    });
+    const data = await res.json();
+    if (!res.ok || !data.success) {
+      throw new Error(data.error || '提交失败');
+    }
+    document.getElementById('formWrap').hidden = true;
+    document.getElementById('done').hidden = false;
+    window.scrollTo({top:0, behavior:'auto'});
+  } catch (e) {
+    errEl.style.display = 'block';
+    btn.disabled = false;
+    btn.textContent = '完成，提交资料';
+  }
+}
+</script>
+</body>
+</html>
