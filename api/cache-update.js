@@ -1,7 +1,8 @@
 // api/cache-update.js
 // 收播后调用此接口，将数据写入 Redis 缓存
 // 调用方式：POST /api/cache-update
-// Body: { anchor, lives, fans, suggestions }
+// Body: { anchor, lives, fans, suggestions, ideas, anchor_tracks }
+//   - anchor 在只更新 ideas / anchor_tracks 时可省略（这两个是全局数据，不挂在单个主播下）
 
 async function redisSet(key, value, ttl) {
   const url = process.env.KV_REST_API_URL;
@@ -63,8 +64,12 @@ export default async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
   if (req.method !== 'POST') return res.status(405).json({ error: 'POST only' });
 
-  const { anchor, lives, fans, suggestions } = req.body;
-  if (!anchor) return res.status(400).json({ error: 'anchor required' });
+  const { anchor, lives, fans, suggestions, ideas, anchor_tracks } = req.body;
+
+  // lives / fans / suggestions 是单个主播的数据，必须有 anchor
+  if ((lives !== undefined || fans !== undefined || suggestions !== undefined) && !anchor) {
+    return res.status(400).json({ error: 'anchor required for lives/fans/suggestions update' });
+  }
 
   try {
     const results = {};
@@ -80,9 +85,19 @@ export default async function handler(req, res) {
       await redisSet(`suggestions:${anchor}`, suggestions, 300);
       results.suggestions = 'ok';
     }
+    // ideas: 内容点子库全量列表（不按主播分key，按赛道/具体主播在 content-ideas.js 里过滤）
+    if (ideas !== undefined) {
+      await redisSet('ideas:all', ideas);
+      results.ideas = 'ok';
+    }
+    // anchor_tracks: 主播 -> 赛道 的映射表，随时可整体覆盖更新，不需要改代码
+    if (anchor_tracks !== undefined) {
+      await redisSet('anchor_tracks', anchor_tracks);
+      results.anchor_tracks = 'ok';
+    }
     // 清除 anchors 缓存，让下次自动刷新
     await redisDel('anchors');
-    res.json({ success: true, anchor, updated: results });
+    res.json({ success: true, anchor: anchor || null, updated: results });
   } catch (e) {
     res.status(500).json({ error: e.message });
   }

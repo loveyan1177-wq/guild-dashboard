@@ -169,6 +169,13 @@
   .todo-detail { display: none; padding: 8px 0 4px 18px; }
   .todo-detail.show { display: block; }
   .todo-ai-item { font-size: 12px; color: var(--text2); line-height: 1.6; padding: 6px 8px; background: rgba(248,113,113,0.06); border-radius: 6px; border-left: 2px solid rgba(248,113,113,0.3); margin-bottom: 5px; }
+
+  /* 内容点子模块 */
+  .idea-list { display: flex; flex-direction: column; gap: 8px; }
+  .idea-item { background: var(--bg2); border: 1px solid var(--border); border-radius: 10px; padding: 12px 14px; }
+  .idea-tag { display: inline-block; font-size: 10px; padding: 2px 8px; border-radius: 20px; background: rgba(124,111,247,0.15); color: var(--purple2); margin-bottom: 6px; }
+  .idea-text { font-size: 13px; line-height: 1.6; color: var(--text); }
+  .idea-empty { text-align: center; padding: 1.5rem; font-size: 13px; color: var(--text2); opacity: 0.7; }
 </style>
 </head>
 <body>
@@ -281,6 +288,11 @@
     <div id="task-list"></div>
   </div>
 
+  <div class="section" id="idea-section">
+    <div class="section-title">💡 运营建议</div>
+    <div class="idea-list" id="idea-list"></div>
+  </div>
+
   <div class="timestamp" id="d-timestamp"></div>
 </div>
 
@@ -374,6 +386,8 @@ async function initLogin() {
       allTasks = data;
       renderTasks(allTasks);
     });
+    document.getElementById('idea-list').innerHTML = '<div class="idea-empty">加载中...</div>';
+    loadIdeas(anchorParam).then(renderIdeas);
     return;
   }
 
@@ -430,6 +444,8 @@ async function selectAnchor(anchor) {
       allTasks = data;
       renderTasks(allTasks);
     });
+    document.getElementById('idea-list').innerHTML = '<div class="idea-empty">加载中...</div>';
+    loadIdeas(anchor.name).then(renderIdeas);
   } catch(e) {
     hideLoading();
     showDashboard();
@@ -596,6 +612,29 @@ async function loadTasks(anchorName) {
     const data = await res.json();
     return data.suggestions || [];
   } catch(e) { return []; }
+}
+
+async function loadIdeas(anchorName) {
+  try {
+    const res = await fetch('/api/content-ideas?anchor=' + encodeURIComponent(anchorName));
+    const data = await res.json();
+    return data.ideas || [];
+  } catch(e) { return []; }
+}
+
+function renderIdeas(ideas) {
+  const list = document.getElementById('idea-list');
+  if (!list) return;
+  if (!ideas || ideas.length === 0) {
+    list.innerHTML = '<div class="idea-empty">暂无运营点子，有新思路随时跟运营说</div>';
+    return;
+  }
+  list.innerHTML = ideas.map(function(idea) {
+    const tagHtml = idea.tracks && idea.tracks.length
+      ? idea.tracks.map(function(t) { return '<span class="idea-tag">' + t + '</span>'; }).join(' ')
+      : '';
+    return '<div class="idea-item">' + tagHtml + '<div class="idea-text">' + (idea.content || '') + '</div></div>';
+  }).join('');
 }
 
 function getPriorityOrder(level) {
