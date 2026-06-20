@@ -459,10 +459,9 @@ function renderDashboard(anchor, liveData, fansData) {
   document.getElementById('d-sessions').textContent = thisMonth.length + ' 场';
 
   // 今日
-  const today = now.toISOString().split('T')[0];
-  const yesterday = new Date(now - 24*60*60*1000).toISOString().split('T')[0];
-  const displayDay = lives.some(l => l.date && l.date.startsWith(today)) ? today : yesterday;
-  const todayLives = lives.filter(l => l.date && l.date.startsWith(displayDay));
+  // 今日：取最近一天有数据的日期（解决时区错位/跨天问题）
+  const displayDay = lives.length > 0 ? lives[0].date : now.toISOString().split('T')[0];
+  const todayLives = lives.filter(l => l.date === displayDay);
   const todayDiamonds = todayLives.reduce((s,l) => s+(l.diamonds||0), 0);
   const todayFans = todayLives.reduce((s,l) => s+(l.new_fans||0), 0);
   const todayGifters = todayLives.reduce((s,l) => s+(l.gifters||0), 0);
