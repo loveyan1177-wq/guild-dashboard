@@ -186,6 +186,16 @@
   .case-vote span { flex: 1; text-align: center; padding: 6px 0; border-radius: 8px; font-size: 12px; font-weight: 600; background: rgba(124,111,247,0.12); color: var(--purple2); }
   .case-angle { font-size: 12px; color: var(--text2); line-height: 1.6; padding: 8px 10px; background: rgba(124,111,247,0.06); border-radius: 8px; border-left: 2px solid rgba(124,111,247,0.3); }
   .case-angle b { color: var(--purple2); }
+  .topic-tag-stack { display: flex; flex-direction: column; gap: 10px; }
+
+  /* 主播提交话题入口 */
+  .submit-box { background: var(--bg2); border: 1px dashed var(--border2); border-radius: 10px; padding: 14px; margin-top: 10px; }
+  .submit-title { font-size: 13px; font-weight: 500; color: var(--text2); margin-bottom: 10px; }
+  .submit-box select, .submit-box textarea { width: 100%; background: var(--bg3); border: 1px solid var(--border); border-radius: 8px; color: var(--text); font-size: 13px; padding: 8px 10px; margin-bottom: 8px; font-family: inherit; }
+  .submit-box textarea { resize: vertical; min-height: 60px; }
+  .submit-box button { width: 100%; background: var(--purple); border: none; border-radius: 8px; color: white; font-size: 13px; font-weight: 600; padding: 10px; cursor: pointer; }
+  .submit-box button:hover { background: #6c5fe8; }
+  .submit-msg { font-size: 12px; color: var(--text2); margin-top: 8px; text-align: center; min-height: 16px; }
 </style>
 </head>
 <body>
@@ -636,66 +646,98 @@ async function loadIdeas(anchorName) {
   } catch(e) { return []; }
 }
 
-async function loadTodayCase() {
+const TOPIC_TAGS = ['❤️情感陪伴', '⚖️婚姻关系', '💔出轨边界', '🧠人生树洞', '😂搞笑整蛊'];
+
+async function loadTodayTopics() {
   try {
     const res = await fetch('/api/today-case');
     const data = await res.json();
-    return data.case || null;
-  } catch(e) { return null; }
+    return data.tags || {};
+  } catch(e) { return {}; }
 }
 
-function renderTodayCase(c) {
-  const box = document.getElementById('case-content');
-  if (!box) return;
+async function loadTopics(anchorName) {
+  const [tagMap, ideas] = await Promise.all([loadTodayTopics(), loadIdeas(anchorName)]);
+  renderTopics(tagMap, ideas);
+}
+
+function caseCardHtml(tag, c) {
   if (!c) {
-    box.innerHTML = '<div class="idea-empty">今天还没有分配案件</div>';
-    return;
+    return '<div class="case-card" style="opacity:0.5">'
+      + '<div class="idea-tag" style="margin-bottom:6px">' + tag + '</div>'
+      + '<div class="idea-empty" style="padding:0.4rem 0">这个标签今天还没有话题，运营会陆续补充</div>'
+      + '</div>';
   }
   const angleHtml = c.angles && c.angles.length
     ? '<div class="case-angle"><b>切入角度：</b>' + c.angles.join('；') + '</div>'
     : '';
-  box.innerHTML = '<div class="case-card">' +
-    '<div class="case-title">' + (c.title || '') + '</div>' +
-    '<div class="case-scenario">' + (c.scenario || '') + '</div>' +
-    '<div class="case-question">' + (c.question || '') + '</div>' +
-    '<div class="case-vote"><span>✅ YES</span><span>❌ NO</span></div>' +
-    angleHtml +
-    '</div>';
+  return '<div class="case-card">'
+    + '<div class="idea-tag" style="margin-bottom:6px">' + tag + '</div>'
+    + '<div class="case-title">' + (c.title || '') + '</div>'
+    + '<div class="case-scenario">' + (c.scenario || '') + '</div>'
+    + '<div class="case-question">' + (c.question || '') + '</div>'
+    + '<div class="case-vote"><span>✅ YES</span><span>❌ NO</span></div>'
+    + angleHtml
+    + '</div>';
 }
 
-async function loadTopics(anchorName) {
-  const [todayCase, ideas] = await Promise.all([loadTodayCase(), loadIdeas(anchorName)]);
-  renderTopics(todayCase, ideas);
+function submitBoxHtml() {
+  const options = TOPIC_TAGS.map(function(t) { return '<option value="' + t + '">' + t + '</option>'; }).join('');
+  return '<div class="submit-box">'
+    + '<div class="submit-title">✍️ 有话题想法？提交给运营看看</div>'
+    + '<select id="submit-tag">' + options + '</select>'
+    + '<textarea id="submit-content" placeholder="说说你的想法..."></textarea>'
+    + '<button onclick="submitTopic()">提交</button>'
+    + '<div class="submit-msg" id="submit-msg"></div>'
+    + '</div>';
 }
 
-function renderTopics(todayCase, ideas) {
+async function submitTopic() {
+  const tagEl = document.getElementById('submit-tag');
+  const contentEl = document.getElementById('submit-content');
+  const msg = document.getElementById('submit-msg');
+  const content = contentEl ? contentEl.value.trim() : '';
+  if (!content) { if (msg) msg.textContent = '写点内容再提交吧'; return; }
+  if (msg) msg.textContent = '提交中...';
+  try {
+    const res = await fetch('/api/topic-submissions', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({
+        anchor: currentAnchor ? currentAnchor.name : '未知',
+        tag: tagEl ? tagEl.value : TOPIC_TAGS[0],
+        content: content
+      })
+    });
+    const data = await res.json();
+    if (data.success) {
+      if (msg) msg.textContent = '提交成功，运营会看到哦～';
+      if (contentEl) contentEl.value = '';
+    } else {
+      if (msg) msg.textContent = '提交失败，一会再试';
+    }
+  } catch(e) {
+    if (msg) msg.textContent = '提交失败，一会再试';
+  }
+}
+
+function renderTopics(tagMap, ideas) {
   const box = document.getElementById('topic-content');
   if (!box) return;
-  let html = '';
-  if (todayCase) {
-    const angleHtml = todayCase.angles && todayCase.angles.length
-      ? '<div class="case-angle"><b>切入角度：</b>' + todayCase.angles.join('；') + '</div>'
-      : '';
-    html += '<div class="case-card">' +
-      '<div class="case-title">' + (todayCase.title || '') + '</div>' +
-      '<div class="case-scenario">' + (todayCase.scenario || '') + '</div>' +
-      '<div class="case-question">' + (todayCase.question || '') + '</div>' +
-      '<div class="case-vote"><span>✅ YES</span><span>❌ NO</span></div>' +
-      angleHtml +
-      '</div>';
-  }
+  let html = '<div class="topic-tag-stack">' + TOPIC_TAGS.map(function(tag) {
+    return caseCardHtml(tag, tagMap[tag]);
+  }).join('') + '</div>';
+
   if (ideas && ideas.length > 0) {
-    const topMargin = todayCase ? '10px' : '0';
-    html += '<div class="idea-list" style="margin-top:' + topMargin + '">' + ideas.map(function(idea) {
+    html += '<div class="idea-list" style="margin-top:10px">' + ideas.map(function(idea) {
       const tagHtml = idea.tracks && idea.tracks.length
         ? idea.tracks.map(function(t) { return '<span class="idea-tag">' + t + '</span>'; }).join(' ')
         : '';
       return '<div class="idea-item">' + tagHtml + '<div class="idea-text">' + (idea.content || '') + '</div></div>';
     }).join('') + '</div>';
   }
-  if (!html) {
-    html = '<div class="idea-empty">今天还没有特别推荐的话题，有新思路随时跟运营说</div>';
-  }
+
+  html += submitBoxHtml();
   box.innerHTML = html;
 }
 
