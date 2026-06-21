@@ -187,6 +187,8 @@
   .case-angle { font-size: 12px; color: var(--text2); line-height: 1.6; padding: 8px 10px; background: rgba(124,111,247,0.06); border-radius: 8px; border-left: 2px solid rgba(124,111,247,0.3); }
   .case-angle b { color: var(--purple2); }
   .topic-tag-stack { display: flex; flex-direction: column; gap: 10px; }
+  .topic-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+  .topic-tag-select { background: var(--bg3); border: 1px solid var(--border); border-radius: 20px; color: var(--purple2); font-size: 12px; font-weight: 600; padding: 5px 10px; }
 
   /* 主播提交话题入口 */
   .submit-box { background: var(--bg2); border: 1px dashed var(--border2); border-radius: 10px; padding: 14px; margin-top: 10px; }
@@ -309,7 +311,10 @@
   </div>
 
   <div class="section" id="topic-section">
-    <div class="section-title">📌 今日话题特别推荐</div>
+    <div class="topic-header">
+      <div class="section-title" style="margin-bottom:0">📌 今日话题特别推荐</div>
+      <select id="topic-tag-select" class="topic-tag-select" onchange="onTagSwitch()"></select>
+    </div>
     <div id="topic-content"></div>
   </div>
 
@@ -721,15 +726,29 @@ async function submitTopic() {
   }
 }
 
-function renderTopics(tagMap, ideas) {
+let lastTagMap = {};
+let lastIdeas = [];
+
+function onTagSwitch() {
+  renderTopicContent();
+}
+
+function populateTagSelect() {
+  const sel = document.getElementById('topic-tag-select');
+  if (!sel || sel.options.length > 0) return;
+  sel.innerHTML = TOPIC_TAGS.map(function(t) { return '<option value="' + t + '">' + t + '</option>'; }).join('');
+}
+
+function renderTopicContent() {
   const box = document.getElementById('topic-content');
   if (!box) return;
-  let html = '<div class="topic-tag-stack">' + TOPIC_TAGS.map(function(tag) {
-    return caseCardHtml(tag, tagMap[tag]);
-  }).join('') + '</div>';
+  const sel = document.getElementById('topic-tag-select');
+  const selectedTag = sel ? sel.value : TOPIC_TAGS[0];
 
-  if (ideas && ideas.length > 0) {
-    html += '<div class="idea-list" style="margin-top:10px">' + ideas.map(function(idea) {
+  let html = caseCardHtml(selectedTag, lastTagMap[selectedTag]);
+
+  if (lastIdeas && lastIdeas.length > 0) {
+    html += '<div class="idea-list" style="margin-top:10px">' + lastIdeas.map(function(idea) {
       const tagHtml = idea.tracks && idea.tracks.length
         ? idea.tracks.map(function(t) { return '<span class="idea-tag">' + t + '</span>'; }).join(' ')
         : '';
@@ -739,6 +758,13 @@ function renderTopics(tagMap, ideas) {
 
   html += submitBoxHtml();
   box.innerHTML = html;
+}
+
+function renderTopics(tagMap, ideas) {
+  lastTagMap = tagMap || {};
+  lastIdeas = ideas || [];
+  populateTagSelect();
+  renderTopicContent();
 }
 
 function getPriorityOrder(level) {
