@@ -719,8 +719,9 @@ function caseCardHtml(tag, c) {
   const angleHtml = c.angles && c.angles.length
     ? '<div class="case-angle"><b>切入角度：</b>' + c.angles.join('；') + '</div>'
     : '';
+  const subCat = c.category_l2 ? (' · ' + c.category_l2) : (c.category_l1 ? (' · ' + c.category_l1) : '');
   return '<div class="case-card">'
-    + '<div class="idea-tag" style="margin-bottom:6px">' + tag + '</div>'
+    + '<div class="idea-tag" style="margin-bottom:6px">' + tag + subCat + '</div>'
     + '<div class="case-title">' + (c.title || '') + '</div>'
     + '<div class="case-scenario">' + (c.scenario || '') + '</div>'
     + '<div class="case-question">' + (c.question || '') + '</div>'

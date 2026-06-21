@@ -59,6 +59,15 @@ body { background: var(--bg); color: var(--text); font-family: -apple-system,'Pi
     <div class="section-title">📬 主播提交待审核</div>
     <div id="submissions-list"></div>
 
+    <div class="section-title">📌 分类速查</div>
+    <div class="sub-card" style="font-size:12px;color:var(--text2);line-height:1.8">
+      <b style="color:var(--purple2)">婚姻</b>：离婚财产 / 婆媳关系 / 婚前协议 &nbsp;|&nbsp;
+      <b style="color:var(--purple2)">出轨</b>：手机密码 / 前任联系 / 同事关系 &nbsp;|&nbsp;
+      <b style="color:var(--purple2)">金钱</b>：彩票 / 遗产 / AA制 &nbsp;|&nbsp;
+      <b style="color:var(--purple2)">抚养家庭</b>：抚养权 / 养老金 / 继子女 &nbsp;|&nbsp;
+      <b style="color:var(--purple2)">狗血反转</b>：DNA / 双重生活 / 秘密账户
+    </div>
+
     <div class="section-title">🗂 案件库（按标签分组）</div>
     <div id="cases-list"></div>
   </div>
@@ -136,10 +145,13 @@ function caseCardHtml(c) {
     const active = c.effect_rating === r ? ' active' : '';
     return '<button class="btn-sm' + active + '" onclick="rateCase(\'' + c.id + '\',\'' + r + '\')">' + r + '</button>';
   }).join('');
+  const catLine = (c.category_l1 || c.category_l2)
+    ? ' · ' + (c.category_l1||'') + (c.category_l2 ? ('/' + c.category_l2) : '')
+    : '';
   return '<div class="case-card' + (isRetired ? ' retired' : '') + '">'
     + '<div class="case-top">'
     + '<div><div class="case-title">' + (c.title||'') + '</div>'
-    + '<div class="case-meta">order ' + (c.order||'-') + ' · used_date ' + (c.used_date||'未使用') + '</div></div>'
+    + '<div class="case-meta">order ' + (c.order||'-') + ' · used_date ' + (c.used_date||'未使用') + catLine + '</div></div>'
     + '<div class="case-status status-' + (c.status||'待用') + '">' + (c.status||'待用') + '</div>'
     + '</div>'
     + '<div class="case-scenario">' + (c.scenario||'') + ' ' + (c.question||'') + '</div>'
