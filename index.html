@@ -506,15 +506,19 @@ function renderDashboard(anchor, liveData, fansData) {
   });
   document.getElementById('d-lost').textContent = lostFans.length;
 
-  // 趋势图
-  const recent = lives.slice(0, 10).reverse();
-  const labels = recent.map(l => {
-    if (!l.date) return '';
-    // 支持 2026-06-15 和 20260615 两种格式
-    const d = l.date.replace(/-/g, '');
-    return d.slice(4,6) + '/' + d.slice(6,8);
+  // 趋势图：同一天多场合并为一个数据点（累加钻石）
+  const dailyTotals = {};
+  lives.forEach(l => {
+    if (!l.date) return;
+    dailyTotals[l.date] = (dailyTotals[l.date] || 0) + (l.diamonds || 0);
   });
-  const values = recent.map(l => l.diamonds || 0);
+  const recentDates = Object.keys(dailyTotals).sort().slice(-10); // 升序取最近10天
+  const labels = recentDates.map(d => {
+    // 支持 2026-06-15 和 20260615 两种格式
+    const dd = d.replace(/-/g, '');
+    return dd.slice(4,6) + '/' + dd.slice(6,8);
+  });
+  const values = recentDates.map(d => dailyTotals[d]);
 
   if (trendChartInst) trendChartInst.destroy();
   const ctx = document.getElementById('trendChart');
