@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>话题库管理 - BIG.monster</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --bg: #0a0a0f; --bg2: #12121a; --bg3: #1a1a26;
+  --border: rgba(255,255,255,0.07); --border2: rgba(255,255,255,0.14);
+  --text: #f0f0f5; --text2: #8888a0;
+  --purple: #7c6ff7; --purple2: #a89ff9;
+  --green: #34d399; --red: #f87171; --amber: #fbbf24;
+}
+body { background: var(--bg); color: var(--text); font-family: -apple-system,'PingFang SC',sans-serif; min-height:100vh; }
+.nav { background: var(--bg2); border-bottom: 1px solid var(--border); height: 52px; display: flex; align-items: center; justify-content: space-between; padding: 0 1.5rem; position: sticky; top:0; z-index:100; }
+.nav-logo { display:flex; align-items:center; gap:8px; font-size:15px; font-weight:700; }
+.nav-logo span { font-size:12px; color:var(--text2); font-weight:400; margin-left:4px; }
+.nav-back { font-size:12px; color:var(--text2); text-decoration:none; }
+.nav-back:hover { color:var(--purple2); }
+.main { max-width:760px; margin:0 auto; padding:1.5rem 1.5rem 3rem; }
+.section-title { font-size:13px; font-weight:600; color:var(--text2); text-transform:uppercase; letter-spacing:0.07em; margin-bottom:10px; margin-top:1.8rem; }
+.tag-group { margin-bottom:1.2rem; }
+.tag-head { font-size:13px; font-weight:600; color:var(--purple2); margin-bottom:8px; }
+.case-card { background:var(--bg2); border:1px solid var(--border); border-radius:12px; padding:14px; margin-bottom:8px; }
+.case-card.retired { opacity:0.45; }
+.case-top { display:flex; align-items:flex-start; justify-content:space-between; gap:10px; }
+.case-title { font-size:14px; font-weight:600; }
+.case-meta { font-size:11px; color:var(--text2); margin-top:4px; }
+.case-scenario { font-size:12px; color:var(--text2); line-height:1.6; margin-top:8px; }
+.case-status { font-size:10px; padding:2px 8px; border-radius:20px; font-weight:600; flex-shrink:0; white-space:nowrap; }
+.status-待用 { background:rgba(96,165,250,0.15); color:#60a5fa; }
+.status-已用 { background:rgba(52,211,153,0.12); color:var(--green); }
+.status-已下架 { background:rgba(248,113,113,0.12); color:var(--red); }
+.case-actions { display:flex; gap:6px; margin-top:10px; flex-wrap:wrap; }
+.btn-sm { font-size:11px; padding:5px 10px; border-radius:8px; border:1px solid var(--border2); background:var(--bg3); color:var(--text2); cursor:pointer; }
+.btn-sm:hover { border-color:var(--purple); color:var(--purple2); }
+.btn-sm.active { background:rgba(124,111,247,0.18); border-color:var(--purple); color:var(--purple2); }
+.empty { text-align:center; padding:1.2rem; font-size:12px; color:var(--text2); opacity:.6; }
+.sub-card { background:var(--bg2); border:1px solid var(--border); border-radius:12px; padding:14px; margin-bottom:8px; }
+.sub-meta { font-size:11px; color:var(--text2); margin-bottom:6px; }
+.sub-content { font-size:13px; line-height:1.6; margin-bottom:10px; }
+.sub-tag { display:inline-block; font-size:10px; padding:2px 8px; border-radius:20px; background:rgba(124,111,247,0.15); color:var(--purple2); margin-right:6px; }
+#loading { display:flex; align-items:center; justify-content:center; min-height:100vh; flex-direction:column; gap:14px; }
+.spinner { width:34px; height:34px; border:3px solid var(--border); border-top-color:var(--purple); border-radius:50%; animation:spin .8s linear infinite; }
+@keyframes spin { to { transform:rotate(360deg); } }
+.loading-text { font-size:13px; color:var(--text2); }
+</style>
+</head>
+<body>
+<div id="loading"><div class="spinner"></div><div class="loading-text">加载话题库...</div></div>
+<div id="page" style="display:none">
+  <nav class="nav">
+    <div class="nav-logo">🗂 话题库管理</div>
+    <a class="nav-back" href="/ops.html">← 返回运营总览</a>
+  </nav>
+  <div class="main">
+    <div class="section-title">📬 主播提交待审核</div>
+    <div id="submissions-list"></div>
+
+    <div class="section-title">🗂 案件库（按标签分组）</div>
+    <div id="cases-list"></div>
+  </div>
+</div>
+
+<script>
+const TOPIC_TAGS = ['❤️情感陪伴', '⚖️婚姻关系', '💔出轨边界', '🧠人生树洞', '😂搞笑整蛊'];
+let allCases = [];
+let allSubmissions = [];
+
+async function loadAll() {
+  const [casesRes, subsRes] = await Promise.all([
+    fetch('/api/today-case?all=1').then(r => r.json()).catch(() => ({cases:[]})),
+    fetch('/api/topic-submissions').then(r => r.json()).catch(() => ({submissions:[]}))
+  ]);
+  allCases = casesRes.cases || [];
+  allSubmissions = subsRes.submissions || [];
+  renderSubmissions();
+  renderCases();
+  document.getElementById('loading').style.display = 'none';
+  document.getElementById('page').style.display = 'block';
+}
+
+function renderSubmissions() {
+  const box = document.getElementById('submissions-list');
+  const pending = allSubmissions.filter(s => s.status === '待审核');
+  if (pending.length === 0) {
+    box.innerHTML = '<div class="empty">暂无待审核的主播提交</div>';
+    return;
+  }
+  box.innerHTML = pending.map(function(s) {
+    return '<div class="sub-card">'
+      + '<div class="sub-meta">' + (s.anchor||'未知主播') + ' · ' + (s.submitted_at||'') + '</div>'
+      + '<span class="sub-tag">' + (s.tag||'') + '</span>'
+      + '<div class="sub-content" style="margin-top:8px">' + (s.content||'') + '</div>'
+      + '<div class="case-actions">'
+      + '<button class="btn-sm" onclick="reviewSubmission(\'' + s.id + '\',\'已采纳\')">✅ 采纳</button>'
+      + '<button class="btn-sm" onclick="reviewSubmission(\'' + s.id + '\',\'已拒绝\')">✕ 拒绝</button>'
+      + '</div>'
+      + '</div>';
+  }).join('');
+}
+
+async function reviewSubmission(id, status) {
+  try {
+    await fetch('/api/admin-submission-update', {
+      method: 'POST',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({ id, status })
+    });
+    allSubmissions = allSubmissions.map(s => s.id === id ? {...s, status} : s);
+    renderSubmissions();
+    if (status === '已采纳') {
+      alert('已标记采纳。记得把内容告诉 Claude，让它整理成标准案件格式排进对应标签队列。');
+    }
+  } catch(e) {
+    alert('操作失败，请重试');
+  }
+}
+
+function renderCases() {
+  const box = document.getElementById('cases-list');
+  box.innerHTML = TOPIC_TAGS.map(function(tag) {
+    const list = allCases.filter(c => c.tag === tag).sort((a,b) => (a.order||0)-(b.order||0));
+    const items = list.length === 0
+      ? '<div class="empty">这个标签还没有案件</div>'
+      : list.map(caseCardHtml).join('');
+    return '<div class="tag-group"><div class="tag-head">' + tag + ' (' + list.length + ')</div>' + items + '</div>';
+  }).join('');
+}
+
+function caseCardHtml(c) {
+  const isRetired = c.status === '已下架';
+  const ratingBtns = ['优秀','一般','不适合'].map(function(r) {
+    const active = c.effect_rating === r ? ' active' : '';
+    return '<button class="btn-sm' + active + '" onclick="rateCase(\'' + c.id + '\',\'' + r + '\')">' + r + '</button>';
+  }).join('');
+  return '<div class="case-card' + (isRetired ? ' retired' : '') + '">'
+    + '<div class="case-top">'
+    + '<div><div class="case-title">' + (c.title||'') + '</div>'
+    + '<div class="case-meta">order ' + (c.order||'-') + ' · used_date ' + (c.used_date||'未使用') + '</div></div>'
+    + '<div class="case-status status-' + (c.status||'待用') + '">' + (c.status||'待用') + '</div>'
+    + '</div>'
+    + '<div class="case-scenario">' + (c.scenario||'') + ' ' + (c.question||'') + '</div>'
+    + '<div class="case-actions">'
+    + (isRetired
+        ? '<button class="btn-sm" onclick="toggleRetire(\'' + c.id + '\',\'待用\')">↩ 恢复</button>'
+        : '<button class="btn-sm" onclick="toggleRetire(\'' + c.id + '\',\'已下架\')">🗑 下架</button>')
+    + ratingBtns
+    + '</div>'
+    + '</div>';
+}
+
+async function toggleRetire(id, status) {
+  try {
+    await fetch('/api/admin-case-update', {
+      method: 'POST',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({ id, status })
+    });
+    allCases = allCases.map(c => c.id === id ? {...c, status} : c);
+    renderCases();
+  } catch(e) {
+    alert('操作失败，请重试');
+  }
+}
+
+async function rateCase(id, rating) {
+  try {
+    await fetch('/api/admin-case-update', {
+      method: 'POST',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({ id, effect_rating: rating })
+    });
+    allCases = allCases.map(c => c.id === id ? {...c, effect_rating: rating} : c);
+    renderCases();
+  } catch(e) {
+    alert('操作失败，请重试');
+  }
+}
+
+loadAll();
+</script>
+</body>
+</html>
