@@ -235,6 +235,7 @@
 
   <div class="dash-tabs">
     <div class="dash-tab active" id="tab-btn-data" onclick="switchTab('data')">📊 数据</div>
+    <div class="dash-tab" id="tab-btn-bro" onclick="switchTab('bro')">👑 大哥</div>
     <div class="dash-tab" id="tab-btn-content" onclick="switchTab('content')">💡 内容运营</div>
   </div>
 
@@ -304,6 +305,16 @@
     </div>
   </div>
 
+  <div class="section" id="task-section">
+    <div class="task-header">
+      <div class="task-title">📋 今日行动清单</div>
+      <div class="task-badge" id="task-pending-count"></div>
+    </div>
+    <div id="task-list"></div>
+  </div>
+  </div>
+
+  <div id="tab-bro" style="display:none">
   <div class="section">
     <div class="section-title">累计Top大哥</div>
     <div class="bro-list" id="d-bros"></div>
@@ -312,14 +323,6 @@
   <div class="section">
     <div class="section-title">今日待跟进</div>
     <div class="todo-list" id="d-todos"></div>
-  </div>
-
-  <div class="section" id="task-section">
-    <div class="task-header">
-      <div class="task-title">📋 今日行动清单</div>
-      <div class="task-badge" id="task-pending-count"></div>
-    </div>
-    <div id="task-list"></div>
   </div>
   </div>
 
@@ -403,18 +406,25 @@ function hideLoading() {
 
 function switchTab(tab) {
   const dataTab = document.getElementById('tab-data');
+  const broTab = document.getElementById('tab-bro');
   const contentTab = document.getElementById('tab-content');
   const btnData = document.getElementById('tab-btn-data');
+  const btnBro = document.getElementById('tab-btn-bro');
   const btnContent = document.getElementById('tab-btn-content');
-  if (tab === 'content') {
-    dataTab.style.display = 'none';
+  dataTab.style.display = 'none';
+  broTab.style.display = 'none';
+  contentTab.style.display = 'none';
+  btnData.classList.remove('active');
+  btnBro.classList.remove('active');
+  btnContent.classList.remove('active');
+  if (tab === 'bro') {
+    broTab.style.display = 'block';
+    btnBro.classList.add('active');
+  } else if (tab === 'content') {
     contentTab.style.display = 'block';
-    btnData.classList.remove('active');
     btnContent.classList.add('active');
   } else {
     dataTab.style.display = 'block';
-    contentTab.style.display = 'none';
-    btnContent.classList.remove('active');
     btnData.classList.add('active');
   }
 }
