@@ -176,6 +176,16 @@
   .idea-tag { display: inline-block; font-size: 10px; padding: 2px 8px; border-radius: 20px; background: rgba(124,111,247,0.15); color: var(--purple2); margin-bottom: 6px; }
   .idea-text { font-size: 13px; line-height: 1.6; color: var(--text); }
   .idea-empty { text-align: center; padding: 1.5rem; font-size: 13px; color: var(--text2); opacity: 0.7; }
+
+  /* 今日案件模块 */
+  .case-card { background: var(--bg2); border: 1px solid var(--border); border-radius: 10px; padding: 14px; }
+  .case-title { font-size: 14px; font-weight: 600; color: var(--text); margin-bottom: 6px; }
+  .case-scenario { font-size: 13px; color: var(--text2); line-height: 1.7; margin-bottom: 8px; white-space: pre-line; }
+  .case-question { font-size: 13px; font-weight: 600; color: var(--text); margin-bottom: 8px; }
+  .case-vote { display: flex; gap: 10px; margin-bottom: 10px; }
+  .case-vote span { flex: 1; text-align: center; padding: 6px 0; border-radius: 8px; font-size: 12px; font-weight: 600; background: rgba(124,111,247,0.12); color: var(--purple2); }
+  .case-angle { font-size: 12px; color: var(--text2); line-height: 1.6; padding: 8px 10px; background: rgba(124,111,247,0.06); border-radius: 8px; border-left: 2px solid rgba(124,111,247,0.3); }
+  .case-angle b { color: var(--purple2); }
 </style>
 </head>
 <body>
@@ -288,6 +298,11 @@
     <div id="task-list"></div>
   </div>
 
+  <div class="section" id="case-section">
+    <div class="section-title">📰 今日案件</div>
+    <div id="case-content"></div>
+  </div>
+
   <div class="section" id="idea-section">
     <div class="section-title">💡 运营建议</div>
     <div class="idea-list" id="idea-list"></div>
@@ -388,6 +403,7 @@ async function initLogin() {
     });
     document.getElementById('idea-list').innerHTML = '<div class="idea-empty">加载中...</div>';
     loadIdeas(anchorParam).then(renderIdeas);
+    loadTodayCase().then(renderTodayCase);
     return;
   }
 
@@ -446,6 +462,7 @@ async function selectAnchor(anchor) {
     });
     document.getElementById('idea-list').innerHTML = '<div class="idea-empty">加载中...</div>';
     loadIdeas(anchor.name).then(renderIdeas);
+    loadTodayCase().then(renderTodayCase);
   } catch(e) {
     hideLoading();
     showDashboard();
@@ -624,6 +641,33 @@ async function loadIdeas(anchorName) {
     const data = await res.json();
     return data.ideas || [];
   } catch(e) { return []; }
+}
+
+async function loadTodayCase() {
+  try {
+    const res = await fetch('/api/today-case');
+    const data = await res.json();
+    return data.case || null;
+  } catch(e) { return null; }
+}
+
+function renderTodayCase(c) {
+  const box = document.getElementById('case-content');
+  if (!box) return;
+  if (!c) {
+    box.innerHTML = '<div class="idea-empty">今天还没有分配案件</div>';
+    return;
+  }
+  const angleHtml = c.angles && c.angles.length
+    ? '<div class="case-angle"><b>切入角度：</b>' + c.angles.join('；') + '</div>'
+    : '';
+  box.innerHTML = '<div class="case-card">' +
+    '<div class="case-title">' + (c.title || '') + '</div>' +
+    '<div class="case-scenario">' + (c.scenario || '') + '</div>' +
+    '<div class="case-question">' + (c.question || '') + '</div>' +
+    '<div class="case-vote"><span>✅ YES</span><span>❌ NO</span></div>' +
+    angleHtml +
+    '</div>';
 }
 
 function renderIdeas(ideas) {

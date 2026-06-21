@@ -64,7 +64,7 @@ export default async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
   if (req.method !== 'POST') return res.status(405).json({ error: 'POST only' });
 
-  const { anchor, lives, fans, suggestions, ideas, anchor_tracks } = req.body;
+  const { anchor, lives, fans, suggestions, ideas, cases, anchor_tracks } = req.body;
 
   // lives / fans / suggestions 是单个主播的数据，必须有 anchor
   if ((lives !== undefined || fans !== undefined || suggestions !== undefined) && !anchor) {
@@ -89,6 +89,11 @@ export default async function handler(req, res) {
     if (ideas !== undefined) {
       await redisSet('ideas:all', ideas);
       results.ideas = 'ok';
+    }
+    // cases: 案件库全量列表（今日案件栏目，YES/NO提问式内容，与 ideas 分开存储，避免主播页面混淆两种内容）
+    if (cases !== undefined) {
+      await redisSet('cases:all', cases);
+      results.cases = 'ok';
     }
     // anchor_tracks: 主播 -> 赛道 的映射表，随时可整体覆盖更新，不需要改代码
     if (anchor_tracks !== undefined) {
