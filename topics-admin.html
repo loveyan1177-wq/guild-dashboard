@@ -104,10 +104,10 @@ function renderSubmissions() {
 
 async function reviewSubmission(id, status) {
   try {
-    await fetch('/api/admin-submission-update', {
+    await fetch('/api/admin-update', {
       method: 'POST',
       headers: {'Content-Type':'application/json'},
-      body: JSON.stringify({ id, status })
+      body: JSON.stringify({ type: 'submission', id, status })
     });
     allSubmissions = allSubmissions.map(s => s.id === id ? {...s, status} : s);
     renderSubmissions();
@@ -154,10 +154,10 @@ function caseCardHtml(c) {
 
 async function toggleRetire(id, status) {
   try {
-    await fetch('/api/admin-case-update', {
+    await fetch('/api/admin-update', {
       method: 'POST',
       headers: {'Content-Type':'application/json'},
-      body: JSON.stringify({ id, status })
+      body: JSON.stringify({ type: 'case', id, status })
     });
     allCases = allCases.map(c => c.id === id ? {...c, status} : c);
     renderCases();
@@ -168,10 +168,10 @@ async function toggleRetire(id, status) {
 
 async function rateCase(id, rating) {
   try {
-    await fetch('/api/admin-case-update', {
+    await fetch('/api/admin-update', {
       method: 'POST',
       headers: {'Content-Type':'application/json'},
-      body: JSON.stringify({ id, effect_rating: rating })
+      body: JSON.stringify({ type: 'case', id, effect_rating: rating })
     });
     allCases = allCases.map(c => c.id === id ? {...c, effect_rating: rating} : c);
     renderCases();
