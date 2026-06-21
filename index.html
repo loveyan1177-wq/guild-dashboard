@@ -50,6 +50,11 @@
   .dash-level { font-size: 12px; color: var(--purple2); margin-top: 2px; }
   .back-btn { background: var(--bg2); border: 1px solid var(--border); border-radius: 8px; padding: 8px 14px; cursor: pointer; font-size: 13px; color: var(--text2); }
 
+  /* 顶部切换标签 */
+  .dash-tabs { display: flex; gap: 8px; margin-bottom: 1rem; }
+  .dash-tab { flex: 1; text-align: center; padding: 10px; border-radius: 10px; background: var(--bg2); border: 1px solid var(--border); font-size: 13px; font-weight: 600; color: var(--text2); cursor: pointer; }
+  .dash-tab.active { background: rgba(124,111,247,0.15); border-color: rgba(124,111,247,0.4); color: var(--purple2); }
+
   /* 收入卡片 */
   .income-card { background: linear-gradient(135deg, #1e1a3a, #12121a); border: 1px solid rgba(124,111,247,0.3); border-radius: 16px; padding: 1.5rem; margin-bottom: 1rem; position: relative; overflow: hidden; }
   .income-card::before { content: ''; position: absolute; top: -50px; right: -50px; width: 150px; height: 150px; background: radial-gradient(circle, rgba(124,111,247,0.15), transparent 70%); }
@@ -228,6 +233,13 @@
     <div class="back-btn" onclick="showLogin()">切换</div>
   </div>
 
+  <div class="dash-tabs">
+    <div class="dash-tab active" id="tab-btn-data" onclick="switchTab('data')">📊 数据</div>
+    <div class="dash-tab" id="tab-btn-content" onclick="switchTab('content')">💡 内容运营</div>
+  </div>
+
+  <div id="tab-data">
+
   <div class="income-card">
     <div class="income-label">本月累计钻石</div>
     <div class="income-value animated" id="d-monthly">--</div>
@@ -309,13 +321,16 @@
     </div>
     <div id="task-list"></div>
   </div>
+  </div>
 
+  <div id="tab-content" style="display:none">
   <div class="section" id="topic-section">
     <div class="topic-header">
       <div class="section-title" style="margin-bottom:0">📌 今日话题特别推荐</div>
       <select id="topic-tag-select" class="topic-tag-select" onchange="onTagSwitch()"></select>
     </div>
     <div id="topic-content"></div>
+  </div>
   </div>
 
   <div class="timestamp" id="d-timestamp"></div>
@@ -384,6 +399,24 @@ function showLoading() {
 
 function hideLoading() {
   document.getElementById('loading').style.display = 'none';
+}
+
+function switchTab(tab) {
+  const dataTab = document.getElementById('tab-data');
+  const contentTab = document.getElementById('tab-content');
+  const btnData = document.getElementById('tab-btn-data');
+  const btnContent = document.getElementById('tab-btn-content');
+  if (tab === 'content') {
+    dataTab.style.display = 'none';
+    contentTab.style.display = 'block';
+    btnData.classList.remove('active');
+    btnContent.classList.add('active');
+  } else {
+    dataTab.style.display = 'block';
+    contentTab.style.display = 'none';
+    btnContent.classList.remove('active');
+    btnData.classList.add('active');
+  }
 }
 
 async function initLogin() {
