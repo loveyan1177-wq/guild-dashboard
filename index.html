@@ -298,14 +298,9 @@
     <div id="task-list"></div>
   </div>
 
-  <div class="section" id="case-section">
-    <div class="section-title">📰 今日案件</div>
-    <div id="case-content"></div>
-  </div>
-
-  <div class="section" id="idea-section">
-    <div class="section-title">💡 运营建议</div>
-    <div class="idea-list" id="idea-list"></div>
+  <div class="section" id="topic-section">
+    <div class="section-title">📌 今日话题特别推荐</div>
+    <div id="topic-content"></div>
   </div>
 
   <div class="timestamp" id="d-timestamp"></div>
@@ -401,9 +396,8 @@ async function initLogin() {
       allTasks = data;
       renderTasks(allTasks);
     });
-    document.getElementById('idea-list').innerHTML = '<div class="idea-empty">加载中...</div>';
-    loadIdeas(anchorParam).then(renderIdeas);
-    loadTodayCase().then(renderTodayCase);
+    document.getElementById('topic-content').innerHTML = '<div class="idea-empty">加载中...</div>';
+    loadTopics(anchorParam);
     return;
   }
 
@@ -460,9 +454,8 @@ async function selectAnchor(anchor) {
       allTasks = data;
       renderTasks(allTasks);
     });
-    document.getElementById('idea-list').innerHTML = '<div class="idea-empty">加载中...</div>';
-    loadIdeas(anchor.name).then(renderIdeas);
-    loadTodayCase().then(renderTodayCase);
+    document.getElementById('topic-content').innerHTML = '<div class="idea-empty">加载中...</div>';
+    loadTopics(anchor.name);
   } catch(e) {
     hideLoading();
     showDashboard();
@@ -670,19 +663,40 @@ function renderTodayCase(c) {
     '</div>';
 }
 
-function renderIdeas(ideas) {
-  const list = document.getElementById('idea-list');
-  if (!list) return;
-  if (!ideas || ideas.length === 0) {
-    list.innerHTML = '<div class="idea-empty">暂无运营点子，有新思路随时跟运营说</div>';
-    return;
-  }
-  list.innerHTML = ideas.map(function(idea) {
-    const tagHtml = idea.tracks && idea.tracks.length
-      ? idea.tracks.map(function(t) { return '<span class="idea-tag">' + t + '</span>'; }).join(' ')
+async function loadTopics(anchorName) {
+  const [todayCase, ideas] = await Promise.all([loadTodayCase(), loadIdeas(anchorName)]);
+  renderTopics(todayCase, ideas);
+}
+
+function renderTopics(todayCase, ideas) {
+  const box = document.getElementById('topic-content');
+  if (!box) return;
+  let html = '';
+  if (todayCase) {
+    const angleHtml = todayCase.angles && todayCase.angles.length
+      ? '<div class="case-angle"><b>切入角度：</b>' + todayCase.angles.join('；') + '</div>'
       : '';
-    return '<div class="idea-item">' + tagHtml + '<div class="idea-text">' + (idea.content || '') + '</div></div>';
-  }).join('');
+    html += '<div class="case-card">' +
+      '<div class="case-title">' + (todayCase.title || '') + '</div>' +
+      '<div class="case-scenario">' + (todayCase.scenario || '') + '</div>' +
+      '<div class="case-question">' + (todayCase.question || '') + '</div>' +
+      '<div class="case-vote"><span>✅ YES</span><span>❌ NO</span></div>' +
+      angleHtml +
+      '</div>';
+  }
+  if (ideas && ideas.length > 0) {
+    const topMargin = todayCase ? '10px' : '0';
+    html += '<div class="idea-list" style="margin-top:' + topMargin + '">' + ideas.map(function(idea) {
+      const tagHtml = idea.tracks && idea.tracks.length
+        ? idea.tracks.map(function(t) { return '<span class="idea-tag">' + t + '</span>'; }).join(' ')
+        : '';
+      return '<div class="idea-item">' + tagHtml + '<div class="idea-text">' + (idea.content || '') + '</div></div>';
+    }).join('') + '</div>';
+  }
+  if (!html) {
+    html = '<div class="idea-empty">今天还没有特别推荐的话题，有新思路随时跟运营说</div>';
+  }
+  box.innerHTML = html;
 }
 
 function getPriorityOrder(level) {
