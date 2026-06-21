@@ -60,18 +60,6 @@ body { background: var(--bg); color: var(--text); font-family: -apple-system,'Pi
 .rank-bar-fill { height:100%; border-radius:2px; background:linear-gradient(90deg,#7c6ff7,#34d399); }
 .rank-diamonds { font-size:13px; font-weight:700; color:var(--purple2); white-space:nowrap; flex-shrink:0; min-width:52px; text-align:right; }
 .rank-divider { height:1px; background:var(--border); margin:0 1.1rem; }
-.task-item { display:flex; align-items:flex-start; gap:10px; padding:.7rem 1.1rem; border-top:1px solid var(--border); transition:background .15s; }
-.task-item:hover { background:rgba(255,255,255,0.02); }
-.task-check { width:18px; height:18px; border-radius:50%; border:2px solid var(--border2); flex-shrink:0; cursor:pointer; display:flex; align-items:center; justify-content:center; transition:all .2s; margin-top:1px; }
-.task-check:hover { border-color:var(--green); }
-.task-item.done .task-check { border-color:var(--green); background:var(--green); }
-.task-check-icon { display:none; color:#0a0a0f; font-size:10px; font-weight:800; }
-.task-item.done .task-check-icon { display:block; }
-.task-anchor-tag { font-size:10px; padding:1px 6px; border-radius:20px; background:rgba(124,111,247,0.15); color:var(--purple2); flex-shrink:0; margin-top:2px; font-weight:600; white-space:nowrap; }
-.task-text { font-size:13px; line-height:1.5; flex:1; }
-.task-item.done .task-text { text-decoration:line-through; color:var(--text2); }
-.task-toggle { font-size:12px; color:var(--text2); cursor:pointer; padding:.5rem 1.1rem; text-align:center; border-top:1px solid var(--border); }
-.task-toggle:hover { color:var(--purple2); }
 .empty { text-align:center; padding:1.5rem; font-size:13px; color:var(--text2); opacity:.6; }
 #loading { display:flex; align-items:center; justify-content:center; min-height:100vh; flex-direction:column; gap:14px; }
 .spinner { width:34px; height:34px; border:3px solid var(--border); border-top-color:var(--purple); border-radius:50%; animation:spin .8s linear infinite; }
@@ -110,7 +98,7 @@ body { background: var(--bg); color: var(--text); font-family: -apple-system,'Pi
       </div>
     </div>
     <div class="stats-row">
-      <div class="stat-card"><div class="stat-label">待处理行动</div><div class="stat-val" id="s-tasks" style="color:var(--amber)">--</div><div class="stat-sub">全公会合计</div></div>
+      <div class="stat-card"><div class="stat-label">话题库覆盖度</div><div class="stat-val" id="s-tasks" style="color:var(--amber)">--</div><div class="stat-sub">5个标签中今日已填</div></div>
       <div class="stat-card"><div class="stat-label">流失预警</div><div class="stat-val" id="s-lost" style="color:var(--red)">--</div><div class="stat-sub">VIP 7天未出现</div></div>
       <div class="stat-card"><div class="stat-label">VIP粉丝总数</div><div class="stat-val" id="s-vip" style="color:var(--purple2)">--</div><div class="stat-sub">全公会合计</div></div>
       <div class="stat-card"><div class="stat-label">今日开播</div><div class="stat-val" id="s-live" style="color:var(--green)">--</div><div class="stat-sub">场次合计</div></div>
@@ -128,12 +116,9 @@ body { background: var(--bg); color: var(--text); font-family: -apple-system,'Pi
       </div>
       <div class="block">
         <div class="block-header">
-          <div class="block-title">待处理行动</div>
-          <div class="block-badge badge-red" id="task-count-badge"></div>
+          <div class="block-title">主播最新动态</div>
         </div>
-        <div id="task-urgent"></div>
-        <div id="task-others-wrap" style="display:none"><div id="task-others"></div></div>
-        <div class="task-toggle" id="task-toggle-btn" onclick="toggleOthers()" style="display:none"></div>
+        <div id="anchor-activity"></div>
       </div>
     </div>
     <div class="timestamp" id="ops-timestamp"></div>
@@ -141,8 +126,6 @@ body { background: var(--bg); color: var(--text); font-family: -apple-system,'Pi
 </div>
 <script>
 const DIAMOND_TO_USD = 0.005;
-let othersVisible = false;
-let allTasksData = [];
 let allDataGlobal = [];
 let todayGlobal = '';
 let monthPrefixGlobal = '';
@@ -152,9 +135,6 @@ function fmt(n) {
   if (n >= 1000) return (n/1000).toFixed(1) + 'K';
   return n.toString();
 }
-function getPriorityOrder(l) { const o={'紧急':0,'高':0,'重要':1,'中':2,'常规':3,'低':4}; return o[l]!==undefined?o[l]:3; }
-function isUrgent(l) { return l==='紧急'||l==='高'; }
-function getPriorityEmoji(l) { return l==='紧急'||l==='高'?'🔴':l==='重要'||l==='中'?'🟡':'🟢'; }
 
 function switchRankTab(tab) {
   document.getElementById('tab-month').className = 'rank-tab'+(tab==='month'?' active':'');
@@ -202,61 +182,25 @@ function renderRankList(allData, tab) {
   }).join('');
 }
 
-function renderTaskItem(t) {
-  return '<div class="task-item" id="ops-task-'+t.id+'">'
-    +'<div class="task-check" onclick="doneTask(\''+t.id+'\',\''+t.anchorName+'\',event)"><span class="task-check-icon">✓</span></div>'
-    +'<span class="task-anchor-tag">'+t.anchorName+'</span>'
-    +'<div class="task-text">'+getPriorityEmoji(t.level)+' '+(t.action||t.reason||'')+'</div>'
-    +'</div>';
-}
-
-function renderTasks(tasks) {
-  const urgent = tasks.filter(t=>isUrgent(t.level));
-  const others = tasks.filter(t=>!isUrgent(t.level));
-  const badge = document.getElementById('task-count-badge');
-  badge.textContent = tasks.length>0 ? tasks.length+' 项待处理' : '全部完成 ✓';
-  badge.className = 'block-badge '+(tasks.length>0?'badge-red':'badge-green');
-  const urgentEl = document.getElementById('task-urgent');
-  if (urgent.length===0&&others.length===0) {
-    urgentEl.innerHTML = '<div class="empty">所有行动项已处理完毕 🎉</div>';
-  } else if (urgent.length===0) {
-    urgentEl.innerHTML = '<div class="empty" style="padding:.8rem;opacity:.5;font-size:12px">暂无紧急行动</div>';
-  } else {
-    urgentEl.innerHTML = urgent.map(renderTaskItem).join('');
-  }
-  const othersEl = document.getElementById('task-others');
-  const toggleBtn = document.getElementById('task-toggle-btn');
-  const othersWrap = document.getElementById('task-others-wrap');
-  if (others.length>0) {
-    othersEl.innerHTML = others.map(renderTaskItem).join('');
-    toggleBtn.style.display = 'block';
-    toggleBtn.textContent = '查看其他 '+others.length+' 项 ▾';
-  } else {
-    toggleBtn.style.display = 'none';
-    othersWrap.style.display = 'none';
-  }
-}
-
-function toggleOthers() {
-  othersVisible = !othersVisible;
-  document.getElementById('task-others-wrap').style.display = othersVisible?'block':'none';
-  document.getElementById('task-toggle-btn').textContent = othersVisible
-    ? '▴ 收起'
-    : '查看其他 '+allTasksData.filter(t=>!isUrgent(t.level)).length+' 项 ▾';
-}
-
-async function doneTask(recordId, anchorName, e) {
-  e.stopPropagation();
-  const row = document.getElementById('ops-task-'+recordId);
-  if (!row||row.classList.contains('done')) return;
-  row.classList.add('done');
-  allTasksData = allTasksData.filter(t=>t.id!==recordId);
-  const rem = allTasksData.length;
-  document.getElementById('s-tasks').textContent = rem;
-  const badge = document.getElementById('task-count-badge');
-  badge.textContent = rem>0 ? rem+' 项待处理' : '全部完成 ✓';
-  badge.className = 'block-badge '+(rem>0?'badge-red':'badge-green');
-  try { await fetch('/api/suggestion-done',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({record_id:recordId,anchor:anchorName})}); } catch(e){}
+function renderAnchorActivity(allData) {
+  const box = document.getElementById('anchor-activity');
+  const items = allData.map(d => {
+    const sorted = [...d.lives].sort((a,b) => (b.date||'').localeCompare(a.date||''));
+    const latest = sorted[0];
+    return { anchor: d.anchor, latest };
+  });
+  box.innerHTML = items.map((it, i) => {
+    const a = it.anchor;
+    const l = it.latest;
+    const sub = l
+      ? l.date + ' · 💎' + fmt(l.diamonds||0) + ' · 🎁' + (l.gifters||0) + '人送礼 · ✨+' + (l.new_fans||0) + '粉'
+      : '暂无开播记录';
+    return '<div class="rank-item" onclick="window.open(\'/?anchor=' + encodeURIComponent(a.name) + '&key=bm2026' + a.name + '\',\'_blank\')">'
+      + '<div class="rank-avatar">' + a.name[0].toUpperCase() + '</div>'
+      + '<div class="rank-info"><div class="rank-name">' + a.name + '</div><div class="rank-meta">' + sub + '</div></div>'
+      + '</div>'
+      + (i < items.length-1 ? '<div class="rank-divider"></div>' : '');
+  }).join('');
 }
 
 async function init() {
@@ -272,13 +216,16 @@ async function init() {
   const anchors = (await anchorsRes.json()).anchors || [];
 
   const allData = await Promise.all(anchors.map(async a => {
-    const [liveRes,fansRes,taskRes] = await Promise.all([
+    const [liveRes,fansRes] = await Promise.all([
       fetch('/api/live?anchor='+encodeURIComponent(a.name)).then(r=>r.json()).catch(()=>({lives:[]})),
-      fetch('/api/fans?anchor='+encodeURIComponent(a.name)).then(r=>r.json()).catch(()=>({fans:[]})),
-      fetch('/api/suggestions?anchor='+encodeURIComponent(a.name)).then(r=>r.json()).catch(()=>({suggestions:[]}))
+      fetch('/api/fans?anchor='+encodeURIComponent(a.name)).then(r=>r.json()).catch(()=>({fans:[]}))
     ]);
-    return { anchor:a, lives:liveRes.lives||[], fans:fansRes.fans||[], tasks:(taskRes.suggestions||[]).filter(s=>s.status!=='已处理') };
+    return { anchor:a, lives:liveRes.lives||[], fans:fansRes.fans||[] };
   }));
+
+  const topicRes = await fetch('/api/today-case').then(r=>r.json()).catch(()=>({tags:{}}));
+  const filledTags = Object.values(topicRes.tags||{}).filter(Boolean).length;
+  document.getElementById('s-tasks').textContent = filledTags + '/5';
 
   allDataGlobal = allData;
 
@@ -287,7 +234,7 @@ async function init() {
   const hasToday = allData.some(d => d.lives.some(l => l.date && l.date.startsWith(today)));
   todayGlobal = hasToday ? today : yesterday;
   const sevenDaysAgo = new Date(now - 7*24*60*60*1000);
-  let totalMonth=0, totalToday=0, totalSessions=0, totalTodaySessions=0, totalLost=0, totalVIP=0, totalPending=0, activeAnchors=0;
+  let totalMonth=0, totalToday=0, totalSessions=0, totalTodaySessions=0, totalLost=0, totalVIP=0, activeAnchors=0;
 
   allData.forEach(d => {
     const ml = d.lives.filter(l=>l.date&&l.date.startsWith(monthPrefix));
@@ -299,7 +246,6 @@ async function init() {
     if (ml.length>0) activeAnchors++;
     totalLost += d.fans.filter(f=>f.last_active&&new Date(f.last_active)<sevenDaysAgo&&f.total_coins>=1000).length;
     totalVIP += d.fans.filter(f=>f.total_coins>=1000).length;
-    totalPending += d.tasks.length;
   });
 
   document.getElementById('h-month').innerHTML = fmt(totalMonth)+' <span>💎</span>';
@@ -307,17 +253,12 @@ async function init() {
   document.getElementById('h-today').textContent = totalToday>0 ? fmt(totalToday) : '--';
   document.getElementById('h-sessions').textContent = totalSessions;
   document.getElementById('h-anchors').textContent = activeAnchors;
-  document.getElementById('s-tasks').textContent = totalPending;
   document.getElementById('s-lost').textContent = totalLost;
   document.getElementById('s-vip').textContent = totalVIP;
   document.getElementById('s-live').textContent = totalTodaySessions>0 ? totalTodaySessions+' 场' : '--';
 
   renderRankList(allData, 'today');
-
-  allTasksData = [];
-  allData.forEach(d=>d.tasks.forEach(t=>allTasksData.push({...t,anchorName:d.anchor.name})));
-  allTasksData.sort((a,b)=>getPriorityOrder(a.level)-getPriorityOrder(b.level));
-  renderTasks(allTasksData);
+  renderAnchorActivity(allData);
 
   document.getElementById('ops-timestamp').textContent = '数据更新于 '+now.toLocaleString('zh-CN');
   document.getElementById('loading').style.display = 'none';
