@@ -1,9 +1,15 @@
 // api/today-case.js
-// 新结构：内容按"人设"分库(persona，固定，存在 anchor_tracks 里)，
-// 库内再按"动机"分类(motivation: 冲突/缺失/渴望/娱乐)，主播自己选动机查看对应内容
-// ?anchor=lila              -> 只返回该主播的人设(persona)
-// ?anchor=lila&motivation=冲突 -> 返回该人设下、该动机分类的全部案件（不含已下架）
-// ?all=1                    -> 管理用，返回全量未过滤列表
+// 内容结构：人设(persona,固定) -> 直播模式(live_mode,该人设专属选项) -> 动机(motivation,通用4类) -> 案件
+// ?anchor=lila                         -> 返回该主播人设 + 该人设可选的直播模式列表
+// ?anchor=lila&live_mode=X&motivation=Y -> 返回该人设+该模式+该动机下的全部案件（不含已下架）
+// ?all=1                                -> 管理用，返回全量未过滤列表
+
+const LIVE_MODE_CONFIG = {
+  '情感陪伴型': ['情感法官', '神秘知己', '邻家姐姐'],
+  '健身自律型': ['严厉教练', '鼓励陪伴', '生活方式'],
+  '美食治愈型': ['吃货朋友', '厨房达人', '家乡味道'],
+  'Cos娱乐型': ['整蛊搞笑', '二次元互动', '暗黑角色']
+};
 
 async function redisGetRaw(key) {
   const url = process.env.KV_REST_API_URL;
@@ -25,7 +31,7 @@ async function redisGetRaw(key) {
 
 export default async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
-  const { anchor, motivation, all } = req.query;
+  const { anchor, motivation, live_mode, all } = req.query;
 
   try {
     const allCases = (await redisGetRaw('cases:all')) || [];
@@ -41,13 +47,18 @@ export default async function handler(req, res) {
     const anchorLower = anchor.toLowerCase();
     const personaKey = Object.keys(anchorTracks).find(k => k.toLowerCase() === anchorLower);
     const persona = personaKey ? anchorTracks[personaKey] : null;
+    const liveModes = persona ? (LIVE_MODE_CONFIG[persona] || []) : [];
 
-    let matched = list.filter(c => c.status !== '已下架' && c.persona === persona);
-    if (motivation) {
-      matched = matched.filter(c => c.motivation === motivation);
+    // 只查人设本身和模式列表，不带 live_mode/motivation 时直接返回
+    if (!live_mode && !motivation) {
+      return res.json({ persona: persona || null, live_modes: liveModes });
     }
 
-    res.json({ persona: persona || null, motivation: motivation || null, cases: matched });
+    let matched = list.filter(c => c.status !== '已下架' && c.persona === persona);
+    if (live_mode) matched = matched.filter(c => c.live_mode === live_mode);
+    if (motivation) matched = matched.filter(c => c.motivation === motivation);
+
+    res.json({ persona: persona || null, live_modes: liveModes, live_mode: live_mode || null, motivation: motivation || null, cases: matched });
   } catch (e) {
     res.status(500).json({ error: e.message, cases: [] });
   }

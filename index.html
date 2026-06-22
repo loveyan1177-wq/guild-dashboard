@@ -197,6 +197,7 @@
   .mood-row { display: grid; grid-template-columns: repeat(4,1fr); gap: 6px; margin-bottom: 12px; }
   .mood-btn { text-align: center; padding: 10px 4px; border-radius: 10px; background: var(--bg2); border: 1px solid var(--border); font-size: 12px; font-weight: 600; color: var(--text2); cursor: pointer; }
   .mood-btn.active { background: rgba(124,111,247,0.18); border-color: var(--purple); color: var(--purple2); }
+  .live-mode-row { display: grid; grid-template-columns: repeat(3,1fr); gap: 6px; margin-bottom: 10px; }
 
   /* 今日话题模块结尾 */
 </style>
@@ -326,6 +327,7 @@
   <div class="section" id="topic-section">
     <div class="section-title">📌 今日话题特别推荐</div>
     <div id="persona-badge" class="persona-badge"></div>
+    <div id="live-mode-row" class="live-mode-row"></div>
     <div id="mood-row" class="mood-row"></div>
     <div id="topic-content"></div>
   </div>
@@ -807,25 +809,27 @@ function renderTopics(tagMap, ideas) {
 }
 
 const MOODS = [
-  {key:'冲突', emoji:'🔴', label:'想爆'},
-  {key:'缺失', emoji:'💭', label:'想聊深'},
-  {key:'渴望', emoji:'💗', label:'想陪伴'},
-  {key:'娱乐', emoji:'😄', label:'想破冰'}
+  {key:'冲突', emoji:'🔴', label:'引战站队'},
+  {key:'缺失', emoji:'💭', label:'树洞讲故事'},
+  {key:'渴望', emoji:'💗', label:'暖场治愈'},
+  {key:'娱乐', emoji:'😄', label:'整活互动'}
 ];
 let currentPersona = null;
+let currentLiveModes = [];
+let currentLiveMode = null;
 let currentMood = MOODS[0].key;
 
 async function loadPersonaInfo(anchorName) {
   try {
     const res = await fetch('/api/today-case?anchor=' + encodeURIComponent(anchorName));
     const data = await res.json();
-    return data.persona || null;
-  } catch(e) { return null; }
+    return data;
+  } catch(e) { return {persona:null, live_modes:[]}; }
 }
 
-async function loadMoodCases(anchorName, mood) {
+async function loadMoodCases(anchorName, liveMode, mood) {
   try {
-    const res = await fetch('/api/today-case?anchor=' + encodeURIComponent(anchorName) + '&motivation=' + encodeURIComponent(mood));
+    const res = await fetch('/api/today-case?anchor=' + encodeURIComponent(anchorName) + '&live_mode=' + encodeURIComponent(liveMode) + '&motivation=' + encodeURIComponent(mood));
     const data = await res.json();
     return data.cases || [];
   } catch(e) { return []; }
@@ -841,6 +845,16 @@ function renderPersonaBadge() {
   }
 }
 
+function renderLiveModeRow() {
+  const box = document.getElementById('live-mode-row');
+  if (!box) return;
+  if (!currentLiveModes.length) { box.innerHTML = ''; return; }
+  box.innerHTML = currentLiveModes.map(function(m) {
+    const active = currentLiveMode === m ? ' active' : '';
+    return '<div class="mood-btn' + active + '" onclick="selectLiveMode(\'' + m + '\')">' + m + '</div>';
+  }).join('');
+}
+
 function renderMoodRow() {
   const box = document.getElementById('mood-row');
   if (!box) return;
@@ -848,6 +862,13 @@ function renderMoodRow() {
     const active = currentMood === m.key ? ' active' : '';
     return '<div class="mood-btn' + active + '" onclick="selectMood(\'' + m.key + '\')">' + m.emoji + ' ' + m.label + '</div>';
   }).join('');
+}
+
+async function selectLiveMode(mode) {
+  currentLiveMode = mode;
+  renderLiveModeRow();
+  document.getElementById('topic-content').innerHTML = '<div class="idea-empty">加载中...</div>';
+  await refreshMoodContent(currentAnchor ? currentAnchor.name : '');
 }
 
 async function selectMood(mood) {
@@ -858,7 +879,11 @@ async function selectMood(mood) {
 }
 
 async function refreshMoodContent(anchorName) {
-  const cases = await loadMoodCases(anchorName, currentMood);
+  if (!currentLiveMode) {
+    document.getElementById('topic-content').innerHTML = '<div class="idea-empty">先选个模式试试</div>';
+    return;
+  }
+  const cases = await loadMoodCases(anchorName, currentLiveMode, currentMood);
   renderMoodCases(cases);
 }
 
@@ -882,15 +907,19 @@ function renderMoodCases(cases) {
   const box = document.getElementById('topic-content');
   if (!box) return;
   if (!cases || cases.length === 0) {
-    box.innerHTML = '<div class="idea-empty">这个心情下还没有内容，运营会陆续补充</div>';
+    box.innerHTML = '<div class="idea-empty">这个组合还没有内容，运营会陆续补充</div>';
     return;
   }
   box.innerHTML = '<div class="topic-tag-stack">' + cases.map(newCaseCardHtml).join('') + '</div>';
 }
 
 async function loadTopics(anchorName) {
-  currentPersona = await loadPersonaInfo(anchorName);
+  const info = await loadPersonaInfo(anchorName);
+  currentPersona = info.persona || null;
+  currentLiveModes = info.live_modes || [];
+  currentLiveMode = currentLiveModes.length ? currentLiveModes[0] : null;
   renderPersonaBadge();
+  renderLiveModeRow();
   renderMoodRow();
   await refreshMoodContent(anchorName);
 }
