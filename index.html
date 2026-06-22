@@ -193,16 +193,12 @@
   .case-angle b { color: var(--purple2); }
   .topic-tag-stack { display: flex; flex-direction: column; gap: 10px; }
   .topic-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
-  .topic-tag-select { background: var(--bg3); border: 1px solid var(--border); border-radius: 20px; color: var(--purple2); font-size: 12px; font-weight: 600; padding: 5px 10px; }
+  .persona-badge { margin-bottom: 10px; }
+  .mood-row { display: grid; grid-template-columns: repeat(4,1fr); gap: 6px; margin-bottom: 12px; }
+  .mood-btn { text-align: center; padding: 10px 4px; border-radius: 10px; background: var(--bg2); border: 1px solid var(--border); font-size: 12px; font-weight: 600; color: var(--text2); cursor: pointer; }
+  .mood-btn.active { background: rgba(124,111,247,0.18); border-color: var(--purple); color: var(--purple2); }
 
-  /* 主播提交话题入口 */
-  .submit-box { background: var(--bg2); border: 1px dashed var(--border2); border-radius: 10px; padding: 14px; margin-top: 10px; }
-  .submit-title { font-size: 13px; font-weight: 500; color: var(--text2); margin-bottom: 10px; }
-  .submit-box select, .submit-box textarea { width: 100%; background: var(--bg3); border: 1px solid var(--border); border-radius: 8px; color: var(--text); font-size: 13px; padding: 8px 10px; margin-bottom: 8px; font-family: inherit; }
-  .submit-box textarea { resize: vertical; min-height: 60px; }
-  .submit-box button { width: 100%; background: var(--purple); border: none; border-radius: 8px; color: white; font-size: 13px; font-weight: 600; padding: 10px; cursor: pointer; }
-  .submit-box button:hover { background: #6c5fe8; }
-  .submit-msg { font-size: 12px; color: var(--text2); margin-top: 8px; text-align: center; min-height: 16px; }
+  /* 今日话题模块结尾 */
 </style>
 </head>
 <body>
@@ -328,10 +324,9 @@
 
   <div id="tab-content" style="display:none">
   <div class="section" id="topic-section">
-    <div class="topic-header">
-      <div class="section-title" style="margin-bottom:0">📌 今日话题特别推荐</div>
-      <select id="topic-tag-select" class="topic-tag-select" onchange="onTagSwitch()"></select>
-    </div>
+    <div class="section-title">📌 今日话题特别推荐</div>
+    <div id="persona-badge" class="persona-badge"></div>
+    <div id="mood-row" class="mood-row"></div>
     <div id="topic-content"></div>
   </div>
   </div>
@@ -809,6 +804,95 @@ function renderTopics(tagMap, ideas) {
   lastIdeas = ideas || [];
   populateTagSelect();
   renderTopicContent();
+}
+
+const MOODS = [
+  {key:'冲突', emoji:'🔴', label:'想爆'},
+  {key:'缺失', emoji:'💭', label:'想聊深'},
+  {key:'渴望', emoji:'💗', label:'想陪伴'},
+  {key:'娱乐', emoji:'😄', label:'想破冰'}
+];
+let currentPersona = null;
+let currentMood = MOODS[0].key;
+
+async function loadPersonaInfo(anchorName) {
+  try {
+    const res = await fetch('/api/today-case?anchor=' + encodeURIComponent(anchorName));
+    const data = await res.json();
+    return data.persona || null;
+  } catch(e) { return null; }
+}
+
+async function loadMoodCases(anchorName, mood) {
+  try {
+    const res = await fetch('/api/today-case?anchor=' + encodeURIComponent(anchorName) + '&motivation=' + encodeURIComponent(mood));
+    const data = await res.json();
+    return data.cases || [];
+  } catch(e) { return []; }
+}
+
+function renderPersonaBadge() {
+  const box = document.getElementById('persona-badge');
+  if (!box) return;
+  if (currentPersona) {
+    box.innerHTML = '<span class="idea-tag">' + currentPersona + '</span>';
+  } else {
+    box.innerHTML = '<span class="idea-tag">还没设置人设，找运营配置一下</span>';
+  }
+}
+
+function renderMoodRow() {
+  const box = document.getElementById('mood-row');
+  if (!box) return;
+  box.innerHTML = MOODS.map(function(m) {
+    const active = currentMood === m.key ? ' active' : '';
+    return '<div class="mood-btn' + active + '" onclick="selectMood(\'' + m.key + '\')">' + m.emoji + ' ' + m.label + '</div>';
+  }).join('');
+}
+
+async function selectMood(mood) {
+  currentMood = mood;
+  renderMoodRow();
+  document.getElementById('topic-content').innerHTML = '<div class="idea-empty">加载中...</div>';
+  await refreshMoodContent(currentAnchor ? currentAnchor.name : '');
+}
+
+async function refreshMoodContent(anchorName) {
+  const cases = await loadMoodCases(anchorName, currentMood);
+  renderMoodCases(cases);
+}
+
+function newCaseCardHtml(c) {
+  const angleHtml = c.angles && c.angles.length
+    ? '<div class="case-angle"><b>切入角度：</b>' + c.angles.join('；') + '</div>'
+    : '';
+  const subCat = c.category_l2 || c.category_l1 || '';
+  const scenarioHtml = c.scenario ? '<div class="case-scenario">' + c.scenario + '</div>' : '';
+  return '<div class="case-card">'
+    + (subCat ? '<div class="idea-tag" style="margin-bottom:6px">' + subCat + '</div>' : '')
+    + '<div class="case-title">' + (c.title || '') + '</div>'
+    + scenarioHtml
+    + '<div class="case-question">' + (c.question || '') + '</div>'
+    + '<div class="case-vote"><span>✅ YES</span><span>❌ NO</span></div>'
+    + angleHtml
+    + '</div>';
+}
+
+function renderMoodCases(cases) {
+  const box = document.getElementById('topic-content');
+  if (!box) return;
+  if (!cases || cases.length === 0) {
+    box.innerHTML = '<div class="idea-empty">这个心情下还没有内容，运营会陆续补充</div>';
+    return;
+  }
+  box.innerHTML = '<div class="topic-tag-stack">' + cases.map(newCaseCardHtml).join('') + '</div>';
+}
+
+async function loadTopics(anchorName) {
+  currentPersona = await loadPersonaInfo(anchorName);
+  renderPersonaBadge();
+  renderMoodRow();
+  await refreshMoodContent(anchorName);
 }
 
 function getPriorityOrder(level) {

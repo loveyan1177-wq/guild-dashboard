@@ -56,9 +56,6 @@ body { background: var(--bg); color: var(--text); font-family: -apple-system,'Pi
     <a class="nav-back" href="/ops.html">← 返回运营总览</a>
   </nav>
   <div class="main">
-    <div class="section-title">📬 主播提交待审核</div>
-    <div id="submissions-list"></div>
-
     <div class="section-title">📌 分类速查</div>
     <div class="sub-card" style="font-size:12px;color:var(--text2);line-height:1.8">
       <b style="color:var(--purple2)">婚姻</b>：离婚财产 / 婆媳关系 / 婚前协议 &nbsp;|&nbsp;
@@ -68,7 +65,7 @@ body { background: var(--bg); color: var(--text); font-family: -apple-system,'Pi
       <b style="color:var(--purple2)">狗血反转</b>：DNA / 双重生活 / 秘密账户
     </div>
 
-    <div class="section-title">🗂 案件库（按标签分组）</div>
+    <div class="section-title">🗂 案件库（按人设＋动机分组）</div>
     <div id="cases-list"></div>
   </div>
 </div>
@@ -190,6 +187,34 @@ async function rateCase(id, rating) {
   } catch(e) {
     alert('操作失败，请重试');
   }
+}
+
+const PERSONAS = ['情感陪伴型', 'Cos娱乐型'];
+const MOODS_ADMIN = ['冲突', '缺失', '渴望', '娱乐'];
+
+async function loadAll() {
+  const casesRes = await fetch('/api/today-case?all=1').then(r => r.json()).catch(() => ({cases:[]}));
+  allCases = casesRes.cases || [];
+  renderCases();
+  document.getElementById('loading').style.display = 'none';
+  document.getElementById('page').style.display = 'block';
+}
+
+function renderCases() {
+  const box = document.getElementById('cases-list');
+  const personasInData = Array.from(new Set(allCases.map(function(c){return c.persona;}).filter(Boolean)));
+  const personaList = personasInData.length ? personasInData : PERSONAS;
+  let html = '';
+  personaList.forEach(function(persona) {
+    MOODS_ADMIN.forEach(function(mood) {
+      const list = allCases.filter(function(c){return c.persona === persona && c.motivation === mood;}).sort(function(a,b){return (a.order||0)-(b.order||0);});
+      const items = list.length === 0
+        ? '<div class="empty">这个组合还没有案件</div>'
+        : list.map(caseCardHtml).join('');
+      html += '<div class="tag-group"><div class="tag-head">' + persona + ' · ' + mood + ' (' + list.length + ')</div>' + items + '</div>';
+    });
+  });
+  box.innerHTML = html;
 }
 
 loadAll();
