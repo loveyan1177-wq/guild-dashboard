@@ -74,7 +74,17 @@ async function fetchFromFeishu(anchor) {
     }
   );
   const data = await response.json();
-  const items = data.data?.items || [];
+  const rawItems = data.data?.items || [];
+
+  // 二次过滤：飞书 contains 只是子串匹配，不保证 anchor- 在识别码开头，
+  // 这里按 "-" 分割识别码，第一段必须严格等于 anchor（忽略大小写）才保留，
+  // 避免不同主播识别码互相包含导致串号。
+  const anchorLower = anchor.toLowerCase();
+  const items = rawItems.filter(item => {
+    const code = String(item.fields['单场识别码'] || '');
+    const prefix = code.split('-')[0]?.trim().toLowerCase();
+    return prefix === anchorLower;
+  });
 
   return items.map(item => {
     const f = item.fields;
