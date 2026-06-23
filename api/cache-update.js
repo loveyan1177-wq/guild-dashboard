@@ -73,13 +73,20 @@ export default async function handler(req, res) {
 
   try {
     const results = {};
+    const warnings = [];
     if (lives !== undefined) {
       await redisSet(`lives:${anchor}`, lives);
       results.lives = 'ok';
+      if (Array.isArray(lives) && lives.length === 0) {
+        warnings.push('lives empty, check Feishu query or anchor_key');
+      }
     }
     if (fans !== undefined) {
       const total = await upsertFans(anchor, fans);
       results.fans = `upserted, total ${total}`;
+      if (Array.isArray(fans) && fans.length === 0) {
+        warnings.push('fans empty, check xlsx snapshot');
+      }
     }
     if (suggestions !== undefined) {
       await redisSet(`suggestions:${anchor}`, suggestions, 300);
@@ -102,7 +109,7 @@ export default async function handler(req, res) {
     }
     // 清除 anchors 缓存，让下次自动刷新
     await redisDel('anchors');
-    res.json({ success: true, anchor: anchor || null, updated: results });
+    res.json({ success: true, anchor: anchor || null, updated: results, warnings });
   } catch (e) {
     res.status(500).json({ error: e.message });
   }
