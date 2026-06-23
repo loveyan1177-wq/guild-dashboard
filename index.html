@@ -677,7 +677,7 @@ let allTasks = [];
 
 async function loadTasks(anchorName) {
   try {
-    const res = await fetch('/api/suggestions?anchor=' + encodeURIComponent(anchorName));
+    const res = await fetch('/api/today-actions?anchor=' + encodeURIComponent(anchorName));
     const data = await res.json();
     return data.suggestions || [];
   } catch(e) { return []; }
