@@ -40,6 +40,17 @@ async function redisGet(key) {
   } catch { return null; }
 }
 
+// 只检查 key 是否存在，用于 session_id 幂等标记，不走 redisGet 的数组解析逻辑
+async function redisExists(key) {
+  const url = process.env.KV_REST_API_URL;
+  const token = process.env.KV_REST_API_TOKEN;
+  const res = await fetch(`${url}/get/${encodeURIComponent(key)}`, {
+    headers: { Authorization: `Bearer ${token}` }
+  });
+  const data = await res.json();
+  return data.result !== null && data.result !== undefined;
+}
+
 // fans增量upsert：只更新本场出现的粉丝，其余保持不变
 async function upsertFans(anchor, newFans) {
   const existing = await redisGet(`fans:${anchor}`) || [];
@@ -64,7 +75,7 @@ export default async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
   if (req.method !== 'POST') return res.status(405).json({ error: 'POST only' });
 
-  const { anchor, lives, fans, suggestions, ideas, cases, anchor_tracks } = req.body;
+  const { anchor, lives, fans, suggestions, ideas, cases, anchor_tracks, session_id } = req.body;
 
   // lives / fans / suggestions 是单个主播的数据，必须有 anchor
   if ((lives !== undefined || fans !== undefined || suggestions !== undefined) && !anchor) {
@@ -82,10 +93,21 @@ export default async function handler(req, res) {
       }
     }
     if (fans !== undefined) {
-      const total = await upsertFans(anchor, fans);
-      results.fans = `upserted, total ${total}`;
-      if (Array.isArray(fans) && fans.length === 0) {
-        warnings.push('fans empty, check xlsx snapshot');
+      let skipFans = false;
+      const sessionDoneKey = session_id ? `fans_session_done:${anchor}:${session_id}` : null;
+      if (sessionDoneKey && await redisExists(sessionDoneKey)) {
+        results.fans = 'skipped duplicate session_id';
+        skipFans = true;
+      }
+      if (!skipFans) {
+        const total = await upsertFans(anchor, fans);
+        results.fans = `upserted, total ${total}`;
+        if (Array.isArray(fans) && fans.length === 0) {
+          warnings.push('fans empty, check xlsx snapshot');
+        }
+        if (sessionDoneKey) {
+          await redisSet(sessionDoneKey, true, 604800); // 7天
+        }
       }
     }
     if (suggestions !== undefined) {
