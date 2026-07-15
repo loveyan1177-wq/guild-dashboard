@@ -1,8 +1,8 @@
 // api/admin-update.js
-// 合并版运营后台写入接口（案件库管理 + 主播提交审核共用一个文件，避免超过Vercel Hobby套餐12个函数上限）
-// POST body 加 type 字段区分操作对象：
-//   type: "case"       -> 更新 cases:all 里某条案件的 status / effect_rating / effect_note
-//   type: "submission" -> 更新 topic_submissions 里某条提交的 status
+// 运营后台案件库写入接口
+// POST body 加 type 字段：
+//   type: "case" -> 更新 cases:all 里某条案件的 status / effect_rating / effect_note
+// （主播提交话题功能已下线，原 'submission' 分支已移除）
 
 async function redisGetRaw(key) {
   const url = process.env.KV_REST_API_URL;
@@ -56,18 +56,7 @@ export default async function handler(req, res) {
       return res.json({ success: true, case: list[idx] });
     }
 
-    if (type === 'submission') {
-      if (!status) return res.status(400).json({ error: 'submission 类型需要 status' });
-      const existing = (await redisGetRaw('topic_submissions')) || [];
-      const list = Array.isArray(existing) ? existing : [];
-      const idx = list.findIndex(s => s.id === id);
-      if (idx === -1) return res.status(404).json({ error: '没找到这条提交' });
-      list[idx].status = status;
-      await redisSetRaw('topic_submissions', list);
-      return res.json({ success: true, submission: list[idx] });
-    }
-
-    res.status(400).json({ error: 'type 必须是 case 或 submission' });
+    res.status(400).json({ error: 'type 必须是 case' });
   } catch (e) {
     res.status(500).json({ error: e.message });
   }

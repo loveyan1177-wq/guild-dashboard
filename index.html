@@ -337,33 +337,8 @@
 </div>
 
 <script>
-const FEISHU_APP_ID = 'cli_aaa0a0786b391bec';
-const FEISHU_APP_SECRET = '0bIlPficAAbs9jrVm5S0vcDf2iVj50fm';
-const APP_TOKEN = 'ONg9bbRwoampbAsJd71c7RKsn7e';
-const TABLE_ANCHORS = 'tbl7bMJLN66tBB7M';
-const TABLE_LIVE = 'tbl4VQMLt9PH4QNy';
-const TABLE_FANS = 'tblSpn2p5LW9TCjX';
-
-let token = '';
 let currentAnchor = null;
 let trendChartInst = null;
-
-async function getToken() {
-  const res = await fetch('/api/token');
-  const data = await res.json();
-  token = data.token;
-  return token;
-}
-
-async function feishuGet(url) {
-  const res = await fetch(url, { headers: { 'Authorization': 'Bearer ' + token } });
-  return res.json();
-}
-
-async function feishuSearch(tableId, filter) {
-  const res = await fetch(`/api/search?table=${tableId}&filter=${encodeURIComponent(JSON.stringify(filter))}`);
-  return res.json();
-}
 
 async function loadAnchors() {
   const res = await fetch('/api/anchors');
@@ -689,123 +664,6 @@ async function loadIdeas(anchorName) {
     const data = await res.json();
     return data.ideas || [];
   } catch(e) { return []; }
-}
-
-const TOPIC_TAGS = ['❤️情感陪伴', '⚖️婚姻关系', '💔出轨边界', '🧠人生树洞', '😂搞笑整蛊'];
-
-async function loadTodayTopics() {
-  try {
-    const res = await fetch('/api/today-case');
-    const data = await res.json();
-    return data.tags || {};
-  } catch(e) { return {}; }
-}
-
-async function loadTopics(anchorName) {
-  const [tagMap, ideas] = await Promise.all([loadTodayTopics(), loadIdeas(anchorName)]);
-  renderTopics(tagMap, ideas);
-}
-
-function caseCardHtml(tag, c) {
-  if (!c) {
-    return '<div class="case-card" style="opacity:0.5">'
-      + '<div class="idea-tag" style="margin-bottom:6px">' + tag + '</div>'
-      + '<div class="idea-empty" style="padding:0.4rem 0">这个标签今天还没有话题，运营会陆续补充</div>'
-      + '</div>';
-  }
-  const angleHtml = c.angles && c.angles.length
-    ? '<div class="case-angle"><b>切入角度：</b>' + c.angles.join('；') + '</div>'
-    : '';
-  const subCat = c.category_l2 ? (' · ' + c.category_l2) : (c.category_l1 ? (' · ' + c.category_l1) : '');
-  return '<div class="case-card">'
-    + '<div class="idea-tag" style="margin-bottom:6px">' + tag + subCat + '</div>'
-    + '<div class="case-title">' + (c.title || '') + '</div>'
-    + '<div class="case-scenario">' + (c.scenario || '') + '</div>'
-    + '<div class="case-question">' + (c.question || '') + '</div>'
-    + '<div class="case-vote"><span>✅ YES</span><span>❌ NO</span></div>'
-    + angleHtml
-    + '</div>';
-}
-
-function submitBoxHtml() {
-  const options = TOPIC_TAGS.map(function(t) { return '<option value="' + t + '">' + t + '</option>'; }).join('');
-  return '<div class="submit-box">'
-    + '<div class="submit-title">✍️ 有话题想法？提交给运营看看</div>'
-    + '<select id="submit-tag">' + options + '</select>'
-    + '<textarea id="submit-content" placeholder="说说你的想法..."></textarea>'
-    + '<button onclick="submitTopic()">提交</button>'
-    + '<div class="submit-msg" id="submit-msg"></div>'
-    + '</div>';
-}
-
-async function submitTopic() {
-  const tagEl = document.getElementById('submit-tag');
-  const contentEl = document.getElementById('submit-content');
-  const msg = document.getElementById('submit-msg');
-  const content = contentEl ? contentEl.value.trim() : '';
-  if (!content) { if (msg) msg.textContent = '写点内容再提交吧'; return; }
-  if (msg) msg.textContent = '提交中...';
-  try {
-    const res = await fetch('/api/topic-submissions', {
-      method: 'POST',
-      headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify({
-        anchor: currentAnchor ? currentAnchor.name : '未知',
-        tag: tagEl ? tagEl.value : TOPIC_TAGS[0],
-        content: content
-      })
-    });
-    const data = await res.json();
-    if (data.success) {
-      if (msg) msg.textContent = '提交成功，运营会看到哦～';
-      if (contentEl) contentEl.value = '';
-    } else {
-      if (msg) msg.textContent = '提交失败，一会再试';
-    }
-  } catch(e) {
-    if (msg) msg.textContent = '提交失败，一会再试';
-  }
-}
-
-let lastTagMap = {};
-let lastIdeas = [];
-
-function onTagSwitch() {
-  renderTopicContent();
-}
-
-function populateTagSelect() {
-  const sel = document.getElementById('topic-tag-select');
-  if (!sel || sel.options.length > 0) return;
-  sel.innerHTML = TOPIC_TAGS.map(function(t) { return '<option value="' + t + '">' + t + '</option>'; }).join('');
-}
-
-function renderTopicContent() {
-  const box = document.getElementById('topic-content');
-  if (!box) return;
-  const sel = document.getElementById('topic-tag-select');
-  const selectedTag = sel ? sel.value : TOPIC_TAGS[0];
-
-  let html = caseCardHtml(selectedTag, lastTagMap[selectedTag]);
-
-  if (lastIdeas && lastIdeas.length > 0) {
-    html += '<div class="idea-list" style="margin-top:10px">' + lastIdeas.map(function(idea) {
-      const tagHtml = idea.tracks && idea.tracks.length
-        ? idea.tracks.map(function(t) { return '<span class="idea-tag">' + t + '</span>'; }).join(' ')
-        : '';
-      return '<div class="idea-item">' + tagHtml + '<div class="idea-text">' + (idea.content || '') + '</div></div>';
-    }).join('') + '</div>';
-  }
-
-  html += submitBoxHtml();
-  box.innerHTML = html;
-}
-
-function renderTopics(tagMap, ideas) {
-  lastTagMap = tagMap || {};
-  lastIdeas = ideas || [];
-  populateTagSelect();
-  renderTopicContent();
 }
 
 const MOODS = [

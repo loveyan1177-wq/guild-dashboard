@@ -73,57 +73,6 @@ body { background: var(--bg); color: var(--text); font-family: -apple-system,'Pi
 <script>
 const TOPIC_TAGS = ['❤️情感陪伴', '⚖️婚姻关系', '💔出轨边界', '🧠人生树洞', '😂搞笑整蛊'];
 let allCases = [];
-let allSubmissions = [];
-
-async function loadAll() {
-  const [casesRes, subsRes] = await Promise.all([
-    fetch('/api/today-case?all=1').then(r => r.json()).catch(() => ({cases:[]})),
-    fetch('/api/topic-submissions').then(r => r.json()).catch(() => ({submissions:[]}))
-  ]);
-  allCases = casesRes.cases || [];
-  allSubmissions = subsRes.submissions || [];
-  renderSubmissions();
-  renderCases();
-  document.getElementById('loading').style.display = 'none';
-  document.getElementById('page').style.display = 'block';
-}
-
-function renderSubmissions() {
-  const box = document.getElementById('submissions-list');
-  const pending = allSubmissions.filter(s => s.status === '待审核');
-  if (pending.length === 0) {
-    box.innerHTML = '<div class="empty">暂无待审核的主播提交</div>';
-    return;
-  }
-  box.innerHTML = pending.map(function(s) {
-    return '<div class="sub-card">'
-      + '<div class="sub-meta">' + (s.anchor||'未知主播') + ' · ' + (s.submitted_at||'') + '</div>'
-      + '<span class="sub-tag">' + (s.tag||'') + '</span>'
-      + '<div class="sub-content" style="margin-top:8px">' + (s.content||'') + '</div>'
-      + '<div class="case-actions">'
-      + '<button class="btn-sm" onclick="reviewSubmission(\'' + s.id + '\',\'已采纳\')">✅ 采纳</button>'
-      + '<button class="btn-sm" onclick="reviewSubmission(\'' + s.id + '\',\'已拒绝\')">✕ 拒绝</button>'
-      + '</div>'
-      + '</div>';
-  }).join('');
-}
-
-async function reviewSubmission(id, status) {
-  try {
-    await fetch('/api/admin-update', {
-      method: 'POST',
-      headers: {'Content-Type':'application/json'},
-      body: JSON.stringify({ type: 'submission', id, status })
-    });
-    allSubmissions = allSubmissions.map(s => s.id === id ? {...s, status} : s);
-    renderSubmissions();
-    if (status === '已采纳') {
-      alert('已标记采纳。记得把内容告诉 Claude，让它整理成标准案件格式排进对应标签队列。');
-    }
-  } catch(e) {
-    alert('操作失败，请重试');
-  }
-}
 
 function renderCases() {
   const box = document.getElementById('cases-list');
